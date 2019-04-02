@@ -173,4 +173,11 @@ public class DateUtils {
         DateTime dateTime = new DateTime(date);
         return dateTime.plusYears(years).toDate();
     }
+
+    /**
+     * 系统当前时间（ms）
+     */
+    public static long now(){
+        return System.nanoTime();
+    }
 }
