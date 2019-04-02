@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.story.MsgCommentDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.app.entity.story.MsgCommentEntity" id="commentMap">
+        <result property="id" column="id"/>
+        <result property="pmId" column="pm_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <result property="toMember" column="to_member"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="readCount" column="read_count"/>
+    </resultMap>
+
+    <resultMap type="io.renren.modules.app.dto.CommentDto" id="commentDtoMap">
+        <result property="id" column="id"/>
+        <result property="pmId" column="pm_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="memberAvatar" column="member_avatar"/>
+        <result property="memberId" column="member_id"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="readCount" column="read_count"/>
+    </resultMap>
+
+    <select id="getPage" parameterType="map" resultMap="commentDtoMap">
+        select c.id,c.content,c.create_time,c.parent_id,c.pm_id,c.like_count,c.read_count,m.nick_name as member_name,m.avatar as member_avatar
+         from lf_msg_comment c left join member m on c.member_id=m.id
+         where c.pm_id = #{pmId} and c.parent_id is null
+         order by c.create_time desc
+           limit ${offset},${limit}
+    </select>
+
+    <select id="querySubThroughParentId" resultMap="commentDtoMap">
+       select c.id,c.pm_id,c.content,c.create_time,c.like_count,c.read_count,m.nick_name as member_name,m.avatar as member_avatar
+         from lf_msg_comment c left join member m on c.member_id=m.id
+         where c.pm_id = #{pmId} and c.parent_id = #{parentId}
+    </select>
+
+</mapper>
