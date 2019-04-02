@@ -1,6 +1,6 @@
 **项目说明** 
 - 雷锋在线项目基于renren-fast快速开发框架，前后端分离，目前主要是为app提供api接口
-- swagger访问地址：https://pet.fangzheng.fun/pet/swagger-ui.html
+- swagger访问地址：https://pet.fangzheng.fun/leifeng/swagger-ui.html
 - jenkins访问地址：http://pet.fangzheng.fun:8080
 <br> 
 <br>
