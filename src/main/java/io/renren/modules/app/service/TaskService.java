@@ -5,6 +5,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.TaskForm;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,5 +37,16 @@ public interface TaskService extends IService<TaskEntity> {
      * @param ids
      */
     void deleteTasks(Long[] ids);
+
+    /**
+     * 批量插入任务图片
+     * @param taskId
+     * @param imageUrls
+     */
+    void insertTaskImages(Long taskId, List<String> imageUrls);
+
+    void insertTaskTags(Long taskId,List<Long> tagIds);
+
+    void insertTaskNotifiedUsers(Long taskId,List<Long> userIds);
 }
 

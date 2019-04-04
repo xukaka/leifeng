@@ -1,6 +1,7 @@
 package io.renren.modules.app.entity;
 
 import com.baomidou.mybatisplus.annotations.TableId;
+import io.renren.common.utils.DateUtils;
 
 import java.io.Serializable;
 
@@ -14,8 +15,7 @@ public abstract class BaseEntity implements Serializable {
     /**
      * 创建时间
      */
-    private Long createTime;
-
+    private Long createTime = DateUtils.now();
 
     /**
      * 是否删除

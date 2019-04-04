@@ -55,6 +55,21 @@ public class TaskEntity extends BaseEntity {
      */
     private Long creatorId;
 
+    /**
+     * 点赞数
+     */
+    private Integer likeCount;
+
+    /**
+     * 评论数
+     */
+    private Integer commentCount;
+
+    /**
+     * 状态：0已发布，1已领取，3已完成，4已取消
+     */
+    private Integer status;
+
 
     public String getTitle() {
         return title;
@@ -135,5 +150,29 @@ public class TaskEntity extends BaseEntity {
 
     public void setNotifiedUserIds(List<Long> notifiedUserIds) {
         this.notifiedUserIds = notifiedUserIds;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

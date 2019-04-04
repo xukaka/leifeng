@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -42,6 +43,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
     @Override
+    @Transactional
     public void createTask(TaskForm form) {
         ValidatorUtils.validateEntity(form);
         TaskEntity task = new TaskEntity();
@@ -67,8 +69,23 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             for (TaskEntity task : tasks) {
                 task.setDeleted(true);
             }
+            this.updateBatchById(tasks);
         }
-        this.updateBatchById(tasks);
+    }
+
+    @Override
+    public void insertTaskImages(Long taskId, List<String> imageUrls) {
+
+    }
+
+    @Override
+    public void insertTaskTags(Long taskId, List<Long> tagIds) {
+
+    }
+
+    @Override
+    public void insertTaskNotifiedUsers(Long taskId, List<Long> userIds) {
+
     }
 
 }
