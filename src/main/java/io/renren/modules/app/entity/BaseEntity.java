@@ -15,7 +15,14 @@ public abstract class BaseEntity implements Serializable {
     /**
      * 创建时间
      */
-    private Long createTime = DateUtils.now();
+    private Long createTime;
+
+    public BaseEntity() {
+    }
+
+    public BaseEntity(Long createTime) {
+        this.createTime = createTime;
+    }
 
     /**
      * 是否删除

@@ -22,8 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
-
-@Service("taskService")
+@Service
 public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements TaskService {
     private final static Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
