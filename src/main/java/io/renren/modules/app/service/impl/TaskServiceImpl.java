@@ -8,14 +8,15 @@ import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 import io.renren.common.validator.ValidatorUtils;
-import io.renren.modules.app.controller.task.TaskController;
 import io.renren.modules.app.dao.task.TaskDao;
+import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -25,6 +26,9 @@ import java.util.*;
 @Service
 public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements TaskService {
     private final static Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
+
+
+
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -37,8 +41,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
     @Override
-    public TaskEntity getTask(Long id) {
-        return this.selectById(id);
+    public TaskDto getTask(Long id) {
+        TaskEntity taskEntity = this.selectById(id);
+//        this.baseMapper.insertTaskImageRelation();
+
+//        return this.selectById(id);
+        return null;
     }
 
     @Override
@@ -49,7 +57,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         BeanUtils.copyProperties(form, task);
         task.setCreateTime(DateUtils.now());
         this.insert(task);
+        this.addTaskImageRelation(task.getId(), form.getImageUrls());
+        this.addTaskTagRelation(task.getId(), form.getTagIds());
+        this.addTaskNotifiedUserRelation(task.getId(), form.getNotifiedUserIds());
+
     }
+
 
     @Override
     public void updateTask(TaskForm form) {
@@ -72,19 +85,28 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         }
     }
 
-    @Override
-    public void insertTaskImages(Long taskId, List<String> imageUrls) {
 
+    //任务-图片关系
+    private void addTaskImageRelation(Long taskId, List<String> imageUrls) {
+        if (!CollectionUtils.isEmpty(imageUrls)) {
+            this.baseMapper.insertTaskImageRelation(taskId, imageUrls);
+        }
     }
 
-    @Override
-    public void insertTaskTags(Long taskId, List<Long> tagIds) {
+    //任务-标签关系
 
+    private void addTaskTagRelation(Long taskId, List<Long> tagIds) {
+        if (!CollectionUtils.isEmpty(tagIds)) {
+            this.baseMapper.insertTaskTagRelation(taskId,tagIds);
+        }
     }
 
-    @Override
-    public void insertTaskNotifiedUsers(Long taskId, List<Long> userIds) {
 
+    //任务-提示用户关系
+    private void addTaskNotifiedUserRelation(Long taskId, List<Long> userIds) {
+        if (!CollectionUtils.isEmpty(userIds)) {
+            this.baseMapper.insertTaskNotifiedUserRelation(taskId,userIds);
+        }
     }
 
 }

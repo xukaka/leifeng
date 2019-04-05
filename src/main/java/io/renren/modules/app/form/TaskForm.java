@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @ApiModel(value = "任务表单")
@@ -27,6 +28,7 @@ public class TaskForm {
     @ApiModelProperty(value = "任务ID", example = "")
     private Long id;
     @ApiModelProperty(value = "主题", example = "帮忙抢火车票")
+    @NotBlank
     private String title;
 
     @ApiModelProperty(value = "描述", example = "")
@@ -40,15 +42,15 @@ public class TaskForm {
     private List<Long> tagIds;
 
     @ApiModelProperty(value = "任务开始时间", example = "")
-    @NotBlank
+    @NotNull
     private Long startTime;
 
     @ApiModelProperty(value = "任务过期时间", example = "")
-    @NotBlank
+    @NotNull
     private Long expireTime;
 
     @ApiModelProperty(value = "虚拟货币（雷锋币）", example = "")
-    @NotBlank
+    @NotNull
     private Integer virtualCurrency;
 
     @ApiModelProperty(value = "任务地址id", example = "")

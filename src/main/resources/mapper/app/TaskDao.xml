@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.task.TaskDao">
+
+    <resultMap type="io.renren.modules.app.dto.TaskDto" id="taskMap">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="startTime" column="start_time"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="virtualCurrency" column="virtual_currency"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="readCount" column="read_count"/>
+    </resultMap>
+
+    <select id="getTask" resultMap="taskMap">
+        select
+            t.*,
+            a.province,
+            a.city,
+            a.district,
+            a.street,
+            a.detail AS addressDetail,
+            m.id AS memberId,
+            ri.image_url,
+            tg.name as tagName
+        from t_task t
+        join t_task_address a on t.address_id = a.id
+        join member m on t.creator_id = m.id
+        left join r_task_image ri on t.id = ri.task_id
+        join r_task_tag rg on t.id = rg.task_id
+        join t_task_tag tg on rg.tag_id=tg.id
+        where t.id = #{taskId}
+    </select>
+
+    <insert id="insertTaskImageRelation">
+        insert into r_task_image(task_id,image_url) values
+        <foreach collection="imageUrls" item="item" index="index" separator=",">
+            (#{taskId}, #{item})
+        </foreach>
+    </insert>
+
+    <insert id="insertTaskTagRelation">
+        insert into r_task_tag(task_id,tag_id) values
+        <foreach collection="tagIds" item="item" index="index" separator=",">
+            (#{taskId}, #{item})
+        </foreach>
+    </insert>
+
+    <insert id="insertTaskNotifiedUserRelation">
+        insert into r_task_notified_user(task_id,user_id) values
+        <foreach collection="userIds" item="item" index="index" separator=",">
+            (#{taskId}, #{item})
+        </foreach>
+    </insert>
+
+</mapper>

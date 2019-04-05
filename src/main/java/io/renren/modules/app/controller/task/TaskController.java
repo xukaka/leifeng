@@ -62,18 +62,4 @@ public class TaskController {
         return R.ok();
     }
 
-    /**
-     * 分类浏览统计
-     */
-    /*@GetMapping("/read/{id}")
-    @ApiOperation("分类浏览统计")
-    public R read(@PathVariable("id") Long id) {
-        TreasureBookCategoryEntity treasureBookCategoryEntity = treasureBookCategoryService.selectById(id);
-        if (null != treasureBookCategoryEntity) {
-            treasureBookCategoryEntity.setCount(treasureBookCategoryEntity.getCount() + 1);
-        }
-        treasureBookCategoryService.insertOrUpdate(treasureBookCategoryEntity);
-        return R.ok().put("count", treasureBookCategoryEntity.getCount());
-    }*/
-
 }

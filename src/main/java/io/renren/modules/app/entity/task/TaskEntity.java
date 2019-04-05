@@ -22,12 +22,12 @@ public class TaskEntity extends BaseEntity {
     /**
      * 图片url列表
      */
-    private List<String> imageUrls;
+//    private List<String> imageUrls;
 
     /**
      * 标签ids
      */
-    private List<Long> tagIds;
+//    private List<Long> tagIds;
     /**
      * 任务开始时间
      */
@@ -48,7 +48,7 @@ public class TaskEntity extends BaseEntity {
     /**
      * 被通知的用户id列表
      */
-    private List<Long> notifiedUserIds;
+//    private List<Long> notifiedUserIds;
 
     /**
      * 创建者ID
@@ -87,21 +87,7 @@ public class TaskEntity extends BaseEntity {
         this.description = description;
     }
 
-    public List<String> getImageUrls() {
-        return imageUrls;
-    }
 
-    public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
-    }
-
-    public List<Long> getTagIds() {
-        return tagIds;
-    }
-
-    public void setTagIds(List<Long> tagIds) {
-        this.tagIds = tagIds;
-    }
 
     public Long getStartTime() {
         return startTime;
@@ -144,13 +130,6 @@ public class TaskEntity extends BaseEntity {
     }
 
 
-    public List<Long> getNotifiedUserIds() {
-        return notifiedUserIds;
-    }
-
-    public void setNotifiedUserIds(List<Long> notifiedUserIds) {
-        this.notifiedUserIds = notifiedUserIds;
-    }
 
     public Integer getLikeCount() {
         return likeCount;
