@@ -13,6 +13,10 @@ import java.util.List;
 public class TaskDto implements Serializable {
 
     /**
+     * 任务id
+     */
+    private Long id;
+    /**
      * 主题
      */
     private String title;
@@ -50,6 +54,25 @@ public class TaskDto implements Serializable {
      * 任务创建人
      */
     private Member creator;
+
+    /**
+     * 状态
+     */
+    private Integer status;
+
+    /**
+     * 评论数
+     */
+    private Integer commentCount;
+    /**
+     * 点赞数
+     */
+    private Integer likeCount;
+
+    /**
+     * 创建时间
+     */
+    private Long createTime;
 
 
     public String getTitle() {
@@ -123,5 +146,45 @@ public class TaskDto implements Serializable {
 
     public void setCreator(Member creator) {
         this.creator = creator;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

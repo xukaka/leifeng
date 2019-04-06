@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.exception.RRException;
 import io.renren.modules.app.dao.task.TaskTagDao;
+import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.service.TaskTagService;
 import org.slf4j.Logger;
@@ -20,13 +21,12 @@ import java.util.List;
 public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> implements TaskTagService {
     private final static Logger logger = LoggerFactory.getLogger(TaskTagServiceImpl.class);
 
-    @Resource
-    private TaskTagDao taskTagDao;
 
     @Override
     public List<TaskTagEntity> getTaskTags() {
         Wrapper<TaskTagEntity> wrapper = new EntityWrapper<>();
-        wrapper.orderBy("usageCount",false);
+        wrapper.eq("deleted",false)
+                .orderBy("usageCount",false);
         List<TaskTagEntity> tags = this.selectList(wrapper);
         if (CollectionUtils.isEmpty(tags)) {
             return new ArrayList<>();
@@ -36,30 +36,39 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
     }
 
     @Override
-    public void createTaskTag(String name) {
-        if (exists(name)) {
+    public void createTaskTag(String tagName) {
+        if (exists(tagName)) {
             throw new RRException("标签已存在");
         }
 
-        TaskTagEntity tag = new TaskTagEntity(name);
+        TaskTagEntity tag = new TaskTagEntity(tagName);
         this.insert(tag);
     }
 
     @Override
-    public void updateTaskTag(Long tagId, String name) {
-        checkNameExistsOtherTags(tagId,name);
+    public void updateTaskTag(Long tagId, String tagName) {
+        checkNameExistsOtherTags(tagId,tagName);
         TaskTagEntity tag = this.selectById(tagId);
-        tag.setName(name);
+        tag.setName(tagName);
         this.updateById(tag);
 
+    }
+
+    @Override
+    public void deleteTaskTag(Long tagId) {
+        TaskTagEntity tag = this.selectById(tagId);
+        if (tag != null) {
+            tag.setDeleted(true);
+            this.updateById(tag);
+        }
     }
 
     /**
      * 检查标签名是否存在其它标签中
      */
-    private void checkNameExistsOtherTags(Long tagId, String name) {
+    private void checkNameExistsOtherTags(Long tagId, String tagName) {
         Wrapper<TaskTagEntity> wrapper = new EntityWrapper<>();
-        wrapper.eq("name",name).notIn("id",tagId);
+        wrapper.eq("name",tagName).notIn("id",tagId);
         boolean exists = this.selectCount(wrapper) > 0;
         if (exists){
             throw new RRException("标签已存在");

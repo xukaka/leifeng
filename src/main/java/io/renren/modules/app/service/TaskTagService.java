@@ -19,12 +19,17 @@ public interface TaskTagService extends IService<TaskTagEntity> {
     /**
      * 创建任务标签
      */
-    void createTaskTag(String name);
+    void createTaskTag(String tagName);
 
     /**
      * 更新任务标签
      */
-    void updateTaskTag(Long tagId, String name);
+    void updateTaskTag(Long tagId, String tagName);
+
+    /**
+     * 删除任务标签
+     */
+    void deleteTaskTag(Long tagId);
 
 
 

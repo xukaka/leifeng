@@ -2,6 +2,7 @@ package io.renren.modules.app.controller.task;
 
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
+import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.service.TaskService;
@@ -42,7 +43,7 @@ public class TaskController {
     @GetMapping("/detail/{id}")
     @ApiOperation("获取任务详细信息")
     public R getTask(@PathVariable("id") Long id) {
-        TaskEntity task = taskService.getTask(id);
+        TaskDto task = taskService.getTask(id);
         return R.ok().put("task", task);
     }
 

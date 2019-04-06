@@ -28,8 +28,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     private final static Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
 
-
-
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         Page<TaskEntity> page = this.selectPage(
@@ -42,11 +40,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public TaskDto getTask(Long id) {
-        TaskEntity taskEntity = this.selectById(id);
-//        this.baseMapper.insertTaskImageRelation();
-
-//        return this.selectById(id);
-        return null;
+       TaskDto task = this.baseMapper.getTask(id);
+        return task;
     }
 
     @Override
