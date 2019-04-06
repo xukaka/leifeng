@@ -14,20 +14,31 @@ public class PageWrapper extends HashMap {
 
     private int pageSize=10;
 
+    private int offset;
+
+    private int limit;
+
+
+
     public PageWrapper(Map params){
         this.putAll(params);
 
         //分页参数
         if(params.get("page") != null){
-            currPage = Integer.parseInt((String)params.get("page"));
+            currPage = (int)params.get("page");
+//            currPage = Integer.parseInt((String)params.get("page"));
         }
 
         if(params.get("size") != null){
-            pageSize = Integer.parseInt((String)params.get("size"));
+            pageSize = (int)params.get("size");
+//            pageSize = Integer.parseInt((String)params.get("size"));
         }
 
         this.put("offset",(currPage-1)*pageSize);
         this.put("limit",pageSize);
+
+        offset = (currPage-1)*pageSize;
+        limit = pageSize;
     }
 
     public int getCurrPage() {
@@ -44,5 +55,21 @@ public class PageWrapper extends HashMap {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 }

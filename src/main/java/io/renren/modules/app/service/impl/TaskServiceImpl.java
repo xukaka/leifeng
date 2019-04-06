@@ -40,7 +40,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public TaskDto getTask(Long id) {
-       TaskDto task = this.baseMapper.getTask(id);
+        TaskDto task = this.baseMapper.getTask(id);
         return task;
     }
 
@@ -92,7 +92,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     private void addTaskTagRelation(Long taskId, List<Long> tagIds) {
         if (!CollectionUtils.isEmpty(tagIds)) {
-            this.baseMapper.insertTaskTagRelation(taskId,tagIds);
+            this.baseMapper.insertTaskTagRelation(taskId, tagIds);
         }
     }
 
@@ -100,7 +100,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     //任务-提示用户关系
     private void addTaskNotifiedUserRelation(Long taskId, List<Long> userIds) {
         if (!CollectionUtils.isEmpty(userIds)) {
-            this.baseMapper.insertTaskNotifiedUserRelation(taskId,userIds);
+            this.baseMapper.insertTaskNotifiedUserRelation(taskId, userIds);
         }
     }
 

@@ -19,6 +19,7 @@ package io.renren.common.utils;
 import com.baomidou.mybatisplus.plugins.Page;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ import java.util.List;
  * @email sunlightcs@gmail.com
  * @date 2016年11月4日 下午12:59:00
  */
-public class PageUtils implements Serializable {
+public class PageUtils<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	//总记录数
 	private int totalCount;
@@ -39,17 +40,21 @@ public class PageUtils implements Serializable {
 	//当前页数
 	private int currPage;
 	//列表数据
-	private List<?> list;
-	
+	private List<T> data;
+
+	public PageUtils() {
+		data = new ArrayList<>();
+	}
+
 	/**
 	 * 分页
-	 * @param list        列表数据
+	 * @param data        列表数据
 	 * @param totalCount  总记录数
 	 * @param pageSize    每页记录数
 	 * @param currPage    当前页数
 	 */
-	public PageUtils(List<?> list, int totalCount, int pageSize, int currPage) {
-		this.list = list;
+	public PageUtils(List<T> data, int totalCount, int pageSize, int currPage) {
+		this.data = data;
 		this.totalCount = totalCount;
 		this.pageSize = pageSize;
 		this.currPage = currPage;
@@ -59,8 +64,8 @@ public class PageUtils implements Serializable {
 	/**
 	 * 分页
 	 */
-	public PageUtils(Page<?> page) {
-		this.list = page.getRecords();
+	public PageUtils(Page<T> page) {
+		this.data = page.getRecords();
 		this.totalCount = (int)page.getTotal();
 		this.pageSize = page.getSize();
 		this.currPage = page.getCurrent();
@@ -99,12 +104,15 @@ public class PageUtils implements Serializable {
 		this.currPage = currPage;
 	}
 
-	public List<?> getList() {
-		return list;
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
 	}
 
-	public void setList(List<?> list) {
-		this.list = list;
+	public List<T> getData() {
+		return data;
 	}
-	
+
+	public void setData(List<T> data) {
+		this.data = data;
+	}
 }
