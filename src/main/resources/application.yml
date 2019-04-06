@@ -84,6 +84,8 @@ renren:
     header: token
 
 wx:
+  #app_id: wx337c1f56812473d2
+  #app_secret: fcbe3e0ae4025d2b1e0f3a2c7cc88620
   app_id: wx337c1f56812473d2
   app_secret: f9bac98bfb9277255ad094f478fbb2c4
   code_session_url: https://api.weixin.qq.com/sns/jscode2session

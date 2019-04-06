@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.task.TaskCommentDao">
+
+    <!--任务评论resultMap-->
+    <resultMap type="io.renren.modules.app.dto.TaskCommentDto" id="taskCommentMap">
+        <id property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <!--关联评论人-->
+        <association property="commentator" javaType="io.renren.modules.app.entity.setting.Member">
+            <id property="id" column="member_id"/>
+            <result property="nickName" column="nick_name"/>
+            <result property="realName" column="real_name"/>
+            <result property="avatar" column="member_avatar"/>
+            <result property="sex" column="member_sex"/>
+        </association>
+    </resultMap>
+
+    <!--分页查询任务评论-->
+    <select id="getComments" resultMap="taskCommentMap">
+        SELECT
+            c.id,
+            c.task_id,
+            c.content,
+            c.create_time,
+            m.id AS member_id,
+            m.nick_name,
+            m.real_name,
+            m.avatar AS member_avatar,
+            m.sex AS member_sex
+        FROM t_task_comment c
+        JOIN member m ON c.commentator_id = m.id
+        WHERE c.task_id = #{taskId} and c.deleted = 0
+        ORDER BY c.create_time desc
+        LIMIT #{page.offset},#{page.limit}
+    </select>
+
+
+    <!--查询任务总数-->
+    <select id="count" resultType="int">
+        SELECT
+            count(*)
+        FROM t_task_comment c
+        JOIN member m ON c.commentator_id = m.id
+        WHERE c.task_id = #{taskId} and c.deleted = 0
+    </select>
+
+</mapper>
