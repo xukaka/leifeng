@@ -27,5 +27,4 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
     //插入任务-被提示的用户关系
     void insertTaskNotifiedUserRelation(@Param("taskId") Long taskId, @Param("userIds") List<Long> userIds);
 
-
 }

@@ -31,6 +31,15 @@
             <result property="avatar" column="member_avatar"/>
             <result property="sex" column="member_sex"/>
         </association>
+        <!--关联领取人-->
+        <association property="receiver" javaType="io.renren.modules.app.entity.setting.Member">
+            <id property="id" column="receiver_id"/>
+            <result property="nickName" column="receiver_nick_name"/>
+            <result property="realName" column="receiver_real_name"/>
+            <result property="avatar" column="receiver_avatar"/>
+            <result property="sex" column="receiver_sex"/>
+            <result property="mobile" column="receiver_mobile"/>
+        </association>
         <!--图片url列表-->
         <collection property="imageUrls" ofType="string">
             <constructor>
@@ -62,7 +71,13 @@
         m.avatar AS member_avatar,
         m.sex AS member_sex,
         ri.image_url,
-        tg.name as tag_name
+        tg.name as tag_name,
+        r.id AS receiver_id,
+        r.receiver_nick_name,
+        r.receiver_real_name,
+        r.avatar AS receiver_avatar,
+        r.sex AS receiver_sex,
+        r.mobile AS receiver_mobile
 
         FROM t_task t
         JOIN t_task_address a ON t.address_id = a.id
@@ -71,6 +86,8 @@
         LEFT JOIN r_task_tag rg ON t.id = rg.task_id
         JOIN t_task_tag tg ON rg.tag_id=tg.id
         LEFT JOIN r_task_notified_user ru ON t.id = ru.task_id
+        LEFT JOIN t_task_receive tr ON t.id = tr.task_id AND tr.deleted = 0
+        LEFT JOIN member r ON tr.receiver_id = r.id
         WHERE t.id = #{taskId}
     </select>
 

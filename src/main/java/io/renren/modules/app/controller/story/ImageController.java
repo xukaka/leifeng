@@ -1,6 +1,7 @@
 package io.renren.modules.app.controller.story;
 
 import io.renren.common.exception.RRException;
+import io.renren.common.utils.Constant;
 import io.renren.common.utils.R;
 import io.renren.modules.oss.cloud.OSSFactory;
 import io.swagger.annotations.Api;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Api(tags="图片上传")
 public class ImageController {
 
+
     /**
      * 上传文件
      */
@@ -35,6 +37,6 @@ public class ImageController {
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         String url = OSSFactory.build().uploadSuffix(file.getBytes(), suffix);
 
-        return R.ok().put("url", url);
+        return R.ok().put("url", url+ Constant.IMAGE_STYLE);
     }
 }

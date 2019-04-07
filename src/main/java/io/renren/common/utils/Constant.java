@@ -14,6 +14,9 @@ public class Constant {
     public static final String WX_TYPE="wx";
     public static final String WX_IDENTIFIER="wx_openid";
 
+    //阿里云图片处理样式
+    public static final String IMAGE_STYLE = "?x-oss-process=style/simple";
+
 	/**
 	 * 菜单类型
 	 * 

@@ -36,5 +36,11 @@ public interface TaskService extends IService<TaskEntity> {
      */
     void deleteTasks(Long[] ids);
 
+
+    /**
+     * 领取任务
+     */
+    void receiveTask(Long receiverId,Long taskId);
+
 }
 
