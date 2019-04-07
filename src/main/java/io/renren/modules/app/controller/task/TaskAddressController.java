@@ -33,7 +33,7 @@ public class TaskAddressController {
     @ApiOperation("获取任务地址列表")
     public R getAddresses() {
         List<TaskAddressEntity> addresses = taskAddressService.getAddresses(ReqUtils.currentUserId());
-        return R.ok().put("addresses", addresses);
+        return R.ok().put("resutl", addresses);
     }
 
 
@@ -41,7 +41,7 @@ public class TaskAddressController {
     @ApiOperation("获取任务地址详细信息")
     public R getAddress(@PathVariable("id") Long id) {
         TaskAddressEntity address = taskAddressService.getAddress(id);
-        return R.ok().put("address", address);
+        return R.ok().put("resutl", address);
     }
 
 

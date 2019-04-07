@@ -38,13 +38,13 @@ public class TaskTagController {
 
     @GetMapping("/list")
     @ApiOperation("分页获取任务标签列表")
-    @ApiImplicitParam(name="curPage",value = "分页page从1开始")
+    @ApiImplicitParam(name="curPage",value = "分页page从1开始",paramType = "query")
     public R getTasks(@RequestParam Integer curPage,@RequestParam Integer pageSize) {
         Map<String,Object> pageMap = new HashMap<>();
         pageMap.put("page",curPage);
         pageMap.put("limit",pageSize);
         PageUtils<TaskTagEntity> tags = taskTagService.getTasks(pageMap);
-        return R.ok().put("tags", tags);
+        return R.ok().put("resutl", tags);
     }
 
 

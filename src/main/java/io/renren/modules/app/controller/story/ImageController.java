@@ -37,6 +37,6 @@ public class ImageController {
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         String url = OSSFactory.build().uploadSuffix(file.getBytes(), suffix);
 
-        return R.ok().put("url", url+ Constant.IMAGE_STYLE);
+        return R.ok().put("result", url+ Constant.IMAGE_STYLE);
     }
 }

@@ -36,7 +36,7 @@ public class TaskController {
     @ApiImplicitParam(name = "params", value = "分页page从1开始，sidx和order为排序字段非必填（默认按照排序字段orderNum从小大排序）", example = "{\"page\":1,\"limit\":10,\"sidx\":\"id\",\"order\":\"asc\"}")
     public R getTasks(@RequestParam Map<String, Object> params) {
         PageUtils page = taskService.queryPage(params);
-        return R.ok().put("page", page);
+        return R.ok().put("result", page);
     }
 
 
@@ -44,7 +44,7 @@ public class TaskController {
     @ApiOperation("获取任务详细信息")
     public R getTask(@PathVariable("id") Long id) {
         TaskDto task = taskService.getTask(id);
-        return R.ok().put("task", task);
+        return R.ok().put("result", task);
     }
 
 
