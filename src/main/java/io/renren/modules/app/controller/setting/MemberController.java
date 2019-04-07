@@ -27,32 +27,33 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     @Autowired
-    MemberService memberService;
+    private MemberService memberService;
 
     @Login
-    @GetMapping("/Info")
+    @GetMapping("/detail")
     @ApiOperation("获取用户信息")
-    public R memberInfo(@RequestParam("memberId") Long memberId){
-        Member member = memberService.selectById(memberId);
+    public R getMember(@RequestParam("memberId") Long memberId){
+        Member member = memberService.getMember(memberId);
         return R.ok().put("member", member);
     }
 
     @Login
-    @PostMapping("/update")
-    @ApiOperation("获取用户信息")
-    public R update(MemberForm memberForm){
-        Member member = new Member();
+    @PutMapping("/update")
+    @ApiOperation("更新用户信息")
+    public R updateMember(@RequestBody MemberForm form){
+       /* Member member = new Member();
         BeanUtils.copyProperties(memberForm,member);
         member.setCreateTime(System.currentTimeMillis());
         member.setStatus(1);
-        memberService.insertOrUpdate(member);
+        memberService.insertOrUpdate(member);*/
+       memberService.updateMember(form);
         return R.ok();
     }
 
     @Login
-    @PostMapping("/location")
+    @PutMapping("/location")
     @ApiOperation("更新用户位置")
-    public R location(LocationForm locationForm){
+    public R updateLocation(LocationForm locationForm){
         memberService.updateLocationNumber(locationForm);
         return R.ok();
     }

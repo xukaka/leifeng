@@ -2,8 +2,11 @@ package io.renren.modules.app.controller.task;
 
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
+import io.renren.modules.app.dto.TaskCommentDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
+import io.renren.modules.app.entity.task.TaskTagEntity;
+import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.service.TaskService;
 import io.renren.modules.app.service.TaskTagService;
@@ -13,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -32,12 +36,16 @@ public class TaskTagController {
         return R.ok();
     }
 
-/*    @PostMapping("/list")
-    @ApiOperation("分页获取任务列表")
-    public R getTasks(@RequestParam Map<String, Object> params) {
-        PageUtils page = taskService.queryPage(params);
-        return R.ok().put("page", page);
-    }*/
+    @GetMapping("/list")
+    @ApiOperation("分页获取任务标签列表")
+    @ApiImplicitParam(name="curPage",value = "分页page从1开始")
+    public R getTasks(@RequestParam Integer curPage,@RequestParam Integer pageSize) {
+        Map<String,Object> pageMap = new HashMap<>();
+        pageMap.put("page",curPage);
+        pageMap.put("limit",pageSize);
+        PageUtils<TaskTagEntity> tags = taskTagService.getTasks(pageMap);
+        return R.ok().put("tags", tags);
+    }
 
 
     @PutMapping("/update")
