@@ -44,7 +44,7 @@ public class TaskCommentController {
         pageMap.put("size",pageSize);
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<TaskCommentDto> comments = taskCommentService.getComments(taskId,page);
-        return R.ok().put("resutl", comments);
+        return R.ok().put("result", comments);
     }
 
 

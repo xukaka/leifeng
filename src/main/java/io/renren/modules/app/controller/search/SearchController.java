@@ -33,7 +33,7 @@ public class SearchController {
     @ApiOperation("获取搜索历史列表")
     public R getHistories() {
         List<SearchHistoryEntity> histories = searchService.getHistories(ReqUtils.currentUserId());
-        return R.ok().put("resutl", histories);
+        return R.ok().put("result", histories);
     }
 
 
@@ -48,7 +48,7 @@ public class SearchController {
     @ApiOperation("获取热门搜索列表")
     public R getHotSearch() {
         List<HotSearchDto> hotSearches = searchService.getHotSearch();
-        return R.ok().put("resutl", hotSearches);
+        return R.ok().put("result", hotSearches);
     }
 
 
