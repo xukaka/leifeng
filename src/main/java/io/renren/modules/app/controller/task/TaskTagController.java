@@ -38,7 +38,7 @@ public class TaskTagController {
 
     @GetMapping("/list")
     @ApiOperation("分页获取任务标签列表")
-    @ApiImplicitParam(name="curPage",required = true,value = "分页page从1开始",dataType = "int",paramType = "query")
+    @ApiImplicitParam(name="curPage",required = true,value = "分页page从1开始",dataType = "Integer",paramType = "query")
     public R getTasks(@RequestParam Integer curPage,@RequestParam Integer pageSize) {
         Map<String,Object> pageMap = new HashMap<>();
         pageMap.put("page",curPage);

@@ -24,7 +24,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 创建任务
      */
-    void createTask(TaskForm form);
+    void createTask(Long creatorId,TaskForm form);
 
     /**
      * 更新任务

@@ -1,6 +1,7 @@
 package io.renren.modules.app.controller.search;
 
 import io.renren.common.utils.R;
+import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.HotSearchDto;
 import io.renren.modules.app.entity.search.SearchHistoryEntity;
 import io.renren.modules.app.service.SearchService;
@@ -22,6 +23,7 @@ public class SearchController {
     private SearchService searchService;
 
 
+    @Login
     @PostMapping("/history")
     @ApiOperation("保存搜索历史")
     public R saveHistory( @RequestParam String keyword) {
@@ -29,6 +31,7 @@ public class SearchController {
         return R.ok();
     }
 
+    @Login
     @GetMapping("/history")
     @ApiOperation("获取搜索历史列表")
     public R getHistories() {

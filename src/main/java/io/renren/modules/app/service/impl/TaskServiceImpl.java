@@ -52,10 +52,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     @Transactional
-    public void createTask(TaskForm form) {
+    public void createTask(Long creatorId,TaskForm form) {
         ValidatorUtils.validateEntity(form);
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);
+        task.setCreatorId(creatorId);
         task.setCreateTime(DateUtils.now());
         this.insert(task);
         this.addTaskImageRelation(task.getId(), form.getImageUrls());

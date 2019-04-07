@@ -2,17 +2,24 @@ package io.renren.modules.app.controller.setting;
 
 
 import com.mchange.v2.beans.BeansUtils;
+import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.TaskCommentDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.MemberForm;
+import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.MemberService;
+import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * APP测试接口
@@ -69,6 +76,48 @@ public class MemberController {
     @ApiOperation("忽略Token验证测试")
     public R notToken(){
         return R.ok().put("result", "无需token也能访问。。。");
+    }
+
+
+    @Login
+    @PostMapping("/follow")
+    @ApiOperation("关注用户")
+    public R followMember(@RequestParam Long toMemberId){
+        memberService.followMember(ReqUtils.currentUserId(),toMemberId);
+        return R.ok();
+    }
+
+    @Login
+    @PostMapping("/unfollow")
+    @ApiOperation("取消关注")
+    public R unfollowMember(@RequestParam Long toMemberId){
+        memberService.unfollowMember(ReqUtils.currentUserId(),toMemberId);
+        return R.ok();
+    }
+
+    @Login
+    @PostMapping("/follow/list")
+    @ApiOperation("分页获取关注的用户列表")
+    public R getFollowMembers(@RequestParam Integer curPage,@RequestParam Integer pageSize){
+        Map<String,Object> pageMap = new HashMap<>();
+        pageMap.put("page",curPage);
+        pageMap.put("size",pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<Member> members = memberService.getFollowMembers(ReqUtils.currentUserId(),page);
+        return R.ok().put("result", members);
+    }
+
+
+    @Login
+    @PostMapping("/fans/list")
+    @ApiOperation("分页获取粉丝用户列表")
+    public R getFansMembers(@RequestParam Integer curPage,@RequestParam Integer pageSize){
+        Map<String,Object> pageMap = new HashMap<>();
+        pageMap.put("page",curPage);
+        pageMap.put("size",pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<Member> members = memberService.getFansMembers(ReqUtils.currentUserId(),page);
+        return R.ok().put("result", members);
     }
 
 }

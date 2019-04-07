@@ -2,6 +2,7 @@ package io.renren.modules.app.entity.setting;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import io.swagger.annotations.ApiModel;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Date;
  * @author xukaijun
  */
 @TableName("member")
+@ApiModel
 public class Member implements Serializable {
 
     @TableId
@@ -37,6 +39,10 @@ public class Member implements Serializable {
     private String mobile;
     //状态
     private Integer status=1;
+    //鲜花数
+    private Integer flowerCount = 0;
+    //奖状数
+    private Integer certificateCount = 0;
     //创建时间
     private Long createTime;
 
@@ -142,5 +148,21 @@ public class Member implements Serializable {
 
     public void setLnt(String lnt) {
         this.lnt = lnt;
+    }
+
+    public Integer getFlowerCount() {
+        return flowerCount;
+    }
+
+    public void setFlowerCount(Integer flowerCount) {
+        this.flowerCount = flowerCount;
+    }
+
+    public Integer getCertificateCount() {
+        return certificateCount;
+    }
+
+    public void setCertificateCount(Integer certificateCount) {
+        this.certificateCount = certificateCount;
     }
 }

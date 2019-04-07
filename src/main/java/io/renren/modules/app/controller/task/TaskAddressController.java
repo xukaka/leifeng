@@ -1,6 +1,7 @@
 package io.renren.modules.app.controller.task;
 
 import io.renren.common.utils.R;
+import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.form.TaskAddressForm;
 import io.renren.modules.app.service.TaskAddressService;
@@ -22,6 +23,7 @@ public class TaskAddressController {
     private TaskAddressService taskAddressService;
 
 
+    @Login
     @PostMapping("/create")
     @ApiOperation("创建任务地址")
     public R createAddress( @RequestBody TaskAddressForm form) {
@@ -29,6 +31,8 @@ public class TaskAddressController {
         return R.ok();
     }
 
+
+    @Login
     @GetMapping("/list")
     @ApiOperation("获取任务地址列表")
     public R getAddresses() {

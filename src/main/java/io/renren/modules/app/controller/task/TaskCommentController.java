@@ -2,6 +2,7 @@ package io.renren.modules.app.controller.task;
 
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
+import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskCommentDto;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.form.PageWrapper;
@@ -28,7 +29,7 @@ public class TaskCommentController {
     @Autowired
     private TaskCommentService taskCommentService;
 
-
+    @Login
     @PostMapping("/add")
     @ApiOperation("新增评论")
     public R addComment(@RequestParam Long taskId, @RequestParam String content) {

@@ -2,10 +2,12 @@ package io.renren.modules.app.controller.task;
 
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
+import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.service.TaskService;
+import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -23,11 +25,11 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-
+    @Login
     @PostMapping("/create")
     @ApiOperation("创建任务")
     public R createTask(@RequestBody TaskForm form) {
-        taskService.createTask(form);
+        taskService.createTask(ReqUtils.currentUserId(),form);
         return R.ok();
     }
 
