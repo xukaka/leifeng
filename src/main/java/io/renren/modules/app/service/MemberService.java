@@ -7,13 +7,22 @@ import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.MemberForm;
+import io.renren.modules.app.form.MemberScoreForm;
 import io.renren.modules.app.form.PageWrapper;
+import org.springframework.data.redis.core.query.QueryUtils;
 
 /**
  * 用户
  * @author xukaijun
  */
 public interface MemberService extends IService<Member> {
+	/**
+	 * 根据关键字(雷锋ID/昵称/手机号)搜索用户-分页
+	 * @param keyword
+	 * @param page
+	 * @return
+	 */
+	PageUtils<Member> searchMembers(String keyword,PageWrapper page);
 
 	/**
 	 * 获取用户信息-根据id
@@ -61,4 +70,11 @@ public interface MemberService extends IService<Member> {
 	 * @param toMemberId
 	 */
 	PageUtils<Member> getFansMembers(Long toMemberId, PageWrapper page);
+
+	/**
+	 * 用户评分
+	 * @param judgeId 评分人id
+	 * @param form
+	 */
+    void score(Long judgeId, MemberScoreForm form);
 }

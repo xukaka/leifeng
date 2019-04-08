@@ -7,8 +7,10 @@ import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskCommentDto;
 import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.setting.MemberScoreEntity;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.MemberForm;
+import io.renren.modules.app.form.MemberScoreForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.utils.ReqUtils;
@@ -35,6 +37,20 @@ public class MemberController {
 
     @Autowired
     private MemberService memberService;
+
+
+
+
+    @GetMapping("/list")
+    @ApiOperation("搜索用户列表-分页")
+    public R searchMembers(@RequestParam String keyword,@RequestParam Integer curPage,@RequestParam Integer pageSize){
+        Map<String,Object> pageMap = new HashMap<>();
+        pageMap.put("page",curPage);
+        pageMap.put("size",pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<Member> members = memberService.searchMembers(keyword,page);
+        return R.ok().put("result", members);
+    }
 
     @Login
     @GetMapping("/detail")
@@ -108,6 +124,7 @@ public class MemberController {
     }
 
 
+
     @Login
     @PostMapping("/fans/list")
     @ApiOperation("分页获取粉丝用户列表")
@@ -118,6 +135,15 @@ public class MemberController {
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<Member> members = memberService.getFansMembers(ReqUtils.currentUserId(),page);
         return R.ok().put("result", members);
+    }
+
+
+    @Login
+    @PostMapping("/score")
+    @ApiOperation("用户评分")
+    public R socre(@RequestBody MemberScoreForm form){
+        memberService.score(ReqUtils.currentUserId(),form);
+        return R.ok();
     }
 
 }

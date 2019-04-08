@@ -9,12 +9,16 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.setting.MemberDao;
 import io.renren.modules.app.dao.setting.MemberFollowDao;
+import io.renren.modules.app.dao.setting.MemberScoreDao;
 import io.renren.modules.app.dto.TaskCommentDto;
+import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.entity.setting.MemberFollowEntity;
+import io.renren.modules.app.entity.setting.MemberScoreEntity;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.MemberForm;
+import io.renren.modules.app.form.MemberScoreForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
@@ -35,6 +39,18 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     private MemberAuthsService memberAuthsService;
     @Autowired
     private MemberFollowDao memberFollowDao;
+    @Autowired
+    private MemberScoreDao memberScoreDao;
+
+    @Override
+    public PageUtils<Member> searchMembers(String keyword, PageWrapper page) {
+        List<Member>  members = this.baseMapper.searchMembers(keyword,page);
+        if (CollectionUtils.isEmpty(members)) {
+            return new PageUtils<>();
+        }
+        int total = this.baseMapper.count(keyword);
+        return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
+    }
 
     @Override
     public Member getMember(Long memberId) {
@@ -100,6 +116,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         }
         int total = memberFollowDao.fansCount(toMemberId);
         return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
+    }
+
+    @Override
+    public void score(Long judgeId, MemberScoreForm form) {
+        ValidatorUtils.validateEntity(form);
+        MemberScoreEntity score = new MemberScoreEntity();
+        BeanUtils.copyProperties(form,score);
+        score.setCreateTime(DateUtils.now());
+        memberScoreDao.insert(score);
+
+        //TODO 发送消息给被评分人
     }
 
 
