@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
+import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 
 import java.util.List;
@@ -15,6 +16,19 @@ import java.util.Map;
 public interface TaskService extends IService<TaskEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * 分页获取发布的任务
+     * @return
+     */
+    PageUtils<TaskDto> getPublishedTasks(Long publisherId, PageWrapper page);
+
+    /**
+     * 分页获取领取的任务
+     * @return
+     */
+    PageUtils<TaskDto> getReceivedTasks(Long receiverId, PageWrapper page);
+
 
     /**
      * 获取任务-根据id

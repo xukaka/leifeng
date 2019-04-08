@@ -14,6 +14,7 @@ import io.renren.modules.app.dao.task.TaskReceiveDao;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskReceiveEntity;
+import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.service.TaskService;
 import org.slf4j.Logger;
@@ -24,7 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements TaskService {
@@ -42,6 +45,26 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public PageUtils<TaskDto> getPublishedTasks(Long publisherId, PageWrapper page) {
+        List<TaskDto>  tasks = this.baseMapper.getPublishedTasks( publisherId,page);
+        if (CollectionUtils.isEmpty(tasks)) {
+            return new PageUtils<>();
+        }
+        int total = this.baseMapper.publishCount(publisherId);
+        return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
+    }
+
+    @Override
+    public PageUtils<TaskDto> getReceivedTasks(Long receiverId, PageWrapper page) {
+        List<TaskDto>  tasks = this.baseMapper.getReceivedTasks( receiverId,page);
+        if (CollectionUtils.isEmpty(tasks)) {
+            return new PageUtils<>();
+        }
+        int total = this.baseMapper.receiveCount(receiverId);
+        return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
     @Override
