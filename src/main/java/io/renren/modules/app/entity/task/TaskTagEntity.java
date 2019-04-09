@@ -16,12 +16,13 @@ public class TaskTagEntity extends BaseEntity {
     /**
      * 使用次数
      */
-    private Long usageCount;
+    private Long usageCount = 0L;
 
     public TaskTagEntity() {
     }
 
-    public TaskTagEntity(String name) {
+    public TaskTagEntity(Long createTime, String name) {
+        super(createTime);
         this.name = name;
     }
 

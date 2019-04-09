@@ -6,6 +6,10 @@ import com.github.qcloudsms.httpclient.HTTPException;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.form.LocationForm;
+import io.renren.modules.app.form.MemberForm;
+import io.renren.modules.app.form.MemberScoreForm;
+import io.renren.modules.app.form.PageWrapper;
+import org.springframework.data.redis.core.query.QueryUtils;
 
 import java.io.IOException;
 
@@ -14,6 +18,26 @@ import java.io.IOException;
  * @author xukaijun
  */
 public interface MemberService extends IService<Member> {
+	/**
+	 * 根据关键字(雷锋ID/昵称/手机号)搜索用户-分页
+	 * @param keyword
+	 * @param page
+	 * @return
+	 */
+	PageUtils<Member> searchMembers(String keyword,PageWrapper page);
+
+	/**
+	 * 获取用户信息-根据id
+	 * @param memberId
+	 * @return
+	 */
+	Member getMember(Long memberId);
+
+	/**
+	 * 更新用户信息
+	 * @param form
+	 */
+	void updateMember(MemberForm form);
 
 	/**
 	 * 同时写入member表和member_auths表

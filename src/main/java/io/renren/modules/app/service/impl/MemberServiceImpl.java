@@ -1,16 +1,29 @@
 package io.renren.modules.app.service.impl;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 import io.renren.common.utils.JsonUtil;
 import io.renren.modules.app.dao.setting.MemberDao;
+import io.renren.modules.app.dao.setting.MemberFollowDao;
+import io.renren.modules.app.dao.setting.MemberScoreDao;
+import io.renren.modules.app.dto.TaskCommentDto;
+import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
+import io.renren.modules.app.entity.setting.MemberFollowEntity;
+import io.renren.modules.app.entity.setting.MemberScoreEntity;
 import io.renren.modules.app.form.LocationForm;
+import io.renren.modules.app.form.MemberForm;
+import io.renren.modules.app.form.MemberScoreForm;
+import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

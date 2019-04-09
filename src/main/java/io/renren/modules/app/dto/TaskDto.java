@@ -56,6 +56,11 @@ public class TaskDto implements Serializable {
     private Member creator;
 
     /**
+     * 任务领取人
+     */
+    private Member receiver;
+
+    /**
      * 状态
      */
     private Integer status;
@@ -186,5 +191,13 @@ public class TaskDto implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Member getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(Member receiver) {
+        this.receiver = receiver;
     }
 }

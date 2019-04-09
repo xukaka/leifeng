@@ -12,7 +12,7 @@ import java.io.Serializable;
  * 注册的用户表
  * @author xukaijun
  */
-@ApiModel
+@ApiModel("用户表单")
 public class MemberForm implements Serializable {
 
     @NotBlank

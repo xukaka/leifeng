@@ -3,7 +3,21 @@
 
 <mapper namespace="io.renren.modules.app.dao.setting.MemberDao">
 
- <update id="updateLocationNumber">
-     update member set lat = #{location.lat},lnt=#{location.lnt} where id=#{location.id}
- </update>
+    <update id="updateLocationNumber">
+        update member set lat = #{location.lat},lnt=#{location.lnt} where id=#{location.id}
+    </update>
+
+
+    <select id="searchMembers" resultType="io.renren.modules.app.entity.setting.Member">
+        select * from member m
+        where (m.id = #{keyword} or m.mobile = #{keyword} or m.nick_name like concat('%',#{keyword},'%')) and m.status = 1
+        ORDER BY m.create_time ASC
+        LIMIT #{page.offset},#{page.limit}
+    </select>
+
+    <select id="count" resultType="int">
+        select count(*) from member m
+        where (m.id = #{keyword} or m.mobile = #{keyword} or m.nick_name like concat('%',#{keyword},'%')) and m.status = 1
+    </select>
+
 </mapper>

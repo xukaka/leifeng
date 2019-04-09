@@ -64,7 +64,6 @@ public class RegisterController {
         logger.info("[AppRegisterController.wxRegister] request param:{}", JSON.toJSONString(form));
         //表单校验
         ValidatorUtils.validateEntity(form);
-
         Member member = new Member();
         BeanUtils.copyProperties(form,member);
         member.setCreateTime(System.currentTimeMillis());
