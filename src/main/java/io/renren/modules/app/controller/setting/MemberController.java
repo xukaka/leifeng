@@ -4,6 +4,8 @@ package io.renren.modules.app.controller.setting;
 import com.mchange.v2.beans.BeansUtils;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
+import io.renren.common.utils.RabbitMqHelper;
+import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskCommentDto;
 import io.renren.modules.app.entity.setting.Member;
@@ -39,6 +41,10 @@ public class MemberController {
     private MemberService memberService;
 
 
+    @Autowired
+    private RabbitMqHelper rabbitMqHelper;
+
+
 
 
     @GetMapping("/list")
@@ -64,11 +70,6 @@ public class MemberController {
     @PutMapping("/update")
     @ApiOperation("更新用户信息")
     public R updateMember(@RequestBody MemberForm form){
-       /* Member member = new Member();
-        BeanUtils.copyProperties(memberForm,member);
-        member.setCreateTime(System.currentTimeMillis());
-        member.setStatus(1);
-        memberService.insertOrUpdate(member);*/
        memberService.updateMember(form);
         return R.ok();
     }
@@ -91,6 +92,7 @@ public class MemberController {
     @GetMapping("notToken")
     @ApiOperation("忽略Token验证测试")
     public R notToken(){
+//        rabbitMqHelper.sendMessage(RabbitMQConfig.QUEUE_NAME,"mq test");
         return R.ok().put("result", "无需token也能访问。。。");
     }
 

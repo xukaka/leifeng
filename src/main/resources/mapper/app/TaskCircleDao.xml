@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.task.TaskCircleDao">
+
+    <!--任务resultMap-->
+    <resultMap type="io.renren.modules.app.dto.TaskCircleDto" id="taskCircleMap">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="avatar" column="avatar"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="needReview" column="need_review"/>
+        <result property="memberCount" column="member_count"/>
+        <result property="taskCount" column="task_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <!--关联创建人-->
+        <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
+            <id property="id" column="member_id"/>
+            <result property="nickName" column="nick_name"/>
+            <result property="realName" column="real_name"/>
+            <result property="avatar" column="member_avatar"/>
+            <result property="sex" column="member_sex"/>
+        </association>
+    </resultMap>
+
+
+    <!--查询任务圈详情-->
+    <select id="getCircle" resultMap="taskCircleMap">
+        SELECT
+        tc.*,
+        m.id AS member_id,
+        m.nick_name,
+        m.real_name,
+        m.avatar AS member_avatar,
+        m.sex AS member_sex
+        FROM t_task_circle tc
+        JOIN member m ON tc.creator_id = m.id
+        WHERE tc.id = #{circleId}
+    </select>
+</mapper>

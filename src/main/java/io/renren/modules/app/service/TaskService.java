@@ -6,6 +6,7 @@ import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
+import io.renren.modules.app.form.TaskQueryForm;
 
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,15 @@ import java.util.Map;
  */
 public interface TaskService extends IService<TaskEntity> {
 
-    PageUtils queryPage(Map<String, Object> params);
+//    PageUtils queryPage(Map<String, Object> params);
 
+    /**
+     * 分页搜索任务-根据搜索条件
+     * @param form
+     * @param page
+     * @return
+     */
+    PageUtils<TaskDto> searchTasks(TaskQueryForm form, PageWrapper page);
     /**
      * 分页获取发布的任务
      * @return

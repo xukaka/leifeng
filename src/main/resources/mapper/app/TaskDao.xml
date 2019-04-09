@@ -171,12 +171,89 @@
         LIMIT #{page.offset},#{page.limit}
     </select>
 
+    <select id="count" resultType="int">
+        SELECT
+        count(DISTINCT(t.id))
+        FROM t_task t
+        JOIN t_task_address a ON t.address_id = a.id
+        <if test="tagIds != null and tagIds.size() > 0">
+            JOIN t_task_tag tag ON t.id = tag.task_id AND tag.id IN
+            <foreach collection="tagIds" item="id" index="index" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        WHERE t.deleted = 0
+        <if test="keyword !=null and keyword != ''">
+            AND t.title like concat('%',#{keyword},'%)'
+        </if>
+        <if test="difficulty!=null and difficulty != ''">
+            <choose>
+                <when test="difficulty =='FREE'">
+                    AND t.virtual_currency = #{maxVirtualCurrency}
+                </when>
+                <when test="difficulty == 'SIMPLE'">
+                    AND t.virtual_currency &gt;= #{minVirtualCurrency}
+                    AND t.virtual_currency &lt;= #{maxVirtualCurrency}
+                </when>
+                <when test="difficulty =='NORMAL'">
+                    AND t.virtual_currency &gt;= #{minVirtualCurrency}
+                    AND t.virtual_currency &lt;= #{maxVirtualCurrency}
+                </when>
+                <when test="difficulty =='DIFFICULT'">
+                    AND t.virtual_currency &gt; #{maxVirtualCurrency}
+                </when>
+            </choose>
+        </if>
+        <if test="minLat != null and maxLat != null and minLng!=null and maxLng != null">
+            AND a.latitude &gt;= #{minLat} AND a.latitude &lt;= #{maxLat}
+            AND a.longitude &gt;= #{minLng} AND a.longitude &lt;= #{maxLng}
+        </if>
+
+    </select>
+
     <select id="receiveCount" resultType="int">
         SELECT
             count(*)
         FROM t_task t
         JOIN t_task_receive re ON t.id = re.task_id
         WHERE re.receiver_id  = #{receiverId} and t.deleted = 0
+    </select>
+
+    <!--获取任务总数-根据查询条件-->
+    <select id="searchTasks" resultMap="taskMap">
+        SELECT
+        t.*,
+        a.id AS address_id,
+        a.province AS address_province,
+        a.city AS address_city,
+        a.district AS address_district,
+        a.street AS address_street,
+        a.detail AS address_detail,
+        m.id AS member_id,
+        m.nick_name,
+        m.real_name,
+        m.avatar AS member_avatar,
+        m.sex AS member_sex,
+        ri.image_url,
+        tg.name as tag_name,
+        r.id AS receiver_id,
+        r.receiver_nick_name,
+        r.receiver_real_name,
+        r.avatar AS receiver_avatar,
+        r.sex AS receiver_sex,
+        r.mobile AS receiver_mobile
+        FROM t_task t
+        JOIN t_task_receive re ON t.id = re.task_id
+        JOIN t_task_address a ON t.address_id = a.id
+        JOIN member m ON t.creator_id = m.id
+        LEFT JOIN r_task_image ri ON t.id = ri.task_id
+        LEFT JOIN r_task_tag rg ON t.id = rg.task_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id
+        LEFT JOIN t_task_receive tr ON t.id = tr.task_id AND tr.deleted = 0
+        LEFT JOIN member r ON tr.receiver_id = r.id
+        WHERE re.receiver_id  = #{receiverId} and t.deleted = 0
+        ORDER BY re.create_time desc
+        LIMIT #{page.offset},#{page.limit}
     </select>
 
     <insert id="insertTaskImageRelation">

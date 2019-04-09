@@ -6,16 +6,19 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.DateUtils;
+import io.renren.common.utils.GeoUtils;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
 import io.renren.modules.app.dto.TaskDto;
+import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskReceiveEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
+import io.renren.modules.app.form.TaskQueryForm;
 import io.renren.modules.app.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,10 +40,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     private final static Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
 
-    @Autowired
+    @Resource
     private TaskReceiveDao taskReceiveDao;
 
-    @Override
+  /*  @Override
     public PageUtils queryPage(Map<String, Object> params) {
         Page<TaskEntity> page = this.selectPage(
                 new Query<TaskEntity>(params).getPage(),
@@ -45,11 +51,55 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         );
 
         return new PageUtils(page);
+    }*/
+
+    @Override
+    public PageUtils<TaskDto> searchTasks(TaskQueryForm form, PageWrapper page) {
+        Map<String, Object> queryMap = getTaskQueryMap(form);
+        List<TaskDto> tasks = this.baseMapper.searchTasks(queryMap, page);
+        int total = this.baseMapper.count(queryMap);
+        return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
+    }
+
+    private Map<String, Object> getTaskQueryMap(TaskQueryForm form) {
+        Map<String, Object> queryMap = new HashMap<>();
+        if (!StringUtils.isEmpty(form.getKeyword())){
+            queryMap.put("title",form.getKeyword());
+        }
+        if (form.getLatitude() != null && form.getLongitude() != null && form.getRaidus() != null) {
+            Map<String, Double> aroundMap = GeoUtils.getAround(form.getLatitude(), form.getLongitude(), form.getRaidus());
+            queryMap.putAll(aroundMap);
+        }
+        if (!CollectionUtils.isEmpty(form.getTagIds())) {
+            queryMap.put("tagIds", form.getTagIds());
+        }
+        if (form.getTaskDifficulty() != null) {
+            TaskDifficultyEnum difficulty = form.getTaskDifficulty();
+            queryMap.put("difficulty",difficulty.name());
+            switch (difficulty) {
+                case FREE:
+                    queryMap.put("maxVirtualCurrency",difficulty.getMaxVirtualCurrency());
+                    break;
+                case SIMPLE:
+                    queryMap.put("minVirtualCurrency", difficulty.getMinVirtualCurrency());
+                    queryMap.put("maxVirtualCurrency", difficulty.getMaxVirtualCurrency());
+                    break;
+                case NORMAL:
+                    queryMap.put("minVirtualCurrency", difficulty.getMinVirtualCurrency());
+                    queryMap.put("maxVirtualCurrency", difficulty.getMaxVirtualCurrency());
+                    break;
+                case DIFFICULT:
+                    queryMap.put("minVirtualCurrency", difficulty.getMinVirtualCurrency());
+                default:
+                    break;
+            }
+        }
+        return queryMap;
     }
 
     @Override
     public PageUtils<TaskDto> getPublishedTasks(Long publisherId, PageWrapper page) {
-        List<TaskDto>  tasks = this.baseMapper.getPublishedTasks( publisherId,page);
+        List<TaskDto> tasks = this.baseMapper.getPublishedTasks(publisherId, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
@@ -59,7 +109,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public PageUtils<TaskDto> getReceivedTasks(Long receiverId, PageWrapper page) {
-        List<TaskDto>  tasks = this.baseMapper.getReceivedTasks( receiverId,page);
+        List<TaskDto> tasks = this.baseMapper.getReceivedTasks(receiverId, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
@@ -75,7 +125,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     @Transactional
-    public void createTask(Long creatorId,TaskForm form) {
+    public void createTask(Long creatorId, TaskForm form) {
         ValidatorUtils.validateEntity(form);
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);

@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @ApiModel(value = "任务地址表单")
 public class TaskAddressForm {
@@ -56,6 +57,13 @@ public class TaskAddressForm {
 
     @ApiModelProperty(value = "详细地址", example = "上白石43栋601")
     private String detail;
+
+    @ApiModelProperty(value = "维度", example = "")
+    @NotNull
+    private Double latitude;
+    @ApiModelProperty(value = "经度", example = "")
+    @NotNull
+    private Double longitude;
 
     public Long getId() {
         return id;
@@ -127,5 +135,21 @@ public class TaskAddressForm {
 
     public void setDetail(String detail) {
         this.detail = detail;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }
