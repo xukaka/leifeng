@@ -13,8 +13,8 @@ import io.renren.modules.app.form.LoginForm;
 import io.renren.modules.app.form.RegisterForm;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
-import io.renren.modules.app.utils.JwtUtils;
 import io.renren.modules.app.service.impl.WXRequest;
+import io.renren.modules.app.utils.JwtUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -77,6 +77,31 @@ public class RegisterController {
         memberService.registerMemberWithAuth(member,auths);
 
         return R.ok();
+    }
+
+    @PostMapping("/phone/send")
+    @ApiOperation("通过手机号发送短信验证码")
+    public R phoneSend(String phone){
+        try {
+            memberService.sendPhoneCode(phone);
+            return R.ok();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/phone/validate")
+    @ApiOperation("验证手机号和验证码是否一致")
+    public R phoneValidate(String phone, String code ,String memberId){
+        boolean success = memberService.validatePhoneCode(phone, code);
+        if(success){
+            Member member = memberService.selectById(memberId);
+            member.setMobile(phone);
+            memberService.updateById(member);
+            return R.ok();
+        }
+        return R.error(HttpStatus.SC_FORBIDDEN,"验证码错误");
     }
 
     /**

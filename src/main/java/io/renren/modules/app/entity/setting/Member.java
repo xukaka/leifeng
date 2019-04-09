@@ -26,7 +26,7 @@ public class Member implements Serializable {
     //维度
     private String lat;
     //经度
-    private String lnt;
+    private String lng;
     //地址
     private String address;
     //性别0男，1女
@@ -136,11 +136,11 @@ public class Member implements Serializable {
         this.lat = lat;
     }
 
-    public String getLnt() {
-        return lnt;
+    public String getLng() {
+        return lng;
     }
 
     public void setLnt(String lnt) {
-        this.lnt = lnt;
+        this.lng = lng;
     }
 }
