@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.task.TaskCommentReplyDao">
+
+    <!--任务评论回复resultMap-->
+    <resultMap type="io.renren.modules.app.dto.TaskCommentReplyDto" id="commentReplyMap">
+        <id property="id" column="id"/>
+        <result property="commentId" column="comment_id"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <!--关联回复人-->
+        <association property="fromUser" javaType="io.renren.modules.app.entity.setting.Member">
+            <id property="id" column="from_id"/>
+            <result property="nickName" column="from_nick_name"/>
+            <result property="realName" column="from_real_name"/>
+            <result property="avatar" column="from_avatar"/>
+            <result property="sex" column="from_sex"/>
+        </association>
+        <!--关联被回复人-->
+        <association property="toUser" javaType="io.renren.modules.app.entity.setting.Member">
+            <id property="id" column="to_id"/>
+            <result property="nickName" column="to_nick_name"/>
+            <result property="realName" column="to_real_name"/>
+            <result property="avatar" column="to_avatar"/>
+            <result property="sex" column="to_sex"/>
+        </association>
+    </resultMap>
+
+    <!--查询任务评论回复-->
+    <select id="getCommentReplies" resultMap="commentReplyMap">
+        SELECT
+            r.id,
+            r.comment_id,
+            r.content,
+            r.create_time,
+            f.id AS from_id,
+            f.nick_name AS from_nick_name,
+            f.real_name AS from_real_name,
+            f.avatar AS from_avatar,
+            f.sex AS from_sex,
+            t.id AS to_id,
+            t.nick_name AS to_nick_name,
+            t.real_name AS to_real_name,
+            t.avatar AS to_avatar,
+            t.sex AS to_sex
+        FROM t_task_comment_reply r
+        JOIN member f ON r.from_user_id = f.id
+        JOIN member t ON r.to_user_id = t.id
+        WHERE r.comment_id = #{commentId} and r.deleted = 0
+        ORDER BY r.create_time ASC
+    </select>
+
+</mapper>

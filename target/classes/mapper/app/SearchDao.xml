@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.search.SearchDao">
+
+    <!-- 插入搜索日志 -->
+    <insert id="insertLog" parameterType="io.renren.modules.app.entity.search.SearchLogEntity">
+        insert into t_search_log(`keyword`,`create_time`,`deleted`)
+            value(#{keyword},#{createTime},#{deleted})
+    </insert>
+
+    <!-- 统计最近一个月，搜索关键字最多的前10个数据 -->
+    <select id="getHotSearch" resultType="io.renren.modules.app.dto.HotSearchDto">
+        select `keyword`,count(1) as searchCount from t_search_log
+        where `create_time`> date_add(now(), interval -1 month)
+        group by `keyword`
+        order by searchCount desc
+        limit 10
+    </select>
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.task.TaskDao">
+
+    <!--任务resultMap-->
+    <resultMap type="io.renren.modules.app.dto.TaskDto" id="taskMap">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="startTime" column="start_time"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="virtualCurrency" column="virtual_currency"/>
+        <result property="status" column="status"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <!--关联地址-->
+        <association property="address" javaType="io.renren.modules.app.entity.task.TaskAddressEntity">
+            <id property="id" column="address_id"/>
+            <result property="province" column="address_province"/>
+            <result property="city" column="address_city"/>
+            <result property="district" column="address_district"/>
+            <result property="street" column="address_street"/>
+            <result property="detail" column="address_detail"/>
+        </association>
+        <!--关联创建人-->
+        <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
+            <id property="id" column="member_id"/>
+            <result property="nickName" column="nick_name"/>
+            <result property="realName" column="real_name"/>
+            <result property="avatar" column="member_avatar"/>
+            <result property="sex" column="member_sex"/>
+        </association>
+        <!--图片url列表-->
+        <collection property="imageUrls" ofType="string">
+            <constructor>
+                <arg column="image_url"/>
+            </constructor>
+        </collection>
+        <!--标签名称列表-->
+        <collection property="tagNames" ofType="string">
+            <constructor>
+                <arg column="tag_name"/>
+            </constructor>
+        </collection>
+
+    </resultMap>
+
+    <!--查询任务详情-->
+    <select id="getTask" resultMap="taskMap">
+        SELECT
+        t.*,
+        a.id AS address_id,
+        a.province AS address_province,
+        a.city AS address_city,
+        a.district AS address_district,
+        a.street AS address_street,
+        a.detail AS address_detail,
+        m.id AS member_id,
+        m.nick_name,
+        m.real_name,
+        m.avatar AS member_avatar,
+        m.sex AS member_sex,
+        ri.image_url,
+        tg.name as tag_name
+
+        FROM t_task t
+        JOIN t_task_address a ON t.address_id = a.id
+        JOIN member m ON t.creator_id = m.id
+        LEFT JOIN r_task_image ri ON t.id = ri.task_id
+        LEFT JOIN r_task_tag rg ON t.id = rg.task_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id
+        LEFT JOIN r_task_notified_user ru ON t.id = ru.task_id
+        WHERE t.id = #{taskId}
+    </select>
+
+    <insert id="insertTaskImageRelation">
+        INSERT INTO r_task_image(task_id,image_url) VALUES
+        <foreach collection="imageUrls" item="item" index="index" separator=",">
+            (#{taskId}, #{item})
+        </foreach>
+    </insert>
+
+    <insert id="insertTaskTagRelation">
+        INSERT INTO r_task_tag(task_id,tag_id) VALUES
+        <foreach collection="tagIds" item="item" index="index" separator=",">
+            (#{taskId}, #{item})
+        </foreach>
+    </insert>
+
+    <insert id="insertTaskNotifiedUserRelation">
+        INSERT INTO r_task_notified_user(task_id,user_id) VALUES
+        <foreach collection="userIds" item="item" index="index" separator=",">
+            (#{taskId}, #{item})
+        </foreach>
+    </insert>
+
+</mapper>
