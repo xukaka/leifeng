@@ -63,8 +63,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     private Map<String, Object> getTaskQueryMap(TaskQueryForm form) {
         Map<String, Object> queryMap = new HashMap<>();
-        if (!StringUtils.isEmpty(form.getKeyword())){
-            queryMap.put("title",form.getKeyword());
+        if (!StringUtils.isEmpty(form.getKeyword())) {
+            queryMap.put("title", form.getKeyword());
         }
         if (form.getLatitude() != null && form.getLongitude() != null && form.getRaidus() != null) {
             Map<String, Double> aroundMap = GeoUtils.getAround(form.getLatitude(), form.getLongitude(), form.getRaidus());
@@ -75,10 +75,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         }
         if (form.getTaskDifficulty() != null) {
             TaskDifficultyEnum difficulty = form.getTaskDifficulty();
-            queryMap.put("difficulty",difficulty.name());
+            queryMap.put("difficulty", difficulty.name());
             switch (difficulty) {
                 case FREE:
-                    queryMap.put("maxVirtualCurrency",difficulty.getMaxVirtualCurrency());
+                    queryMap.put("maxVirtualCurrency", difficulty.getMaxVirtualCurrency());
                     break;
                 case SIMPLE:
                     queryMap.put("minVirtualCurrency", difficulty.getMinVirtualCurrency());
@@ -148,8 +148,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
     @Override
-    public void deleteTasks(Long[] ids) {
-        Wrapper<TaskEntity> wrapper = new EntityWrapper<>();
+    public void deleteTask(Long id) {
+       /* Wrapper<TaskEntity> wrapper = new EntityWrapper<>();
         wrapper.in("id", Arrays.asList(ids));
         List<TaskEntity> tasks = this.selectList(wrapper);
         if (!CollectionUtils.isEmpty(tasks)) {
@@ -157,6 +157,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 task.setDeleted(true);
             }
             this.updateBatchById(tasks);
+        }*/
+        TaskEntity task = this.selectById(id);
+        if (task != null) {
+            task.setDeleted(true);
+            this.updateById(task);
         }
     }
 

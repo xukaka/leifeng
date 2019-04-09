@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
     public final static String QUEUE_NAME = "test-queue-name_haha123";
-    @Bean
+  /*  @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         return new RabbitTemplate(connectionFactory);
     }
@@ -17,6 +17,6 @@ public class RabbitMQConfig {
     @Bean
     public Queue queue() {
         return new Queue(QUEUE_NAME);
-    }
+    }*/
 
 }

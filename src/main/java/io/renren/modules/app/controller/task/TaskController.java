@@ -5,7 +5,9 @@ import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
+import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
+import io.renren.modules.app.form.TaskQueryForm;
 import io.renren.modules.app.service.TaskService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
@@ -14,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -33,15 +36,6 @@ public class TaskController {
         return R.ok();
     }
 
-    /*@PostMapping("/list")
-    @ApiOperation("分页获取任务列表")
-    @ApiImplicitParam(name = "params", value = "分页page从1开始，sidx和order为排序字段非必填（默认按照排序字段orderNum从小大排序）", example = "{\"page\":1,\"limit\":10,\"sidx\":\"id\",\"order\":\"asc\"}")
-    public R getTasks(@RequestParam Map<String, Object> params) {
-        PageUtils page = taskService.queryPage(params);
-        return R.ok().put("result", page);
-    }*/
-
-
     @GetMapping("/detail/{id}")
     @ApiOperation("获取任务详细信息")
     public R getTask(@PathVariable("id") Long id) {
@@ -50,6 +44,7 @@ public class TaskController {
     }
 
 
+    @Login
     @PutMapping("/update")
     @ApiOperation("更新任务信息")
     public R updateTask(@RequestBody TaskForm form) {
@@ -58,11 +53,53 @@ public class TaskController {
     }
 
 
-    @DeleteMapping("/delete")
-    @ApiOperation("批量删除任务")
-    public R deleteTasks(@RequestBody Long[] ids) {
-        taskService.deleteTasks(ids);
+    @Login
+    @DeleteMapping("/delete/{id}")
+    @ApiOperation("删除任务")
+    public R deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
         return R.ok();
+    }
+
+    @Login
+    @PostMapping("/receive")
+    @ApiOperation("领取任务")
+    public R receiveTask(@RequestBody Long taskId) {
+        taskService.receiveTask(ReqUtils.currentUserId(),taskId);
+        return R.ok();
+    }
+
+    @PostMapping("/receive/list")
+    @ApiOperation("分页获取领取任务列表")
+    public R getReceivedTasks(@RequestParam Long receiverId,@RequestParam Integer curPage,@RequestParam Long pageSize) {
+        Map<String,Object> pageMap = new HashMap<>();
+        pageMap.put("page",curPage);
+        pageMap.put("size",pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<TaskDto> tasks= taskService.getReceivedTasks(receiverId,page);
+        return R.ok().put("result",tasks);
+    }
+
+    @PostMapping("/publish/list")
+    @ApiOperation("分页获取发布任务列表")
+    public R getPublishedTasks(@RequestParam Long publisherId,@RequestParam Integer curPage,@RequestParam Long pageSize) {
+        Map<String,Object> pageMap = new HashMap<>();
+        pageMap.put("page",curPage);
+        pageMap.put("size",pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<TaskDto> tasks= taskService.getPublishedTasks(publisherId,page);
+        return R.ok().put("result",tasks);
+    }
+
+    @PostMapping("/search/list")
+    @ApiOperation("分页获取发布任务列表")
+    public R searchTasks(@RequestBody TaskQueryForm form) {
+        Map<String,Object> pageMap = new HashMap<>();
+        pageMap.put("page",form.getCurPage());
+        pageMap.put("size",form.getPageSize());
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<TaskDto> tasks= taskService.searchTasks(form,page);
+        return R.ok().put("result",tasks);
     }
 
 }

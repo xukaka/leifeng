@@ -54,9 +54,9 @@ public interface TaskService extends IService<TaskEntity> {
     void updateTask(TaskForm form);
 
     /**
-     * 批量删除任务-逻辑删除
+     * 删除任务-逻辑删除
      */
-    void deleteTasks(Long[] ids);
+    void deleteTask(Long id);
 
 
     /**

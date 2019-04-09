@@ -39,6 +39,10 @@ public class TaskQueryForm {
     private List<Long> tagIds;
     @ApiModelProperty(value = "任务难度", example = "")
     private TaskDifficultyEnum taskDifficulty;
+    @ApiModelProperty(value = "当前页", example = "")
+    private Integer curPage;
+    @ApiModelProperty(value = "分页大小", example = "")
+    private Integer pageSize;
 
     public String getKeyword() {
         return keyword;
@@ -86,5 +90,21 @@ public class TaskQueryForm {
 
     public void setTaskDifficulty(TaskDifficultyEnum taskDifficulty) {
         this.taskDifficulty = taskDifficulty;
+    }
+
+    public Integer getCurPage() {
+        return curPage;
+    }
+
+    public void setCurPage(Integer curPage) {
+        this.curPage = curPage;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
     }
 }

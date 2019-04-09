@@ -1,15 +1,13 @@
 package io.renren.modules.app.controller.setting;
 
 
-import com.mchange.v2.beans.BeansUtils;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RabbitMqHelper;
+import io.renren.common.utils.RedisUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
-import io.renren.modules.app.dto.TaskCommentDto;
 import io.renren.modules.app.entity.setting.Member;
-import io.renren.modules.app.entity.setting.MemberScoreEntity;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.MemberForm;
 import io.renren.modules.app.form.MemberScoreForm;
@@ -18,8 +16,10 @@ import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.Map;
 @RequestMapping("/app/member")
 @Api(tags = "用户信息接口")
 public class MemberController {
-
+    private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private MemberService memberService;
 
@@ -44,6 +44,10 @@ public class MemberController {
     @Autowired
     private RabbitMqHelper rabbitMqHelper;
 
+    @Autowired
+    private  RedisUtils redisUtils;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
 
@@ -92,7 +96,15 @@ public class MemberController {
     @GetMapping("notToken")
     @ApiOperation("忽略Token验证测试")
     public R notToken(){
-//        rabbitMqHelper.sendMessage(RabbitMQConfig.QUEUE_NAME,"mq test");
+
+/*        redisUtils.set("aaaab","132");
+        String value =redisUtils.get("aaaab");
+
+        redisTemplate.opsForValue().set("abcde","3333");
+        String res = (String)redisTemplate.opsForValue().get("abcde");
+   logger.info("3333"+value);
+   logger.info("444444"+res);*/
+//        rabbitMqHelper.sendMessage(RabbitMQConfig.QUEUE_NAME,"mq test 222");
         return R.ok().put("result", "无需token也能访问。。。");
     }
 
