@@ -1,10 +1,12 @@
 package io.renren.modules.app.controller.setting;
 
 
+import com.alibaba.fastjson.JSONObject;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
-//import io.renren.common.utils.RabbitMqHelper;
+import io.renren.common.utils.RabbitMqHelper;
 import io.renren.common.utils.RedisUtils;
+import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.form.LocationForm;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,8 +43,8 @@ public class MemberController {
     private MemberService memberService;
 
 
-//    @Autowired
-//    private RabbitMqHelper rabbitMqHelper;
+    @Resource
+    private RabbitMqHelper rabbitMqHelper;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -103,8 +106,16 @@ public class MemberController {
     public R redis() {
         redisUtils.set("abc", "123321 redis connected.");
         String value = redisUtils.get("abc");
-//        rabbitMqHelper.sendMessage(RabbitMQConfig.QUEUE_NAME,"mq test 222");
         return R.ok().put("result", value);
+    }
+
+    @GetMapping("/test/rabbitmq")
+    @ApiOperation("rabbitmq消息发送-接收测试")
+    public R rabbitmq() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg","test get a rabbitmq messge");
+        rabbitMqHelper.sendMessage(RabbitMQConfig.QUEUE_NAME, jsonObject.toJSONString());
+        return R.ok().put("result", "rabbit send a babbitmq message.");
     }
 
     @Login

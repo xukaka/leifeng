@@ -41,11 +41,11 @@ spring:
   resources:
     add-mappings: false
   #rabbitMQ
-#  rabbitmq:
-#    host: 119.23.229.161
-#    port: 5672
-#    username: guest
-#    password: guest
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
 
 #mybatis
 mybatis-plus:

@@ -1,4 +1,4 @@
-/*package io.renren.common.utils;
+package io.renren.common.utils;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
@@ -14,4 +14,4 @@ public class RabbitMqHelper {
     public void sendMessage(String queueName,String messageJson){
         rabbitTemplate.convertAndSend(queueName,messageJson);
     }
-}*/
+}

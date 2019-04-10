@@ -1,7 +1,8 @@
-//package io.renren.modules.app.event;
+package io.renren.modules.app.event;
 
-//import com.alibaba.fastjson.JSONObject;
-/*import org.slf4j.Logger;
+import com.alibaba.fastjson.JSONObject;
+import io.renren.config.RabbitMQConfig;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -15,8 +16,8 @@ public class RenrenMsgListener {
     @RabbitHandler
     public void handleMessage(String message) {
         logger.info(message);
-       JSONObject jsonObject = JSONObject.parseObject(message);
+//        JSONObject jsonObject = JSONObject.parseObject(message);
 
     }
-}*/
+}
 
