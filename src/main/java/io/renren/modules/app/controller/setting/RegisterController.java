@@ -42,7 +42,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/app")
-@Api(tags = "微信登录接口")
+@Api(tags = "登录接口")
 public class RegisterController {
     private final static Logger logger = LoggerFactory.getLogger(RegisterController.class);
 
@@ -82,7 +82,7 @@ public class RegisterController {
      * 微信登录
      */
     @PostMapping("wxLogin")
-    @ApiOperation("登录")
+    @ApiOperation("微信登录")
     @ApiImplicitParam(name = "code",value = "微信login方法返回的code",paramType = "query")
     public R wxLogin(String code){
         //表单校验
@@ -120,20 +120,22 @@ public class RegisterController {
     }
 
     /**
-     * 登录
+     * 手机密码登录
      */
-    @PostMapping("login")
-  //  @ApiOperation("登录")
+    @PostMapping("phone/login")
+    @ApiOperation("手机密码登录")
     public R login(@RequestBody LoginForm form){
         //表单校验
         ValidatorUtils.validateEntity(form);
 
         //用户登录
-        MemberAuths auths = memberAuthsService.queryByTypeAndIdentifier(form.getIdentityType(),form.getIdentifier());
+        form.setIdentityType("phone");
+        MemberAuths auths = memberAuthsService.queryByTypeAndIdentifier(form.getIdentityType(),form.getPhone());
         if(ObjectUtils.isEmpty(auths)){
-            throw new RRException("账号不存在");
+            throw new RRException("手机号不存在");
         }
         if(!auths.getCredential().equals(DigestUtils.sha256Hex(form.getCredential()))){
+            String s = DigestUtils.sha256Hex(form.getCredential());
             throw new RRException("登录密码(凭证)错误");
         }
         //生成token

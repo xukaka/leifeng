@@ -12,26 +12,25 @@ import javax.validation.constraints.NotBlank;
 @ApiModel(value = "登录表单")
 public class LoginForm {
     @ApiModelProperty(value = "手机号",example = "13301242325")
-    private String mobile;
+    @NotBlank(message="手机号必填")
+    private String phone;
 
-    @ApiModelProperty(value = "注册类型wx:微信，mobile：手机",example = "wx")
-    @NotBlank(message = "登录方式必填")
+    @ApiModelProperty(value = "注册类型wx:微信，phone：手机,暂不填",example = "wx")
     private String identityType;
 
-    @ApiModelProperty(value = "登录账号",example = "wx_open_id")
-    @NotBlank(message="登录账号必填")
+    @ApiModelProperty(value = "登录账号，暂不用",example = "wx_open_id")
     private String identifier;
 
     @ApiModelProperty(value = "登录秘密凭证",example = "password")
     @NotBlank(message="登录密码凭证必填")
     private String credential;
 
-    public String getMobile() {
-        return mobile;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getIdentifier() {

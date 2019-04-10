@@ -2,6 +2,7 @@ package io.renren.modules.app.controller.setting;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RabbitMqHelper;
@@ -17,10 +18,13 @@ import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -168,4 +172,18 @@ public class MemberController {
         return R.ok();
     }
 
+    @Login
+    @PostMapping("/avatar/phone")
+    @ApiOperation("根据手机号获取用户头像")
+    public R getAvatarByPhone(String phone){
+        if(StringUtils.isEmpty(phone)){
+            return R.error(HttpStatus.SC_BAD_REQUEST,"手机号不为空");
+        }
+        String avatar = "";
+        Member member = memberService.selectOne(new EntityWrapper<Member>().eq("mobile", phone));
+        if(!ObjectUtils.isEmpty(member))
+            avatar = member.getAvatar();
+
+        return R.ok().put("result",avatar);
+    }
 }
