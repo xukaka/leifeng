@@ -172,7 +172,6 @@ public class MemberController {
         return R.ok();
     }
 
-    @Login
     @PostMapping("/avatar/phone")
     @ApiOperation("根据手机号获取用户头像")
     public R getAvatarByPhone(String phone){
