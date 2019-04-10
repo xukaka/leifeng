@@ -9,5 +9,8 @@
         <module name="leifeng" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="leifeng" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
