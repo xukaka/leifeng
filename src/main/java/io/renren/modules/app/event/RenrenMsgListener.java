@@ -1,6 +1,6 @@
-package io.renren.modules.app.event;
+//package io.renren.modules.app.event;
 
-import com.alibaba.fastjson.JSONObject;
+//import com.alibaba.fastjson.JSONObject;
 /*import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;

@@ -3,7 +3,7 @@ package io.renren.modules.app.controller.setting;
 
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
-import io.renren.common.utils.RabbitMqHelper;
+//import io.renren.common.utils.RabbitMqHelper;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.entity.setting.Member;
@@ -40,8 +40,8 @@ public class MemberController {
     private MemberService memberService;
 
 
-    @Autowired
-    private RabbitMqHelper rabbitMqHelper;
+//    @Autowired
+//    private RabbitMqHelper rabbitMqHelper;
 
     @Autowired
     private RedisUtils redisUtils;
