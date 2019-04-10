@@ -146,7 +146,7 @@ public class RegisterController {
         return R.ok(map);
     }
 
-    @PostMapping("/phone/send")
+   /* @PostMapping("/phone/send")
     @ApiOperation("通过手机号发送短信验证码")
     public R phoneSend(String phone){
         try {
@@ -169,5 +169,5 @@ public class RegisterController {
             return R.ok();
         }
         return R.error(HttpStatus.SC_FORBIDDEN,"验证码错误");
-    }
+    }*/
 }

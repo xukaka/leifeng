@@ -4,8 +4,8 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.github.qcloudsms.SmsSingleSender;
-import com.github.qcloudsms.SmsSingleSenderResult;
+//import com.github.qcloudsms.SmsSingleSender;
+//import com.github.qcloudsms.SmsSingleSenderResult;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.JsonUtil;
 import io.renren.common.utils.PageUtils;
@@ -31,6 +31,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,11 +40,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service("MemberService")
 public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements MemberService {
 
-    @Autowired
+    @Resource
     private MemberAuthsService memberAuthsService;
-    @Autowired
+    @Resource
     private MemberFollowDao memberFollowDao;
-    @Autowired
+    @Resource
     private MemberScoreDao memberScoreDao;
 
     @Value("${sms.appid}")
@@ -147,7 +148,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         //TODO 发送消息给被评分人
     }
 
-    @Override
+   /* @Override
     public void sendPhoneCode(String phoneNum) throws Exception {
         //随机生成4位验证码
         String code =String.valueOf((new Random().nextInt(8999) + 1000));
@@ -166,6 +167,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         if(!StringUtils.isEmpty(code) && code.equals(originCode))
             return true;
         return false;
-    }
+    }*/
 
 }
