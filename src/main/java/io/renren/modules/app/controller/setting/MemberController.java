@@ -5,7 +5,6 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RabbitMqHelper;
 import io.renren.common.utils.RedisUtils;
-import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.form.LocationForm;
