@@ -77,4 +77,8 @@ public interface MemberService extends IService<Member> {
 	 * @param form
 	 */
     void score(Long judgeId, MemberScoreForm form);
+
+    void sendPhoneCode(String phoneNum) throws Exception;
+
+    boolean validatePhoneCode(String phoneNum, String code);
 }
