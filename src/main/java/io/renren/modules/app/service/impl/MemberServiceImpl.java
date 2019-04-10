@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 //import com.github.qcloudsms.SmsSingleSender;
 //import com.github.qcloudsms.SmsSingleSenderResult;
+import com.github.qcloudsms.SmsSingleSender;
+import com.github.qcloudsms.SmsSingleSenderResult;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.JsonUtil;
 import io.renren.common.utils.PageUtils;
@@ -150,5 +152,25 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         //TODO 发送消息给被评分人
     }
 
+    @Override
+    public void sendPhoneCode(String phoneNum) throws Exception {
+        //随机生成4位验证码
+        String code =String.valueOf((new Random().nextInt(8999) + 1000));
+        String[] params = {code};
+        SmsSingleSender ssender = new SmsSingleSender(appid, appkey);
+        SmsSingleSenderResult result = ssender.sendWithParam("86", phoneNum,
+                templateId, params, signName, "", "");
+        System.out.println("腾讯短信接口返回结果："+JsonUtil.Java2Json(result));
+        phoneCodeMap.put(phoneNum,code);
+    }
+
+    @Override
+    public boolean validatePhoneCode(String phoneNum, String code) {
+        System.out.println("phoneCodeMap的内容为："+JsonUtil.Java2Json(phoneCodeMap));
+        String originCode = phoneCodeMap.get(phoneNum);
+        if(!StringUtils.isEmpty(code) && code.equals(originCode))
+            return true;
+        return false;
+    }
 
 }
