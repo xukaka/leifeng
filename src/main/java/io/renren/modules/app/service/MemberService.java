@@ -37,6 +37,8 @@ public interface MemberService extends IService<Member> {
 
 	/**
 	 * 同时写入member表和member_auths表
+	 *
+	 *
 	 */
 	void registerMemberWithAuth(Member member, MemberAuths auths);
 
