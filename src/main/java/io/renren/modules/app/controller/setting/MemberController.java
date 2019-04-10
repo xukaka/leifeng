@@ -44,27 +44,26 @@ public class MemberController {
     private RabbitMqHelper rabbitMqHelper;
 
     @Autowired
-    private  RedisUtils redisUtils;
+    private RedisUtils redisUtils;
     @Autowired
     private RedisTemplate redisTemplate;
 
 
-
     @GetMapping("/list")
     @ApiOperation("搜索用户列表-分页")
-    public R searchMembers(@RequestParam String keyword,@RequestParam Integer curPage,@RequestParam Integer pageSize){
-        Map<String,Object> pageMap = new HashMap<>();
-        pageMap.put("page",curPage);
-        pageMap.put("size",pageSize);
+    public R searchMembers(@RequestParam String keyword, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.searchMembers(keyword,page);
+        PageUtils<Member> members = memberService.searchMembers(keyword, page);
         return R.ok().put("result", members);
     }
 
     @Login
     @GetMapping("/detail")
     @ApiOperation("获取用户信息")
-    public R getMember(@RequestParam("memberId") Long memberId){
+    public R getMember(@RequestParam("memberId") Long memberId) {
         Member member = memberService.getMember(memberId);
         return R.ok().put("result", member);
     }
@@ -72,15 +71,15 @@ public class MemberController {
     @Login
     @PutMapping("/update")
     @ApiOperation("更新用户信息")
-    public R updateMember(@RequestBody MemberForm form){
-       memberService.updateMember(form);
+    public R updateMember(@RequestBody MemberForm form) {
+        memberService.updateMember(form);
         return R.ok();
     }
 
     @Login
     @PutMapping("/location")
     @ApiOperation("更新用户位置")
-    public R updateLocation(LocationForm locationForm){
+    public R updateLocation(LocationForm locationForm) {
         memberService.updateLocationNumber(locationForm);
         return R.ok();
     }
@@ -88,65 +87,64 @@ public class MemberController {
     @Login
     @GetMapping("/userId")
     @ApiOperation("获取用户memberID")
-    public R userInfo(@RequestAttribute("userId") Integer userId){
+    public R userInfo(@RequestAttribute("userId") Integer userId) {
         return R.ok().put("result", userId);
     }
 
     @GetMapping("notToken")
     @ApiOperation("忽略Token验证测试")
-    public R notToken(){
+    public R notToken() {
 
-/*        redisUtils.set("aaaab","132");
-        String value =redisUtils.get("aaaab");
-
-        redisTemplate.opsForValue().set("abcde","3333");
-        String res = (String)redisTemplate.opsForValue().get("abcde");
-   logger.info("3333"+value);
-   logger.info("444444"+res);*/
-//        rabbitMqHelper.sendMessage(RabbitMQConfig.QUEUE_NAME,"mq test 222");
         return R.ok().put("result", "无需token也能访问。。。");
     }
 
+    @GetMapping("/test/redis")
+    @ApiOperation("redis连接测试")
+    public R redis() {
+        redisUtils.set("abc", "123321 redis connected.");
+        String value = redisUtils.get("abc");
+//        rabbitMqHelper.sendMessage(RabbitMQConfig.QUEUE_NAME,"mq test 222");
+        return R.ok().put("result", value);
+    }
 
     @Login
     @PostMapping("/follow")
     @ApiOperation("关注用户")
-    public R followMember(@RequestParam Long toMemberId){
-        memberService.followMember(ReqUtils.currentUserId(),toMemberId);
+    public R followMember(@RequestParam Long toMemberId) {
+        memberService.followMember(ReqUtils.currentUserId(), toMemberId);
         return R.ok();
     }
 
     @Login
     @PostMapping("/unfollow")
     @ApiOperation("取消关注")
-    public R unfollowMember(@RequestParam Long toMemberId){
-        memberService.unfollowMember(ReqUtils.currentUserId(),toMemberId);
+    public R unfollowMember(@RequestParam Long toMemberId) {
+        memberService.unfollowMember(ReqUtils.currentUserId(), toMemberId);
         return R.ok();
     }
 
     @Login
     @PostMapping("/follow/list")
     @ApiOperation("分页获取关注的用户列表")
-    public R getFollowMembers(@RequestParam Integer curPage,@RequestParam Integer pageSize){
-        Map<String,Object> pageMap = new HashMap<>();
-        pageMap.put("page",curPage);
-        pageMap.put("size",pageSize);
+    public R getFollowMembers(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.getFollowMembers(ReqUtils.currentUserId(),page);
+        PageUtils<Member> members = memberService.getFollowMembers(ReqUtils.currentUserId(), page);
         return R.ok().put("result", members);
     }
-
 
 
     @Login
     @PostMapping("/fans/list")
     @ApiOperation("分页获取粉丝用户列表")
-    public R getFansMembers(@RequestParam Integer curPage,@RequestParam Integer pageSize){
-        Map<String,Object> pageMap = new HashMap<>();
-        pageMap.put("page",curPage);
-        pageMap.put("size",pageSize);
+    public R getFansMembers(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.getFansMembers(ReqUtils.currentUserId(),page);
+        PageUtils<Member> members = memberService.getFansMembers(ReqUtils.currentUserId(), page);
         return R.ok().put("result", members);
     }
 
@@ -154,8 +152,8 @@ public class MemberController {
     @Login
     @PostMapping("/score")
     @ApiOperation("用户评分")
-    public R socre(@RequestBody MemberScoreForm form){
-        memberService.score(ReqUtils.currentUserId(),form);
+    public R socre(@RequestBody MemberScoreForm form) {
+        memberService.score(ReqUtils.currentUserId(), form);
         return R.ok();
     }
 
