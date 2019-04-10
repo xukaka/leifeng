@@ -28,8 +28,8 @@ public class TaskAddressForm {
     @ApiModelProperty(value = "地址id", example = "")
     private Long id;
 
-    @ApiModelProperty(value = "用户id", example = "")
-    private Long userId;
+    @ApiModelProperty(value = "创建人id", example = "")
+    private Long creatorId;
 
     @ApiModelProperty(value = "姓名", example = "刘江舟")
     @NotBlank
@@ -73,12 +73,12 @@ public class TaskAddressForm {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getCreatorId() {
+        return creatorId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 
     public String getName() {

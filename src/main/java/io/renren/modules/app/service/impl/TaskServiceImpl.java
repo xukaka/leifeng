@@ -149,15 +149,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public void deleteTask(Long id) {
-       /* Wrapper<TaskEntity> wrapper = new EntityWrapper<>();
-        wrapper.in("id", Arrays.asList(ids));
-        List<TaskEntity> tasks = this.selectList(wrapper);
-        if (!CollectionUtils.isEmpty(tasks)) {
-            for (TaskEntity task : tasks) {
-                task.setDeleted(true);
-            }
-            this.updateBatchById(tasks);
-        }*/
         TaskEntity task = this.selectById(id);
         if (task != null) {
             task.setDeleted(true);

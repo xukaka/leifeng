@@ -17,7 +17,7 @@ public interface TaskAddressService extends IService<TaskAddressEntity> {
     /**
      * 创建任务地址
      */
-    void createAddress(Long userId,TaskAddressForm form);
+    void createAddress(Long creatorId,TaskAddressForm form);
 
     /**
      * 获取任务地址-根据id
@@ -27,7 +27,7 @@ public interface TaskAddressService extends IService<TaskAddressEntity> {
     /**
      * 获取用户的所有地址列表
      */
-    List<TaskAddressEntity> getAddresses(Long userId);
+    List<TaskAddressEntity> getAddresses(Long creatorId);
 
 
     /**

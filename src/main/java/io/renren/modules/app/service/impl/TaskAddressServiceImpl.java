@@ -35,11 +35,11 @@ public class TaskAddressServiceImpl extends ServiceImpl<TaskAddressDao, TaskAddr
 
 
     @Override
-    public void createAddress(Long userId, TaskAddressForm form) {
+    public void createAddress(Long creatorId, TaskAddressForm form) {
         ValidatorUtils.validateEntity(form);
         TaskAddressEntity address = new TaskAddressEntity();
         BeanUtils.copyProperties(form, address);
-        address.setUserId(userId);
+        address.setCreatorId(creatorId);
         address.setCreateTime(DateUtils.now());
         this.insert(address);
 
@@ -51,9 +51,9 @@ public class TaskAddressServiceImpl extends ServiceImpl<TaskAddressDao, TaskAddr
     }
 
     @Override
-    public List<TaskAddressEntity> getAddresses(Long userId) {
+    public List<TaskAddressEntity> getAddresses(Long creatorId) {
         Wrapper<TaskAddressEntity> wrapper = new EntityWrapper<>();
-        wrapper.eq("user_id", userId)
+        wrapper.eq("creator_id", creatorId)
                 .eq("deleted", false)
                 .orderBy("create_time", false);
         List<TaskAddressEntity> addresses = this.selectList(wrapper);

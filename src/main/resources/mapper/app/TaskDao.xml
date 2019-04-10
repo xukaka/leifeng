@@ -171,45 +171,7 @@
         LIMIT #{page.offset},#{page.limit}
     </select>
 
-    <select id="count" resultType="int">
-        SELECT
-        count(DISTINCT(t.id))
-        FROM t_task t
-        JOIN t_task_address a ON t.address_id = a.id
-        <if test="tagIds != null and tagIds.size() > 0">
-            JOIN t_task_tag tag ON t.id = tag.task_id AND tag.id IN
-            <foreach collection="tagIds" item="id" index="index" open="(" close=")" separator=",">
-                #{id}
-            </foreach>
-        </if>
-        WHERE t.deleted = 0
-        <if test="keyword !=null and keyword != ''">
-            AND t.title like concat('%',#{keyword},'%)'
-        </if>
-        <if test="difficulty!=null and difficulty != ''">
-            <choose>
-                <when test="difficulty =='FREE'">
-                    AND t.virtual_currency = #{maxVirtualCurrency}
-                </when>
-                <when test="difficulty == 'SIMPLE'">
-                    AND t.virtual_currency &gt;= #{minVirtualCurrency}
-                    AND t.virtual_currency &lt;= #{maxVirtualCurrency}
-                </when>
-                <when test="difficulty =='NORMAL'">
-                    AND t.virtual_currency &gt;= #{minVirtualCurrency}
-                    AND t.virtual_currency &lt;= #{maxVirtualCurrency}
-                </when>
-                <when test="difficulty =='DIFFICULT'">
-                    AND t.virtual_currency &gt; #{maxVirtualCurrency}
-                </when>
-            </choose>
-        </if>
-        <if test="minLat != null and maxLat != null and minLng!=null and maxLng != null">
-            AND a.latitude &gt;= #{minLat} AND a.latitude &lt;= #{maxLat}
-            AND a.longitude &gt;= #{minLng} AND a.longitude &lt;= #{maxLng}
-        </if>
 
-    </select>
 
     <select id="receiveCount" resultType="int">
         SELECT
@@ -255,6 +217,46 @@
         ORDER BY re.create_time desc
         LIMIT #{page.offset},#{page.limit}
     </select>
+
+    <select id="count" resultType="int">
+        SELECT
+        count(DISTINCT(t.id))
+        FROM t_task t
+        JOIN t_task_address a ON t.address_id = a.id
+        <if test="tagIds != null and tagIds.size() > 0">
+            JOIN t_task_tag tag ON t.id = tag.task_id AND tag.id IN
+            <foreach collection="tagIds" item="id" index="index" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        WHERE t.deleted = 0
+        <if test="keyword !=null and keyword != ''">
+            AND t.title like concat('%',#{keyword},'%)'
+        </if>
+        <if test="difficulty!=null and difficulty != ''">
+            <choose>
+                <when test="difficulty =='FREE'">
+                    AND t.virtual_currency = #{maxVirtualCurrency}
+                </when>
+                <when test="difficulty == 'SIMPLE'">
+                    AND t.virtual_currency &gt;= #{minVirtualCurrency}
+                    AND t.virtual_currency &lt;= #{maxVirtualCurrency}
+                </when>
+                <when test="difficulty =='NORMAL'">
+                    AND t.virtual_currency &gt;= #{minVirtualCurrency}
+                    AND t.virtual_currency &lt;= #{maxVirtualCurrency}
+                </when>
+                <when test="difficulty =='DIFFICULT'">
+                    AND t.virtual_currency &gt; #{maxVirtualCurrency}
+                </when>
+            </choose>
+        </if>
+        <if test="minLat != null and maxLat != null and minLng!=null and maxLng != null">
+            AND a.latitude &gt;= #{minLat} AND a.latitude &lt;= #{maxLat}
+            AND a.longitude &gt;= #{minLng} AND a.longitude &lt;= #{maxLng}
+        </if>
+    </select>
+
 
     <insert id="insertTaskImageRelation">
         INSERT INTO r_task_image(task_id,image_url) VALUES
