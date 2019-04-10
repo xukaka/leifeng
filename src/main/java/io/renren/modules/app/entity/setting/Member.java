@@ -146,7 +146,7 @@ public class Member implements Serializable {
         return lng;
     }
 
-    public void setLnt(String lnt) {
+    public void setLng(String lng) {
         this.lng = lng;
     }
 

@@ -16,7 +16,7 @@ public class LocationForm {
     private String lat;
 
     @ApiModelProperty(value = "经度")
-    private String lnt;
+    private String lng;
 
     public Long getId() {
         return id;
@@ -34,11 +34,11 @@ public class LocationForm {
         this.lat = lat;
     }
 
-    public String getLnt() {
-        return lnt;
+    public String getLng() {
+        return lng;
     }
 
-    public void setLnt(String lnt) {
-        this.lnt = lnt;
+    public void setLng(String lng) {
+        this.lng = lng;
     }
 }
