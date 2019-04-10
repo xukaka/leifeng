@@ -2,16 +2,12 @@ package io.renren.modules.app.service;
 
 
 import com.baomidou.mybatisplus.service.IService;
-import com.github.qcloudsms.httpclient.HTTPException;
+import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.MemberForm;
-import io.renren.modules.app.form.MemberScoreForm;
 import io.renren.modules.app.form.PageWrapper;
-import org.springframework.data.redis.core.query.QueryUtils;
-
-import java.io.IOException;
 
 /**
  * 用户
