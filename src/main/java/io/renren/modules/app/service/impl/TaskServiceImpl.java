@@ -1,19 +1,15 @@
 package io.renren.modules.app.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.exception.RRException;
-import io.renren.common.utils.DateUtils;
-import io.renren.common.utils.GeoUtils;
-import io.renren.common.utils.PageUtils;
-import io.renren.common.utils.Query;
+import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
+import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
+import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskReceiveEntity;
 import io.renren.modules.app.form.PageWrapper;
@@ -30,7 +26,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +38,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Resource
     private TaskReceiveDao taskReceiveDao;
 
+    @Resource
+    private RabbitMqHelper rabbitMqHelper;
+
   /*  @Override
     public PageUtils queryPage(Map<String, Object> params) {
         Page<TaskEntity> page = this.selectPage(
@@ -52,6 +50,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         return new PageUtils(page);
     }*/
+
+    @Override
+    public List<TaskBannerDto> getTaskBanners() {
+        return null;
+    }
 
     @Override
     public PageUtils<TaskDto> searchTasks(TaskQueryForm form, PageWrapper page) {
@@ -117,6 +120,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
+
     @Override
     public TaskDto getTask(Long id) {
         TaskDto task = this.baseMapper.getTask(id);
@@ -130,12 +134,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);
         task.setCreatorId(creatorId);
+        task.setStatus(TaskStatusEnum.published);
         task.setCreateTime(DateUtils.now());
         this.insert(task);
         this.addTaskImageRelation(task.getId(), form.getImageUrls());
         this.addTaskTagRelation(task.getId(), form.getTagIds());
         this.addTaskNotifiedUserRelation(task.getId(), form.getNotifiedUserIds());
-
     }
 
 
@@ -150,10 +154,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     public void deleteTask(Long id) {
         TaskEntity task = this.selectById(id);
-        if (task != null) {
-            task.setDeleted(true);
-            this.updateById(task);
+        if (task == null || task.getStatus() == TaskStatusEnum.received || task.getStatus() == TaskStatusEnum.submitted) {
+            throw new RRException("任务已领取");
         }
+        task.setDeleted(true);
+        this.updateById(task);
     }
 
     @Override
@@ -162,14 +167,53 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
         TaskEntity task = this.selectById(taskId);
         if (task == null
-                || task.getStatus() != 0//非发布状态
+                || task.getStatus() != TaskStatusEnum.published
                 || task.getDeleted()) {
             throw new RRException("任务已被领取");
         }
-        task.setStatus(1);//设置为领取状态
+        task.setStatus(TaskStatusEnum.received);
         this.updateById(task);
         taskReceiveDao.insert(receive);
     }
+
+    @Override
+    @Transactional
+    public void submitTask(Long receiverId, Long taskId) {
+        boolean isSubmitable = this.baseMapper.isSubmitableTask(receiverId, taskId);
+        if (!isSubmitable) {
+            throw new RRException("任务不可提交");
+        }
+        TaskEntity task = this.selectById(taskId);
+        if (task != null) {
+            task.setStatus(TaskStatusEnum.submitted);
+            this.updateById(task);
+
+            ThreadPoolUtils.execute(()->{
+                //TODO 发送消息给任务创建人
+                rabbitMqHelper.sendMessage("test","132");
+            });
+        }
+    }
+
+    @Override
+    @Transactional
+    public void completeTask(Long receiverId, Long taskId) {
+        boolean isCompletable = this.baseMapper.isCompletableTask(receiverId, taskId);
+        if (!isCompletable) {
+            throw new RRException("任务不可完成");
+        }
+        TaskEntity task = this.selectById(taskId);
+        if (task != null) {
+            task.setStatus(TaskStatusEnum.completed);
+            this.updateById(task);
+
+            ThreadPoolUtils.execute(()->{
+                //TODO 发送消息给任务领取人
+            });
+        }
+    }
+
+
 /*
 
     @Override
@@ -197,7 +241,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
     //任务-标签关系
-
     private void addTaskTagRelation(Long taskId, List<Long> tagIds) {
         if (!CollectionUtils.isEmpty(tagIds)) {
             this.baseMapper.insertTaskTagRelation(taskId, tagIds);

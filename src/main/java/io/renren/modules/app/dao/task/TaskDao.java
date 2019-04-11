@@ -70,4 +70,20 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
     int count(@Param("queryMap") Map<String, Object> queryMap);
 
 
+    /**
+     * 是否可提交任务
+     * @param receiverId
+     * @param taskId
+     * @return
+     */
+    boolean isSubmitableTask(@Param("receiverId")Long receiverId,@Param("taskId")Long taskId );
+
+
+    /**
+     * 是否可完成任务
+     */
+    boolean isCompletableTask(@Param("receiverId")Long receiverId,@Param("taskId")Long taskId );
+
+
+
 }

@@ -2,6 +2,7 @@ package io.renren.modules.app.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
+import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
@@ -9,15 +10,17 @@ import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 任务
  */
 public interface TaskService extends IService<TaskEntity> {
 
-//    PageUtils queryPage(Map<String, Object> params);
-
+    /**
+     * 获取任务完成banner列表（已完成任务滚动列表）
+     * @return 最新完成时间top20
+     */
+    List<TaskBannerDto> getTaskBanners();
     /**
      * 分页搜索任务-根据搜索条件
      * @param form
@@ -36,7 +39,6 @@ public interface TaskService extends IService<TaskEntity> {
      * @return
      */
     PageUtils<TaskDto> getReceivedTasks(Long receiverId, PageWrapper page);
-
 
     /**
      * 获取任务-根据id
@@ -58,11 +60,20 @@ public interface TaskService extends IService<TaskEntity> {
      */
     void deleteTask(Long id);
 
-
     /**
      * 领取任务
      */
     void receiveTask(Long receiverId,Long taskId);
+
+    /**
+     * 提交任务（申请完成任务）
+     */
+    void submitTask(Long receiverId,Long taskId);
+
+    /**
+     * 完成任务
+     */
+    void completeTask(Long receiverId,Long taskId);
 
 }
 

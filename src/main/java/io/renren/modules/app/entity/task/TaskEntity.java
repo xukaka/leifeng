@@ -2,6 +2,7 @@ package io.renren.modules.app.entity.task;
 
 import com.baomidou.mybatisplus.annotations.TableName;
 import io.renren.modules.app.entity.BaseEntity;
+import io.renren.modules.app.entity.TaskStatusEnum;
 
 import java.util.List;
 
@@ -66,9 +67,9 @@ public class TaskEntity extends BaseEntity {
     private Integer commentCount;
 
     /**
-     * 状态：0已发布，1已领取，3已完成，4已取消
+     * 状态
      */
-    private Integer status;
+    private TaskStatusEnum status;
 
 
     public String getTitle() {
@@ -147,11 +148,11 @@ public class TaskEntity extends BaseEntity {
         this.commentCount = commentCount;
     }
 
-    public Integer getStatus() {
+    public TaskStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(TaskStatusEnum status) {
         this.status = status;
     }
 }

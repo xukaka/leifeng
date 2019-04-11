@@ -1,5 +1,6 @@
 package io.renren.modules.app.dto;
 
+import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskTagEntity;
@@ -63,7 +64,7 @@ public class TaskDto implements Serializable {
     /**
      * 状态
      */
-    private Integer status;
+    private TaskStatusEnum status;
 
     /**
      * 评论数
@@ -153,11 +154,11 @@ public class TaskDto implements Serializable {
         this.creator = creator;
     }
 
-    public Integer getStatus() {
+    public TaskStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(TaskStatusEnum status) {
         this.status = status;
     }
 
