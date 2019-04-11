@@ -39,31 +39,42 @@ public class TaskAddressForm {
     @NotBlank
     private String mobile;
 
-    @ApiModelProperty(value = "省", example = "广东省")
-    @NotBlank
-    private String province;
-
-    @ApiModelProperty(value = "市", example = "深圳市")
-    @NotBlank
-    private String city;
-
-    @ApiModelProperty(value = "区", example = "南山区")
-    @NotBlank
-    private String district;
-
-    @ApiModelProperty(value = "街道", example = "沙河街道")
-    @NotBlank
-    private String street;
-
-    @ApiModelProperty(value = "详细地址", example = "上白石43栋601")
-    private String detail;
-
     @ApiModelProperty(value = "维度", example = "")
     @NotNull
     private Double latitude;
     @ApiModelProperty(value = "经度", example = "")
     @NotNull
     private Double longitude;
+
+    /*
+        @ApiModelProperty(value = "省", example = "广东省")
+        @NotBlank
+        private String province;
+
+        @ApiModelProperty(value = "市", example = "深圳市")
+        @NotBlank
+        private String city;
+
+        @ApiModelProperty(value = "区", example = "南山区")
+        @NotBlank
+        private String district;
+
+        @ApiModelProperty(value = "街道", example = "沙河街道")
+        @NotBlank
+        private String street;
+*/
+        @ApiModelProperty(value = "详细地址", example = "北京市朝阳区上白石43栋601")
+        @NotBlank
+        private String detail;
+
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
 
     public Long getId() {
         return id;
@@ -95,46 +106,6 @@ public class TaskAddressForm {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getDetail() {
-        return detail;
-    }
-
-    public void setDetail(String detail) {
-        this.detail = detail;
     }
 
     public Double getLatitude() {

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import io.renren.modules.app.entity.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -28,19 +29,19 @@ public class TaskAddressEntity extends BaseEntity {
     /**
      * 省
      */
-    private String province;
+//    private String province;
     /**
      * 市
      */
-    private String city;
+//    private String city;
     /**
      * 区
      */
-    private String district;
+//    private String district;
     /**
      * 街道
      */
-    private String street;
+//    private String street;
     /**
      * 详细地址
      */
@@ -77,38 +78,6 @@ public class TaskAddressEntity extends BaseEntity {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
     }
 
     public String getDetail() {

@@ -6,10 +6,8 @@
     <sql id="taskDtoField">
             t.*,
             a.id AS address_id,
-            a.province AS address_province,
-            a.city AS address_city,
-            a.district AS address_district,
-            a.street AS address_street,
+            a.latitude AS address_latitude,
+            a.longitude AS address_longitude,
             a.detail AS address_detail,
             m.id AS creator_id,
             m.nick_name AS creator_nick_name,
@@ -62,10 +60,8 @@
         <!--关联地址-->
         <association property="address" javaType="io.renren.modules.app.entity.task.TaskAddressEntity">
             <id property="id" column="address_id"/>
-            <result property="province" column="address_province"/>
-            <result property="city" column="address_city"/>
-            <result property="district" column="address_district"/>
-            <result property="street" column="address_street"/>
+            <result property="latitude" column="address_latitude"/>
+            <result property="longitude" column="address_longitude"/>
             <result property="detail" column="address_detail"/>
         </association>
         <!--关联创建人-->
@@ -113,10 +109,8 @@
         <!--关联地址-->
         <association property="address" javaType="io.renren.modules.app.entity.task.TaskAddressEntity">
             <id property="id" column="address_id"/>
-            <result property="province" column="address_province"/>
-            <result property="city" column="address_city"/>
-            <result property="district" column="address_district"/>
-            <result property="street" column="address_street"/>
+            <result property="latitude" column="address_latitude"/>
+            <result property="longitude" column="address_longitude"/>
             <result property="detail" column="address_detail"/>
         </association>
         <!--关联创建人-->
