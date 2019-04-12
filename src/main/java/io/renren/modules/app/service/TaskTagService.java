@@ -17,25 +17,25 @@ public interface TaskTagService extends IService<TaskTagEntity> {
     /**
      * 获取所有任务标签列表
      */
-    List<TaskTagEntity> getTaskTags();
+    List<TaskTagEntity> getAllTags();
 
     /**
      * 创建任务标签
      */
-    void createTaskTag(String tagName);
+    void createTag(String tagName);
 
     /**
      * 更新任务标签
      */
-    void updateTaskTag(Long tagId, String tagName);
+    void updateTag(Long tagId, String tagName);
 
     /**
      * 删除任务标签
      */
-    void deleteTaskTag(Long tagId);
+    void deleteTag(Long tagId);
 
 
 
-    PageUtils<TaskTagEntity> getTasks( Map<String,Object> pageMap);
+    PageUtils<TaskTagEntity> getTags( Map<String,Object> pageMap);
 }
 

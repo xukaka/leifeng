@@ -31,10 +31,10 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
 
 
     @Override
-    public List<TaskTagEntity> getTaskTags() {
+    public List<TaskTagEntity> getAllTags() {
         Wrapper<TaskTagEntity> wrapper = new EntityWrapper<>();
-        wrapper.eq("deleted",false)
-                .orderBy("usageCount",false);
+        wrapper.eq("deleted", false)
+                .orderBy("usageCount", false);
         List<TaskTagEntity> tags = this.selectList(wrapper);
         if (CollectionUtils.isEmpty(tags)) {
             return new ArrayList<>();
@@ -44,18 +44,18 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
     }
 
     @Override
-    public void createTaskTag(String tagName) {
+    public void createTag(String tagName) {
         if (exists(tagName)) {
             throw new RRException("标签已存在");
         }
 
-        TaskTagEntity tag = new TaskTagEntity(DateUtils.now(),tagName);
+        TaskTagEntity tag = new TaskTagEntity(DateUtils.now(), tagName);
         this.insert(tag);
     }
 
     @Override
-    public void updateTaskTag(Long tagId, String tagName) {
-        checkNameExistsOtherTags(tagId,tagName);
+    public void updateTag(Long tagId, String tagName) {
+        checkNameExistsOtherTags(tagId, tagName);
         TaskTagEntity tag = this.selectById(tagId);
         tag.setName(tagName);
         this.updateById(tag);
@@ -63,7 +63,7 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
     }
 
     @Override
-    public void deleteTaskTag(Long tagId) {
+    public void deleteTag(Long tagId) {
         TaskTagEntity tag = this.selectById(tagId);
         if (tag != null) {
             tag.setDeleted(true);
@@ -72,23 +72,14 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
     }
 
     @Override
-    public PageUtils<TaskTagEntity> getTasks( Map<String,Object> pageMap) {
+    public PageUtils<TaskTagEntity> getTags(Map<String, Object> pageMap) {
         Wrapper<TaskTagEntity> wrapper = new EntityWrapper<>();
-        wrapper.orderBy("usage_count",false);
+        wrapper.eq("deleted", false)
+                .orderBy("usage_count", false);
         Page<TaskTagEntity> page = this.selectPage(
-                new Query<TaskTagEntity>(pageMap).getPage(),wrapper
+                new Query<TaskTagEntity>(pageMap).getPage(), wrapper
         );
         return new PageUtils<>(page);
-
-      /*
-        List<TaskCommentDto> comments = this.baseMapper.getComments(taskId, page);
-        if (CollectionUtils.isEmpty(comments)) {
-            return new PageUtils<>();
-        }
-        setCommentRepies(comments);
-        int total = this.baseMapper.count(taskId);
-        return new PageUtils<>(comments, total, page.getPageSize(), page.getCurrPage());
-*/
     }
 
     /**
@@ -96,9 +87,9 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
      */
     private void checkNameExistsOtherTags(Long tagId, String tagName) {
         Wrapper<TaskTagEntity> wrapper = new EntityWrapper<>();
-        wrapper.eq("name",tagName).notIn("id",tagId);
+        wrapper.eq("name", tagName).notIn("id", tagId);
         boolean exists = this.selectCount(wrapper) > 0;
-        if (exists){
+        if (exists) {
             throw new RRException("标签已存在");
         }
 
@@ -107,9 +98,9 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
     /**
      * 标签是否已存在
      */
-    private boolean exists(String name){
+    private boolean exists(String name) {
         Wrapper<TaskTagEntity> wrapper = new EntityWrapper<>();
-        wrapper.eq("name",name);
+        wrapper.eq("name", name);
         return this.selectCount(wrapper) > 0;
     }
 }

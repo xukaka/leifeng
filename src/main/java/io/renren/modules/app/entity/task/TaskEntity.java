@@ -59,12 +59,12 @@ public class TaskEntity extends BaseEntity {
     /**
      * 点赞数
      */
-    private Integer likeCount;
+    private Integer likeCount = 0;
 
     /**
      * 评论数
      */
-    private Integer commentCount;
+    private Integer commentCount = 0;
 
     /**
      * 状态
