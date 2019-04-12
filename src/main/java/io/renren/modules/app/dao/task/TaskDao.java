@@ -1,6 +1,7 @@
 package io.renren.modules.app.dao.task;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
@@ -17,6 +18,8 @@ import java.util.Map;
 @Mapper
 public interface TaskDao extends BaseMapper<TaskEntity> {
 
+
+    List<TaskBannerDto> getTaskBanners();
 
     //获取任务详情
     TaskDto getTask(@Param("taskId") Long taskId);

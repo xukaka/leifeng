@@ -71,6 +71,11 @@ public class TaskEntity extends BaseEntity {
      */
     private TaskStatusEnum status;
 
+    /**
+     * 完成时间
+     */
+    private Long completeTime;
+
 
     public String getTitle() {
         return title;
@@ -154,5 +159,14 @@ public class TaskEntity extends BaseEntity {
 
     public void setStatus(TaskStatusEnum status) {
         this.status = status;
+    }
+
+
+    public Long getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Long completeTime) {
+        this.completeTime = completeTime;
     }
 }
