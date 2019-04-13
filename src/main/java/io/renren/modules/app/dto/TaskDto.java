@@ -38,6 +38,11 @@ public class TaskDto implements Serializable {
      * 任务开始时间
      */
     private Long startTime;
+
+    /**
+     * 任务过期时间
+     */
+    private Long expireTime;
     /**
      * 当前当前系统时间
      */
@@ -203,5 +208,13 @@ public class TaskDto implements Serializable {
 
     public void setReceiver(Member receiver) {
         this.receiver = receiver;
+    }
+
+    public Long getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(Long expireTime) {
+        this.expireTime = expireTime;
     }
 }
