@@ -17,8 +17,8 @@ import java.util.List;
 public interface TaskService extends IService<TaskEntity> {
 
     /**
-     * 获取任务完成banner列表（已完成任务滚动列表）
-     * @return 最新完成时间top20
+     * 获取任务横幅列表（已完成任务滚动列表）
+     * @return 最新完成时间top15
      */
     List<TaskBannerDto> getTaskBanners();
     /**

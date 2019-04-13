@@ -7,6 +7,7 @@ import io.renren.modules.app.dto.TaskCommentDto;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskAddressForm;
+import io.renren.modules.app.form.TaskCommentReplyForm;
 import io.renren.modules.app.service.TaskAddressService;
 import io.renren.modules.app.service.TaskCommentService;
 import io.renren.modules.app.utils.ReqUtils;
@@ -54,6 +55,23 @@ public class TaskCommentController {
     @ApiOperation("删除评论")
     public R deleteComment(@PathVariable("id") Long id) {
         taskCommentService.deleteComment(id);
+        return R.ok();
+    }
+
+
+    @Login
+    @PostMapping("/reply/add")
+    @ApiOperation("新增评论回复")
+    public R addCommentReply(@RequestBody TaskCommentReplyForm form) {
+        taskCommentService.addCommentReply(form);
+        return R.ok();
+    }
+
+
+    @DeleteMapping("/reply/delete/{id}")
+    @ApiOperation("删除评论回复")
+    public R deleteCommentReply(@PathVariable Long id) {
+        taskCommentService.deleteCommentReply(id);
         return R.ok();
     }
 

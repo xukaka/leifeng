@@ -26,9 +26,9 @@ public class Member implements Serializable {
     //个性说明
     private String selfIntro;
     //维度
-    private String lat;
+    private Double lat;
     //经度
-    private String lng;
+    private Double lng;
     //地址
     private String address;
     //性别0男，1女
@@ -134,19 +134,19 @@ public class Member implements Serializable {
         this.createTime = createTime;
     }
 
-    public String getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public String getLng() {
+    public Double getLng() {
         return lng;
     }
 
-    public void setLng(String lng) {
+    public void setLng(Double lng) {
         this.lng = lng;
     }
 

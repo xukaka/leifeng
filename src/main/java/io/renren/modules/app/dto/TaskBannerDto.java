@@ -1,6 +1,7 @@
 package io.renren.modules.app.dto;
 
 import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 
 import java.io.Serializable;
@@ -18,6 +19,11 @@ public class TaskBannerDto implements Serializable {
      * 任务信息
      */
     private TaskEntity task;
+
+    /**
+     * 任务地址
+     */
+    private TaskAddressEntity address;
 
     /**
      * 任务完成时间
@@ -46,5 +52,13 @@ public class TaskBannerDto implements Serializable {
 
     public void setCompleteTime(Long completeTime) {
         this.completeTime = completeTime;
+    }
+
+    public TaskAddressEntity getAddress() {
+        return address;
+    }
+
+    public void setAddress(TaskAddressEntity address) {
+        this.address = address;
     }
 }

@@ -38,10 +38,17 @@ public class TaskDto implements Serializable {
      * 任务开始时间
      */
     private Long startTime;
+
     /**
      * 任务过期时间
      */
     private Long expireTime;
+    /**
+     * 当前当前系统时间
+     */
+    private Long curSystemTime;
+
+
     /**
      * 虚拟货币(雷锋币)
      */
@@ -106,12 +113,13 @@ public class TaskDto implements Serializable {
         this.startTime = startTime;
     }
 
-    public Long getExpireTime() {
-        return expireTime;
+
+    public Long getCurSystemTime() {
+        return curSystemTime;
     }
 
-    public void setExpireTime(Long expireTime) {
-        this.expireTime = expireTime;
+    public void setCurSystemTime(Long curSystemTime) {
+        this.curSystemTime = curSystemTime;
     }
 
     public Integer getVirtualCurrency() {
@@ -200,5 +208,13 @@ public class TaskDto implements Serializable {
 
     public void setReceiver(Member receiver) {
         this.receiver = receiver;
+    }
+
+    public Long getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(Long expireTime) {
+        this.expireTime = expireTime;
     }
 }

@@ -19,6 +19,10 @@ import java.util.Map;
 public interface TaskDao extends BaseMapper<TaskEntity> {
 
 
+    /**
+     * 任务横幅列表-top15
+     * @return
+     */
     List<TaskBannerDto> getTaskBanners();
 
     //获取任务详情

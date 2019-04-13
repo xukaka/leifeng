@@ -178,6 +178,6 @@ public class DateUtils {
      * 系统当前时间（ms）
      */
     public static long now(){
-        return System.nanoTime();
+        return System.currentTimeMillis();
     }
 }

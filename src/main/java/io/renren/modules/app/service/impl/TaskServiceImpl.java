@@ -19,7 +19,6 @@ import io.renren.modules.app.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -34,12 +33,16 @@ import java.util.Map;
 public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements TaskService {
     private final static Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
-
     @Resource
     private TaskReceiveDao taskReceiveDao;
 
     @Resource
     private RabbitMqHelper rabbitMqHelper;
+
+    @Resource
+    private RedisUtils redisUtils;
+
+    private static final long TEN_MINUTES = 60 * 10;
 
   /*  @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -53,7 +56,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-        return null;
+        List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+        if (CollectionUtils.isEmpty(banners)) {
+            banners = this.baseMapper.getTaskBanners();
+            redisUtils.addList(RedisKeys.BANNER_KEY, banners, TEN_MINUTES);
+        }
+        return banners;
     }
 
     @Override
@@ -124,6 +132,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     public TaskDto getTask(Long id) {
         TaskDto task = this.baseMapper.getTask(id);
+        if (task != null) {
+            task.setCurSystemTime(DateUtils.now());
+        }
         return task;
     }
 
@@ -188,9 +199,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             task.setStatus(TaskStatusEnum.submitted);
             this.updateById(task);
 
-            ThreadPoolUtils.execute(()->{
+            ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务创建人
-                rabbitMqHelper.sendMessage("test","132");
+                rabbitMqHelper.sendMessage("test", "132");
             });
         }
     }
@@ -207,7 +218,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             task.setStatus(TaskStatusEnum.completed);
             this.updateById(task);
 
-            ThreadPoolUtils.execute(()->{
+            ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务领取人
             });
         }
