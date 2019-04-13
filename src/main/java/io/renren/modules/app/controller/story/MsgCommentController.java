@@ -29,7 +29,7 @@ import io.renren.common.utils.R;
  */
 @RestController
 @RequestMapping("app/comment")
-@Api(tags = "用户评论相关")
+//@Api(tags = "用户评论相关")
 public class MsgCommentController {
     private final static Logger logger = LoggerFactory.getLogger(MsgCommentController.class);
 

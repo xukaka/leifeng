@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import io.renren.common.exception.RRException;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -54,7 +56,7 @@ public class TaskCommentServiceImpl extends ServiceImpl<TaskCommentDao, TaskComm
     }
 
     private void setCommentRepies(List<TaskCommentDto> comments) {
-        for (TaskCommentDto comment : comments){
+        for (TaskCommentDto comment : comments) {
             List<TaskCommentReplyDto> replies = getCommentReplies(comment.getId());
             comment.setReplies(replies);
         }
@@ -63,8 +65,18 @@ public class TaskCommentServiceImpl extends ServiceImpl<TaskCommentDao, TaskComm
 
     @Override
     public void addComment(Long taskId, Long commentatorId, String content) {
+        checkCommentParam(taskId, commentatorId, content);
         TaskCommentEntity comment = new TaskCommentEntity(DateUtils.now(), commentatorId, taskId, content);
         this.insert(comment);
+    }
+
+    private void checkCommentParam(Long taskId, Long commentatorId, String content) {
+        if (taskId == null)
+            throw new RRException("taskId is null.");
+        if (commentatorId == null)
+            throw new RRException("commentatorId is null.");
+        if (StringUtils.isEmpty(content))
+            throw new RRException("content is null.");
     }
 
     @Override

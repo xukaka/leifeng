@@ -9,18 +9,12 @@ import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 import io.renren.modules.app.dao.task.TaskTagDao;
-import io.renren.modules.app.dto.TaskCommentDto;
-import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskTagEntity;
-import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.TaskTagService;
-import io.renren.modules.oss.entity.SysOssEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +22,6 @@ import java.util.Map;
 @Service
 public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> implements TaskTagService {
     private final static Logger logger = LoggerFactory.getLogger(TaskTagServiceImpl.class);
-
 
     @Override
     public List<TaskTagEntity> getAllTags() {
@@ -40,18 +33,18 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
             return new ArrayList<>();
         }
         return tags;
-
     }
+
 
     @Override
     public void createTag(String tagName) {
         if (exists(tagName)) {
             throw new RRException("标签已存在");
         }
-
         TaskTagEntity tag = new TaskTagEntity(DateUtils.now(), tagName);
         this.insert(tag);
     }
+
 
     @Override
     public void updateTag(Long tagId, String tagName) {
@@ -92,7 +85,6 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
         if (exists) {
             throw new RRException("标签已存在");
         }
-
     }
 
     /**
