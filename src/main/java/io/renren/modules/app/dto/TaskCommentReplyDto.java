@@ -19,7 +19,7 @@ public class TaskCommentReplyDto implements Serializable {
     /**
      * 回复人
      */
-    private Member formUser;
+    private Member fromUser;
     /**
      * 被回复人
      */
@@ -50,12 +50,12 @@ public class TaskCommentReplyDto implements Serializable {
         this.commentId = commentId;
     }
 
-    public Member getFormUser() {
-        return formUser;
+    public Member getFromUser() {
+        return fromUser;
     }
 
-    public void setFormUser(Member formUser) {
-        this.formUser = formUser;
+    public void setFromUser(Member fromUser) {
+        this.fromUser = fromUser;
     }
 
     public Member getToUser() {
@@ -81,4 +81,6 @@ public class TaskCommentReplyDto implements Serializable {
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
     }
+
+
 }
