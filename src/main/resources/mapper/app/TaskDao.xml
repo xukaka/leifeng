@@ -13,6 +13,8 @@
             m.nick_name AS creator_nick_name,
             m.real_name AS creator_real_name,
             m.avatar AS creator_avatar,
+            m.self_intro AS creator_self_intro,
+            m.mobile AS creator_mobile,
             m.sex AS creator_sex,
             ri.image_url,
             tg.name AS tag_name
@@ -78,6 +80,7 @@
     <resultMap type="io.renren.modules.app.dto.TaskDto" id="taskMap">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
+        <result property="description" column="description"/>
         <result property="startTime" column="start_time"/>
         <result property="expireTime" column="expire_time"/>
         <result property="createTime" column="create_time"/>
@@ -98,6 +101,8 @@
             <result property="nickName" column="creator_nick_name"/>
             <result property="realName" column="creator_real_name"/>
             <result property="avatar" column="creator_avatar"/>
+            <result property="selfIntro" column="creator_self_intro"/>
+            <result property="mobile" column="creator_mobile"/>
             <result property="sex" column="creator_sex"/>
         </association>
         <!--关联领取人-->
@@ -164,7 +169,7 @@
     </resultMap>
 
     <!--taskBanner-->
-    <resultMap type="io.renren.modules.app.dto.TaskBannerDto" id="taskBannerMap">
+    <!--<resultMap type="io.renren.modules.app.dto.TaskBannerDto" id="taskBannerMap">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
         <result property="startTime" column="start_time"/>
@@ -172,14 +177,14 @@
         <result property="createTime" column="create_time"/>
         <result property="virtualCurrency" column="virtual_currency"/>
 
-        <!--关联地址-->
+        &lt;!&ndash;关联地址&ndash;&gt;
         <association property="address" javaType="io.renren.modules.app.entity.task.TaskAddressEntity">
             <id property="id" column="address_id"/>
             <result property="latitude" column="address_latitude"/>
             <result property="longitude" column="address_longitude"/>
             <result property="detail" column="address_detail"/>
         </association>
-        <!--关联创建人-->
+        &lt;!&ndash;关联创建人&ndash;&gt;
         <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
             <id property="id" column="creator_id"/>
             <result property="nickName" column="creator_nick_name"/>
@@ -187,27 +192,27 @@
             <result property="avatar" column="creator_avatar"/>
             <result property="sex" column="creator_sex"/>
         </association>
-        <!--图片url列表-->
+        &lt;!&ndash;图片url列表&ndash;&gt;
         <collection property="imageUrls" ofType="string">
             <constructor>
                 <arg column="image_url"/>
             </constructor>
         </collection>
-        <!--标签名称列表-->
+        &lt;!&ndash;标签名称列表&ndash;&gt;
         <collection property="tagNames" ofType="string">
             <constructor>
                 <arg column="tag_name"/>
             </constructor>
         </collection>
-    </resultMap>
+    </resultMap>-->
 
     <!--查询任务详情-->
     <select id="getTask" resultMap="taskMap">
         SELECT
         <include refid="taskDtoField"/>,
         r.id AS receiver_id,
-        r.receiver_nick_name,
-        r.receiver_real_name,
+        r.nick_name AS receiver_nick_name,
+        r.real_name AS receiver_real_name,
         r.avatar AS receiver_avatar,
         r.sex AS receiver_sex,
         r.mobile AS receiver_mobile

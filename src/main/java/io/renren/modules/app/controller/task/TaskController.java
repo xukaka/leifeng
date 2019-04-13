@@ -3,6 +3,7 @@ package io.renren.modules.app.controller.task;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -29,10 +31,18 @@ public class TaskController {
     private TaskService taskService;
 
     @Login
+    @PostMapping("/banner")
+    @ApiOperation("获取任务横幅列表")
+    public R getBanners() {
+        List<TaskBannerDto> banners = taskService.getTaskBanners();
+        return R.ok().put("result", banners);
+    }
+
+    @Login
     @PostMapping("/create")
     @ApiOperation("创建任务")
     public R createTask(@RequestBody TaskForm form) {
-        taskService.createTask(ReqUtils.currentUserId(),form);
+        taskService.createTask(ReqUtils.currentUserId(), form);
         return R.ok();
     }
 
@@ -65,41 +75,41 @@ public class TaskController {
     @PostMapping("/receive")
     @ApiOperation("领取任务")
     public R receiveTask(@RequestBody Long taskId) {
-        taskService.receiveTask(ReqUtils.currentUserId(),taskId);
+        taskService.receiveTask(ReqUtils.currentUserId(), taskId);
         return R.ok();
     }
 
     @PostMapping("/receive/list")
     @ApiOperation("分页获取领取任务列表")
-    public R getReceivedTasks(@RequestParam Long receiverId,@RequestParam Integer curPage,@RequestParam Long pageSize) {
-        Map<String,Object> pageMap = new HashMap<>();
-        pageMap.put("page",curPage);
-        pageMap.put("size",pageSize);
+    public R getReceivedTasks(@RequestParam Long receiverId, @RequestParam Integer curPage, @RequestParam Long pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskDto> tasks= taskService.getReceivedTasks(receiverId,page);
-        return R.ok().put("result",tasks);
+        PageUtils<TaskDto> tasks = taskService.getReceivedTasks(receiverId, page);
+        return R.ok().put("result", tasks);
     }
 
     @PostMapping("/publish/list")
     @ApiOperation("分页获取发布任务列表")
-    public R getPublishedTasks(@RequestParam Long publisherId,@RequestParam Integer curPage,@RequestParam Long pageSize) {
-        Map<String,Object> pageMap = new HashMap<>();
-        pageMap.put("page",curPage);
-        pageMap.put("size",pageSize);
+    public R getPublishedTasks(@RequestParam Long publisherId, @RequestParam Integer curPage, @RequestParam Long pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskDto> tasks= taskService.getPublishedTasks(publisherId,page);
-        return R.ok().put("result",tasks);
+        PageUtils<TaskDto> tasks = taskService.getPublishedTasks(publisherId, page);
+        return R.ok().put("result", tasks);
     }
 
     @PostMapping("/search/list")
     @ApiOperation("分页获取发布任务列表")
     public R searchTasks(@RequestBody TaskQueryForm form) {
-        Map<String,Object> pageMap = new HashMap<>();
-        pageMap.put("page",form.getCurPage());
-        pageMap.put("size",form.getPageSize());
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", form.getCurPage());
+        pageMap.put("size", form.getPageSize());
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskDto> tasks= taskService.searchTasks(form,page);
-        return R.ok().put("result",tasks);
+        PageUtils<TaskDto> tasks = taskService.searchTasks(form, page);
+        return R.ok().put("result", tasks);
     }
 
 }

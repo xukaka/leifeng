@@ -26,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +35,16 @@ import java.util.Map;
 public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements TaskService {
     private final static Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
-
     @Resource
     private TaskReceiveDao taskReceiveDao;
 
     @Resource
     private RabbitMqHelper rabbitMqHelper;
+
+    @Resource
+    private RedisUtils redisUtils;
+
+    private static final long TEN_MINUTES = 60 * 10;
 
   /*  @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -53,7 +58,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-        return null;
+        List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY,TaskBannerDto.class);
+        if (CollectionUtils.isEmpty(banners)){
+            banners = this.baseMapper.getTaskBanners();
+            redisUtils.addList(RedisKeys.BANNER_KEY,banners,TEN_MINUTES);
+        }
+        return banners;
     }
 
     @Override

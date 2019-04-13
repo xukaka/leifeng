@@ -32,13 +32,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 @Service
 public class TaskCommentServiceImpl extends ServiceImpl<TaskCommentDao, TaskCommentEntity> implements TaskCommentService {
     private final static Logger logger = LoggerFactory.getLogger(TaskCommentServiceImpl.class);
 
-    @Autowired
+    @Resource
     private TaskCommentReplyDao taskCommentReplyDao;
 
     @Override
@@ -102,4 +103,5 @@ public class TaskCommentServiceImpl extends ServiceImpl<TaskCommentDao, TaskComm
         }
         return replies;
     }
+
 }
