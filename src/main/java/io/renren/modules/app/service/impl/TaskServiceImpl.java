@@ -58,10 +58,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-        List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY,TaskBannerDto.class);
-        if (CollectionUtils.isEmpty(banners)){
+        List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+        if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
-            redisUtils.addList(RedisKeys.BANNER_KEY,banners,TEN_MINUTES);
+            redisUtils.addList(RedisKeys.BANNER_KEY, banners, TEN_MINUTES);
         }
         return banners;
     }
@@ -134,6 +134,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     public TaskDto getTask(Long id) {
         TaskDto task = this.baseMapper.getTask(id);
+        if (task != null) {
+            task.setCurSystemTime(DateUtils.now());
+        }
         return task;
     }
 
@@ -198,9 +201,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             task.setStatus(TaskStatusEnum.submitted);
             this.updateById(task);
 
-            ThreadPoolUtils.execute(()->{
+            ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务创建人
-                rabbitMqHelper.sendMessage("test","132");
+                rabbitMqHelper.sendMessage("test", "132");
             });
         }
     }
@@ -217,7 +220,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             task.setStatus(TaskStatusEnum.completed);
             this.updateById(task);
 
-            ThreadPoolUtils.execute(()->{
+            ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务领取人
             });
         }
