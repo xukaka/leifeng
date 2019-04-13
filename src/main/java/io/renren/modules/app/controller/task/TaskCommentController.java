@@ -59,6 +59,15 @@ public class TaskCommentController {
     }
 
 
+    @Login
+    @PostMapping("/reply/add")
+    @ApiOperation("新增评论回复")
+    public R addCommentReply(@RequestBody TaskCommentReplyForm form) {
+        taskCommentService.addCommentReply(form);
+        return R.ok();
+    }
+
+
     @DeleteMapping("/reply/delete/{id}")
     @ApiOperation("删除评论回复")
     public R deleteCommentReply(@PathVariable Long id) {
