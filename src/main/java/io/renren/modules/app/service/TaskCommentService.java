@@ -3,17 +3,8 @@ package io.renren.modules.app.service;
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.TaskCommentDto;
-import io.renren.modules.app.dto.TaskCommentReplyDto;
-import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskCommentEntity;
-import io.renren.modules.app.entity.task.TaskEntity;
-import io.renren.modules.app.form.PageForm;
 import io.renren.modules.app.form.PageWrapper;
-import io.renren.modules.app.form.TaskCommentReplyForm;
-import io.renren.modules.app.form.TaskForm;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 任务评论
@@ -39,8 +30,12 @@ public interface TaskCommentService extends IService<TaskCommentEntity> {
 
     /**
      * 新增评论回复
+     * @param commentId 评论id
+     * @param fromUserId 回复人id
+     * @param toUserId 被回复人id
+     * @param content 回复内容
      */
-    void addCommentReply(TaskCommentReplyForm form);
+    void addCommentReply(Long commentId, Long fromUserId, Long toUserId,  String content);
 
     /**
      * 删除评论回复

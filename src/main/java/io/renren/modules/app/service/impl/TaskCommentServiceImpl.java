@@ -1,36 +1,22 @@
 package io.renren.modules.app.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import io.netty.util.internal.StringUtil;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
-import io.renren.common.utils.Query;
-import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.task.TaskCommentDao;
 import io.renren.modules.app.dao.task.TaskCommentReplyDao;
-import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dto.TaskCommentDto;
 import io.renren.modules.app.dto.TaskCommentReplyDto;
-import io.renren.modules.app.dto.TaskDto;
-import io.renren.modules.app.entity.story.MsgCommentEntity;
 import io.renren.modules.app.entity.task.TaskCommentEntity;
 import io.renren.modules.app.entity.task.TaskCommentReplyEntity;
-import io.renren.modules.app.entity.task.TaskEntity;
-import io.renren.modules.app.form.PageForm;
 import io.renren.modules.app.form.PageWrapper;
-import io.renren.modules.app.form.TaskCommentReplyForm;
-import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.service.TaskCommentService;
-import io.renren.modules.app.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -89,12 +75,26 @@ public class TaskCommentServiceImpl extends ServiceImpl<TaskCommentDao, TaskComm
     }
 
     @Override
-    public void addCommentReply(TaskCommentReplyForm form) {
-        ValidatorUtils.validateEntity(form);
+    public void addCommentReply(Long commentId, Long fromUserId, Long toUserId, String content) {
+        checkCommentReplyParam(commentId, fromUserId, toUserId, content);
         TaskCommentReplyEntity reply = new TaskCommentReplyEntity();
-        BeanUtils.copyProperties(form, reply);
+        reply.setCommentId(commentId);
+        reply.setFromUserId(fromUserId);
+        reply.setToUserId(toUserId);
+        reply.setContent(content);
         reply.setCreateTime(DateUtils.now());
         taskCommentReplyDao.insert(reply);
+    }
+
+    private void checkCommentReplyParam(Long commentId, Long fromUserId, Long toUserId, String content) {
+        if (commentId == null)
+            throw new RRException("commentId is null.");
+        if (fromUserId == null)
+            throw new RRException("fromUserId is null.");
+        if (toUserId == null)
+            throw new RRException("toUserId is null.");
+        if (StringUtils.isEmpty(content))
+            throw new RRException("content is null.");
     }
 
     @Override

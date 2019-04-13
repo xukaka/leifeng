@@ -4,11 +4,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskCommentDto;
-import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.form.PageWrapper;
-import io.renren.modules.app.form.TaskAddressForm;
-import io.renren.modules.app.form.TaskCommentReplyForm;
-import io.renren.modules.app.service.TaskAddressService;
 import io.renren.modules.app.service.TaskCommentService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
@@ -16,9 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.annotation.Repeatable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -34,21 +28,20 @@ public class TaskCommentController {
     @PostMapping("/add")
     @ApiOperation("新增评论")
     public R addComment(@RequestParam Long taskId, @RequestParam String content) {
-        taskCommentService.addComment(taskId,ReqUtils.currentUserId(), content);
+        taskCommentService.addComment(taskId, ReqUtils.currentUserId(), content);
         return R.ok();
     }
 
     @GetMapping("/list")
     @ApiOperation("分页获取评论列表")
-    public R getComments(@RequestParam Long taskId,@RequestParam Integer curPage,@RequestParam Integer pageSize) {
-        Map<String,Object> pageMap = new HashMap<>();
-        pageMap.put("page",curPage);
-        pageMap.put("size",pageSize);
+    public R getComments(@RequestParam Long taskId, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskCommentDto> comments = taskCommentService.getComments(taskId,page);
+        PageUtils<TaskCommentDto> comments = taskCommentService.getComments(taskId, page);
         return R.ok().put("result", comments);
     }
-
 
 
     @DeleteMapping("/delete/{id}")
@@ -62,8 +55,8 @@ public class TaskCommentController {
     @Login
     @PostMapping("/reply/add")
     @ApiOperation("新增评论回复")
-    public R addCommentReply(@RequestBody TaskCommentReplyForm form) {
-        taskCommentService.addCommentReply(form);
+    public R addCommentReply(@RequestParam Long commentId, @RequestParam Long toUserId, @RequestParam String content) {
+        taskCommentService.addCommentReply(commentId,ReqUtils.currentUserId(),toUserId,content);
         return R.ok();
     }
 
