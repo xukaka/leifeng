@@ -64,6 +64,11 @@ public class TaskDto implements Serializable {
     private TaskAddressEntity address;
 
     /**
+     * 距离，根据经纬度计算
+     */
+    private Long distance;
+
+    /**
      * 任务创建人
      */
     private Member creator;
@@ -99,6 +104,14 @@ public class TaskDto implements Serializable {
 
     public void setReceiveTime(Long receiveTime) {
         this.receiveTime = receiveTime;
+    }
+
+    public Long getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Long distance) {
+        this.distance = distance;
     }
 
     public String getTitle() {

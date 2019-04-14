@@ -82,7 +82,7 @@ public class GeoUtils {
      * @param toLng 结束点的经度
      * @return 距离，单位m
      */
-    public long getDistance(double fromLat, double fromLng, double toLat, double toLng) {
+    public static long getDistance(double fromLat, double fromLng, double toLat, double toLng) {
         int earthRadius = 6367000;//地球半径
         fromLat = (fromLat * PI) / 180;
         fromLng = (fromLng * PI) / 180;

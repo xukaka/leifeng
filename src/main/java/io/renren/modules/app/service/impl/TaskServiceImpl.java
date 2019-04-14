@@ -10,6 +10,7 @@ import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
+import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskReceiveEntity;
 import io.renren.modules.app.form.PageWrapper;
@@ -68,8 +69,23 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public PageUtils<TaskDto> searchTasks(TaskQueryForm form, PageWrapper page) {
         Map<String, Object> queryMap = getTaskQueryMap(form);
         List<TaskDto> tasks = this.baseMapper.searchTasks(queryMap, page);
+        if (CollectionUtils.isEmpty(tasks)) {
+            return new PageUtils<>();
+        }
+
+        setTastDistance(form, tasks);
+
         int total = this.baseMapper.count(queryMap);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
+    }
+
+    //计算距离
+    private void setTastDistance(TaskQueryForm form, List<TaskDto> tasks) {
+        for (TaskDto task : tasks) {
+            TaskAddressEntity address = task.getAddress();
+            long  distance= GeoUtils.getDistance(form.getLatitude(), form.getLongitude(), address.getLatitude(), address.getLongitude());
+            task.setDistance(distance);
+        }
     }
 
     private Map<String, Object> getTaskQueryMap(TaskQueryForm form) {

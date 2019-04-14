@@ -29,11 +29,14 @@ public class TaskQueryForm {
 
     @ApiModelProperty(value = "关键字", example = "")
     private String keyword;
-    @ApiModelProperty(value = "当前位置维度", example = "")
-    private Double latitude;
     @ApiModelProperty(value = "当前位置经度", example = "")
+    @NotNull
     private Double longitude;
+    @ApiModelProperty(value = "当前位置维度", example = "")
+    @NotNull
+    private Double latitude;
     @ApiModelProperty(value = "范围半径[单位m]", example = "")
+    @NotNull
     private Integer raidus;
     @ApiModelProperty(value = "标签id列表", example = "")
     private List<Long> tagIds;
