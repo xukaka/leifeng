@@ -48,6 +48,11 @@ public class TaskDto implements Serializable {
      */
     private Long curSystemTime;
 
+    /**
+     * 任务领取时间
+     */
+    private Long receiveTime;
+
 
     /**
      * 虚拟货币(雷锋币)
@@ -87,6 +92,14 @@ public class TaskDto implements Serializable {
      */
     private Long createTime;
 
+
+    public Long getReceiveTime() {
+        return receiveTime;
+    }
+
+    public void setReceiveTime(Long receiveTime) {
+        this.receiveTime = receiveTime;
+    }
 
     public String getTitle() {
         return title;

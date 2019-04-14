@@ -168,6 +168,47 @@
             </constructor>
         </collection>
     </resultMap>
+ <!--receivedTaskMap-->
+    <resultMap type="io.renren.modules.app.dto.TaskDto" id="receivedTaskMap">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="startTime" column="start_time"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="receiveTime" column="receive_time"/>
+        <result property="virtualCurrency" column="virtual_currency"/>
+        <result property="status" column="status"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <!--关联地址-->
+        <association property="address" javaType="io.renren.modules.app.entity.task.TaskAddressEntity">
+            <id property="id" column="address_id"/>
+            <result property="latitude" column="address_latitude"/>
+            <result property="longitude" column="address_longitude"/>
+            <result property="detail" column="address_detail"/>
+        </association>
+        <!--关联创建人-->
+        <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
+            <id property="id" column="creator_id"/>
+            <result property="nickName" column="creator_nick_name"/>
+            <result property="realName" column="creator_real_name"/>
+            <result property="avatar" column="creator_avatar"/>
+            <result property="sex" column="creator_sex"/>
+        </association>
+        <!--图片url列表-->
+        <collection property="imageUrls" ofType="string">
+            <constructor>
+                <arg column="image_url"/>
+            </constructor>
+        </collection>
+        <!--标签名称列表-->
+        <collection property="tagNames" ofType="string">
+            <constructor>
+                <arg column="tag_name"/>
+            </constructor>
+        </collection>
+    </resultMap>
 
 
     <!--查询任务详情-->
@@ -214,9 +255,11 @@
     </select>
 
     <!--用户领取的任务列表-->
-    <select id="getReceivedTasks" resultMap="searchTaskMap">
+    <select id="getReceivedTasks" resultMap="receivedTaskMap">
         SELECT
-        <include refid="taskDtoField"/>
+        <include refid="taskDtoField"/>,
+        <!--任务领取时间-->
+        re.create_time AS receive_time
         FROM t_task_receive re
         JOIN t_task t ON t.id = re.task_id AND re.deleted = 0
         JOIN t_task_address a ON t.address_id = a.id
