@@ -168,43 +168,6 @@
         </collection>
     </resultMap>
 
-    <!--taskBanner-->
-    <!--<resultMap type="io.renren.modules.app.dto.TaskBannerDto" id="taskBannerMap">
-        <id property="id" column="id"/>
-        <result property="title" column="title"/>
-        <result property="startTime" column="start_time"/>
-        <result property="expireTime" column="expire_time"/>
-        <result property="createTime" column="create_time"/>
-        <result property="virtualCurrency" column="virtual_currency"/>
-
-        &lt;!&ndash;关联地址&ndash;&gt;
-        <association property="address" javaType="io.renren.modules.app.entity.task.TaskAddressEntity">
-            <id property="id" column="address_id"/>
-            <result property="latitude" column="address_latitude"/>
-            <result property="longitude" column="address_longitude"/>
-            <result property="detail" column="address_detail"/>
-        </association>
-        &lt;!&ndash;关联创建人&ndash;&gt;
-        <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
-            <id property="id" column="creator_id"/>
-            <result property="nickName" column="creator_nick_name"/>
-            <result property="realName" column="creator_real_name"/>
-            <result property="avatar" column="creator_avatar"/>
-            <result property="sex" column="creator_sex"/>
-        </association>
-        &lt;!&ndash;图片url列表&ndash;&gt;
-        <collection property="imageUrls" ofType="string">
-            <constructor>
-                <arg column="image_url"/>
-            </constructor>
-        </collection>
-        &lt;!&ndash;标签名称列表&ndash;&gt;
-        <collection property="tagNames" ofType="string">
-            <constructor>
-                <arg column="tag_name"/>
-            </constructor>
-        </collection>
-    </resultMap>-->
 
     <!--查询任务详情-->
     <select id="getTask" resultMap="taskMap">

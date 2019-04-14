@@ -4,6 +4,7 @@ package io.renren.modules.app.controller.setting;
 import com.alibaba.fastjson.JSON;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.Constant;
+import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.R;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dto.WXSession;
@@ -98,7 +99,7 @@ public class RegisterController {
             //通过openid查询不到则注册新用户
             if(ObjectUtils.isEmpty(auths)){
                 Member member = new Member();
-                member.setCreateTime(System.currentTimeMillis());
+                member.setCreateTime(DateUtils.now());
 
                 auths = new MemberAuths();
                 auths.setCredential(DigestUtils.sha256Hex(wxSession.getOpenid()));

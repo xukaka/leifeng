@@ -81,7 +81,7 @@ public class TaskController {
 
     @PostMapping("/receive/list")
     @ApiOperation("分页获取领取任务列表")
-    public R getReceivedTasks(@RequestParam Long receiverId, @RequestParam Integer curPage, @RequestParam Long pageSize) {
+    public R getReceivedTasks(@RequestParam Long receiverId, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -92,7 +92,7 @@ public class TaskController {
 
     @PostMapping("/publish/list")
     @ApiOperation("分页获取发布任务列表")
-    public R getPublishedTasks(@RequestParam Long publisherId, @RequestParam Integer curPage, @RequestParam Long pageSize) {
+    public R getPublishedTasks(@RequestParam Long publisherId, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
