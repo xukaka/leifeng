@@ -132,6 +132,7 @@
     <resultMap type="io.renren.modules.app.dto.TaskDto" id="searchTaskMap">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
+        <result property="description" column="description"/>
         <result property="startTime" column="start_time"/>
         <result property="expireTime" column="expire_time"/>
         <result property="createTime" column="create_time"/>

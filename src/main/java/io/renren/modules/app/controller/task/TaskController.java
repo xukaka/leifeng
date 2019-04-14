@@ -102,7 +102,7 @@ public class TaskController {
     }
 
     @PostMapping("/search/list")
-    @ApiOperation("分页获取发布任务列表")
+    @ApiOperation("搜索任务列表-分页")
     public R searchTasks(@RequestBody TaskQueryForm form) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", form.getCurPage());
