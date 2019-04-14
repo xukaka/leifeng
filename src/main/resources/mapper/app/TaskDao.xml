@@ -4,47 +4,48 @@
 <mapper namespace="io.renren.modules.app.dao.task.TaskDao">
 
     <sql id="taskDtoField">
-            t.*,
-            a.id AS address_id,
-            a.latitude AS address_latitude,
-            a.longitude AS address_longitude,
-            a.detail AS address_detail,
-            m.id AS creator_id,
-            m.nick_name AS creator_nick_name,
-            m.real_name AS creator_real_name,
-            m.avatar AS creator_avatar,
-            m.self_intro AS creator_self_intro,
-            m.mobile AS creator_mobile,
-            m.sex AS creator_sex,
-            ri.image_url,
-            tg.name AS tag_name
+        t.*,
+        a.id AS address_id,
+        a.latitude AS address_latitude,
+        a.longitude AS address_longitude,
+        a.detail AS address_detail,
+        m.id AS creator_id,
+        m.nick_name AS creator_nick_name,
+        m.real_name AS creator_real_name,
+        m.avatar AS creator_avatar,
+        m.self_intro AS creator_self_intro,
+        m.mobile AS creator_mobile,
+        m.sex AS creator_sex,
+        ri.image_url,
+        tg.name AS tag_name
     </sql>
 
     <sql id="searchTaskCondition">
-        <if test="keyword !=null and keyword != ''">
-            AND t.title like concat('%',#{keyword},'%)'
+        <if test="queryMap.keyword !=null and queryMap.keyword != ''">
+            AND t.title like concat('%',#{queryMap.keyword},'%')
         </if>
-        <if test="difficulty!=null and difficulty != ''">
+        <if test="queryMap.difficulty!=null and queryMap.difficulty != ''">
             <choose>
-                <when test="difficulty =='FREE'">
-                    AND t.virtual_currency = #{maxVirtualCurrency}
+                <when test="queryMap.difficulty =='FREE'">
+                    AND t.virtual_currency = #{queryMap.maxVirtualCurrency}
                 </when>
-                <when test="difficulty == 'SIMPLE'">
-                    AND t.virtual_currency &gt;= #{minVirtualCurrency}
-                    AND t.virtual_currency &lt;= #{maxVirtualCurrency}
+                <when test="queryMap.difficulty == 'SIMPLE'">
+                    AND t.virtual_currency &gt;= #{queryMap.minVirtualCurrency}
+                    AND t.virtual_currency &lt;= #{queryMap.maxVirtualCurrency}
                 </when>
-                <when test="difficulty =='NORMAL'">
-                    AND t.virtual_currency &gt;= #{minVirtualCurrency}
-                    AND t.virtual_currency &lt;= #{maxVirtualCurrency}
+                <when test="queryMap.difficulty =='NORMAL'">
+                    AND t.virtual_currency &gt;= #{queryMap.minVirtualCurrency}
+                    AND t.virtual_currency &lt;= #{queryMap.maxVirtualCurrency}
                 </when>
-                <when test="difficulty =='DIFFICULT'">
-                    AND t.virtual_currency &gt; #{maxVirtualCurrency}
+                <when test="queryMap.difficulty =='DIFFICULT'">
+                    AND t.virtual_currency &gt; #{queryMap.maxVirtualCurrency}
                 </when>
             </choose>
         </if>
-        <if test="minLat != null and maxLat != null and minLng!=null and maxLng != null">
-            AND a.latitude &gt;= #{minLat} AND a.latitude &lt;= #{maxLat}
-            AND a.longitude &gt;= #{minLng} AND a.longitude &lt;= #{maxLng}
+        <if test="queryMap.minLat != null and queryMap.maxLat != null
+                 and queryMap.minLng!=null and queryMap.maxLng != null">
+            AND a.latitude &gt;= #{queryMap.minLat} AND a.latitude &lt;= #{queryMap.maxLat}
+            AND a.longitude &gt;= #{queryMap.minLng} AND a.longitude &lt;= #{queryMap.maxLng}
         </if>
     </sql>
     <!--任务banner resultMap-->
@@ -168,7 +169,7 @@
             </constructor>
         </collection>
     </resultMap>
- <!--receivedTaskMap-->
+    <!--receivedTaskMap-->
     <resultMap type="io.renren.modules.app.dto.TaskDto" id="receivedTaskMap">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
@@ -249,7 +250,7 @@
 
     <select id="publishCount" resultType="int">
         SELECT
-            count(*)
+        count(*)
         FROM t_task t
         WHERE t.creator_id = #{publisherId} and t.deleted = 0
     </select>
@@ -275,14 +276,14 @@
 
     <select id="receiveCount" resultType="int">
         SELECT
-            count(*)
+        count(*)
         FROM t_task t
         JOIN t_task_receive re ON t.id = re.task_id
-        WHERE re.receiver_id  = #{receiverId} and t.deleted = 0
+        WHERE re.receiver_id = #{receiverId} and t.deleted = 0
     </select>
 
 
-    <select id="searchTasks" resultMap="searchTaskMap">
+    <select id="searchTasks" parameterType="map" resultMap="searchTaskMap">
         SELECT
         <include refid="taskDtoField"/>
         FROM t_task t
@@ -292,15 +293,15 @@
         LEFT JOIN r_task_tag rg ON t.id = rg.task_id
         JOIN t_task_tag tg ON rg.tag_id=tg.id
         WHERE t.deleted = 0 AND t.status = 'published'
-        <include refid="searchTaskCondition"/>
-        ORDER BY re.create_time desc
+       <include refid="searchTaskCondition"/>
+        ORDER BY t.create_time desc
         LIMIT #{page.offset},#{page.limit}
     </select>
 
     <!--获取任务总数-根据查询条件-->
     <select id="count" resultType="int">
         SELECT
-       /* count(DISTINCT(t.id))*/
+        <!--       count(DISTINCT(t.id))-->
         count(*)
         FROM t_task t
         JOIN t_task_address a ON t.address_id = a.id
@@ -318,20 +319,20 @@
 
     <select id="isSubmitableTask" resultType="boolean">
         SELECT
-          COUNT(*)
+        COUNT(*)
         FROM t_task t
-        JOIN t_task_receive re ON t.id = re.task_id  AND (t.status = 'received' OR t.status='submitted')
+        JOIN t_task_receive re ON t.id = re.task_id AND (t.status = 'received' OR t.status='submitted')
         WHERE t.deleted = 0 AND t.id=#{taskId} AND re.receiver_id = #{receiverId}
     </select>
 
     <select id="isCompletableTask" resultType="boolean">
         SELECT
-          COUNT(*)
+        COUNT(*)
         FROM t_task t
-        JOIN t_task_receive re ON t.id = re.task_id  AND t.status='submitted'
+        JOIN t_task_receive re ON t.id = re.task_id AND t.status='submitted'
         WHERE t.deleted = 0 AND t.id=#{taskId} AND re.receiver_id = #{receiverId}
     </select>
-    
+
     <insert id="insertTaskImageRelation">
         INSERT INTO r_task_image(task_id,image_url) VALUES
         <foreach collection="imageUrls" item="item" index="index" separator=",">
@@ -353,29 +354,29 @@
         </foreach>
     </insert>
 
-     <select id="getTaskBanners" resultMap="taskBannerMap">
-         select
-         t.*,
-         a.id AS address_id,
-         a.latitude AS address_latitude,
-         a.longitude AS address_longitude,
-         a.detail AS address_detail,
-         m.id AS completer_id,
-         m.nick_name AS completer_nick_name,
-         m.real_name AS completer_real_name,
-         m.avatar AS completer_avatar,
-         m.sex AS completer_sex,
-         tg.name AS tag_name
-         from t_task t
-         JOIN t_task_receive re ON t.id = re.task_id
-         JOIN t_task_address a ON t.address_id = a.id
-         JOIN member m ON re.receiver_id = m.id
-         LEFT JOIN r_task_tag rg ON t.id = rg.task_id
-         JOIN t_task_tag tg ON rg.tag_id=tg.id
-         WHERE t.deleted = 0 AND t.status = 'completed'
-         ORDER BY t.complete_time DESC
-         LIMIT 0,15
+    <select id="getTaskBanners" resultMap="taskBannerMap">
+        select
+        t.*,
+        a.id AS address_id,
+        a.latitude AS address_latitude,
+        a.longitude AS address_longitude,
+        a.detail AS address_detail,
+        m.id AS completer_id,
+        m.nick_name AS completer_nick_name,
+        m.real_name AS completer_real_name,
+        m.avatar AS completer_avatar,
+        m.sex AS completer_sex,
+        tg.name AS tag_name
+        from t_task t
+        JOIN t_task_receive re ON t.id = re.task_id
+        JOIN t_task_address a ON t.address_id = a.id
+        JOIN member m ON re.receiver_id = m.id
+        LEFT JOIN r_task_tag rg ON t.id = rg.task_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id
+        WHERE t.deleted = 0 AND t.status = 'completed'
+        ORDER BY t.complete_time DESC
+        LIMIT 0,15
 
-     </select>
+    </select>
 
 </mapper>
