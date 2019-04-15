@@ -71,11 +71,11 @@
             <result property="mobile" column="completer_mobile"/>
         </association>
         <!--标签名称列表-->
-        <collection property="tagNames" ofType="string">
+        <!--<collection property="tagNames" ofType="string">
             <constructor>
                 <arg column="tag_name"/>
             </constructor>
-        </collection>
+        </collection>-->
     </resultMap>
     <!--任务resultMap-->
     <resultMap type="io.renren.modules.app.dto.TaskDto" id="taskMap">
@@ -217,7 +217,7 @@
         SELECT
         <include refid="taskDtoField"/>,
         ri.image_url,
-        tg.name AS tag_name，
+        tg.name AS tag_name,
         r.id AS receiver_id,
         r.nick_name AS receiver_nick_name,
         r.real_name AS receiver_real_name,
@@ -237,19 +237,23 @@
     </select>
 
     <select id="getPublishedTasks" resultMap="searchTaskMap">
-        SELECT
-        <include refid="taskDtoField"/>,
-        ri.image_url,
-        tg.name AS tag_name,
-        FROM t_task t
-        JOIN t_task_address a ON t.address_id = a.id
-        JOIN member m ON t.creator_id = m.id
+
+        select task.* ,
+            ri.image_url,
+            tg.name AS tag_name
+        from(
+            SELECT
+                <include refid="taskDtoField"/>,
+                FROM t_task t
+                JOIN t_task_address a ON t.address_id = a.id
+                JOIN member m ON t.creator_id = m.id
+                WHERE t.creator_id = #{publisherId} AND t.deleted = 0
+                ORDER BY t.create_time DESC
+                LIMIT #{page.offset},#{page.limit}
+        )AS task
         LEFT JOIN r_task_image ri ON t.id = ri.task_id
         LEFT JOIN r_task_tag rg ON t.id = rg.task_id
         JOIN t_task_tag tg ON rg.tag_id=tg.id
-        WHERE t.creator_id = #{publisherId} AND t.deleted = 0
-        ORDER BY t.create_time DESC
-        LIMIT #{page.offset},#{page.limit}
     </select>
 
     <select id="publishCount" resultType="int">
@@ -261,22 +265,25 @@
 
     <!--用户领取的任务列表-->
     <select id="getReceivedTasks" resultMap="receivedTaskMap">
-        SELECT
-        <include refid="taskDtoField"/>,
-        ri.image_url,
-        tg.name AS tag_name,
-        <!--任务领取时间-->
-        re.create_time AS receive_time
-        FROM t_task_receive re
-        JOIN t_task t ON t.id = re.task_id AND re.deleted = 0
-        JOIN t_task_address a ON t.address_id = a.id
-        JOIN member m ON t.creator_id = m.id
+        select task.*,
+            ri.image_url,
+            tg.name AS tag_name
+        from(
+            SELECT
+                <include refid="taskDtoField"/>,
+                <!--任务领取时间-->
+                re.create_time AS receive_time
+                FROM t_task_receive re
+                JOIN t_task t ON t.id = re.task_id
+                JOIN t_task_address a ON t.address_id = a.id
+                JOIN member m ON t.creator_id = m.id
+                WHERE re.receiver_id = #{receiverId} and t.deleted = 0
+                ORDER BY re.create_time desc
+                LIMIT #{page.offset},#{page.limit}
+            ) AS task
         LEFT JOIN r_task_image ri ON t.id = ri.task_id
         LEFT JOIN r_task_tag rg ON t.id = rg.task_id
         JOIN t_task_tag tg ON rg.tag_id=tg.id
-        WHERE re.receiver_id = #{receiverId} and t.deleted = 0
-        ORDER BY re.create_time desc
-        LIMIT #{page.offset},#{page.limit}
     </select>
 
 
@@ -291,18 +298,18 @@
 
     <select id="searchTasks" parameterType="map" resultMap="searchTaskMap">
         select task.* ,
-        ri.image_url,
-        tg.name AS tag_name
+            ri.image_url,
+            tg.name AS tag_name
         from (
-        SELECT
-        <include refid="taskDtoField"/>
-        FROM t_task t
-        JOIN t_task_address a ON t.address_id = a.id
-        JOIN member m ON t.creator_id = m.id
-        WHERE t.deleted = 0 AND t.status = 'published'
-        <include refid="searchTaskCondition"/>
-        ORDER BY t.create_time desc
-        LIMIT #{page.offset},#{page.limit}
+            SELECT
+            <include refid="taskDtoField"/>
+            FROM t_task t
+            JOIN t_task_address a ON t.address_id = a.id
+            JOIN member m ON t.creator_id = m.id
+            WHERE t.deleted = 0 AND t.status = 'published'
+            <include refid="searchTaskCondition"/>
+            ORDER BY t.create_time desc
+            LIMIT #{page.offset},#{page.limit}
         ) AS task
         LEFT JOIN r_task_image ri ON task.id = ri.task_id
         LEFT JOIN r_task_tag rg ON task.id = rg.task_id
@@ -377,14 +384,14 @@
         m.nick_name AS completer_nick_name,
         m.real_name AS completer_real_name,
         m.avatar AS completer_avatar,
-        m.sex AS completer_sex,
-        tg.name AS tag_name
+        m.sex AS completer_sex
+<!--        tg.name AS tag_name-->
         from t_task t
         JOIN t_task_receive re ON t.id = re.task_id
         JOIN t_task_address a ON t.address_id = a.id
         JOIN member m ON re.receiver_id = m.id
-        LEFT JOIN r_task_tag rg ON t.id = rg.task_id
-        JOIN t_task_tag tg ON rg.tag_id=tg.id
+       <!-- LEFT JOIN r_task_tag rg ON t.id = rg.task_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id-->
         WHERE t.deleted = 0 AND t.status = 'completed'
         ORDER BY t.complete_time DESC
         LIMIT 0,15
