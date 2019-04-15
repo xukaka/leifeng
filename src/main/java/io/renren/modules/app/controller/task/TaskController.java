@@ -32,7 +32,7 @@ public class TaskController {
     private TaskService taskService;
 
     @Login
-    @PostMapping("/banner")
+    @GetMapping("/banner")
     @ApiOperation("获取任务横幅列表")
     public R getBanners() {
         List<TaskBannerDto> banners = taskService.getTaskBanners();

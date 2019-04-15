@@ -27,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,12 +59,20 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-        List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+   /*     List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
             redisUtils.addList(RedisKeys.BANNER_KEY, banners, TEN_MINUTES);
         }
+        return banners;*/
+
+        List<TaskBannerDto>    banners = this.baseMapper.getTaskBanners();
+        if (CollectionUtils.isEmpty(banners)) {
+           return new ArrayList<>();
+
+        }
         return banners;
+
     }
 
     @Override
