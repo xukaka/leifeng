@@ -223,11 +223,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         }
         task.setStatus(TaskStatusEnum.received);
         this.updateById(task);
-        taskReceiveDao.insert(receive);
+        long receiveId = taskReceiveDao.insert(receive);
 
 
         logger.info("!!!!!!!!!!!!!!!!!!!!"+receive.toString());
-        Member member = taskReceiveDao.getReceiver(receive.getId());
+        Member member = taskReceiveDao.getReceiver(receiveId);
         logger.info("@@@@@@@@@@@@@@@@@@@@"+member.toString());
         return member;
     }
