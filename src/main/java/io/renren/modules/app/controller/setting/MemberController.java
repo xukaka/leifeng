@@ -10,14 +10,18 @@ import io.renren.common.utils.RedisUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.setting.MemberFeedback;
+import io.renren.modules.app.entity.story.PublishMessageEntity;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.MemberForm;
 import io.renren.modules.app.form.MemberScoreForm;
 import io.renren.modules.app.form.PageWrapper;
+import io.renren.modules.app.service.MemberFeedbackService;
 import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.http.ContentTooLongException;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,7 +50,8 @@ public class MemberController {
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private MemberService memberService;
-
+    @Autowired
+    private MemberFeedbackService memberFeedbackService;
 
     @Resource
     private RabbitMqHelper rabbitMqHelper;
@@ -184,5 +190,32 @@ public class MemberController {
             avatar = member.getAvatar();
 
         return R.ok().put("result",avatar);
+    }
+
+    @PostMapping("/feedback/save")
+    @ApiOperation("用户反馈保存")
+    public R feedbackSave(Long memberId , String content){
+        if(memberId == null && memberId.longValue()<=0){
+            return R.error(HttpStatus.SC_BAD_REQUEST,"memberId不为空");
+        }
+        if(StringUtils.isEmpty(content)){
+            return R.error(HttpStatus.SC_BAD_REQUEST,"content不为空");
+        }
+        MemberFeedback feedback = new MemberFeedback();
+        feedback.setContent(content);
+        feedback.setMemberId(memberId);
+        feedback.setCreateTime(System.currentTimeMillis());
+        memberFeedbackService.insert(feedback);
+        return R.ok();
+    }
+
+    @PostMapping("/feedback/list")
+    @ApiOperation("用户反馈列表")
+    public R feedbackList(@RequestParam Map<String, Object> params){
+        PageWrapper page = new PageWrapper(params);
+        List<PublishMessageEntity> list = memberFeedbackService.getPage(page);
+        return R.ok().put("result", list)
+                .put("page",page.getCurrPage())
+                .put("size",page.getPageSize());
     }
 }
