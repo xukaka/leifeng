@@ -169,4 +169,21 @@ public class TaskEntity extends BaseEntity {
     public void setCompleteTime(Long completeTime) {
         this.completeTime = completeTime;
     }
+
+    @Override
+    public String toString() {
+        return "TaskEntity{" +
+                "title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", startTime=" + startTime +
+                ", expireTime=" + expireTime +
+                ", virtualCurrency=" + virtualCurrency +
+                ", addressId=" + addressId +
+                ", creatorId=" + creatorId +
+                ", likeCount=" + likeCount +
+                ", commentCount=" + commentCount +
+                ", status=" + status +
+                ", completeTime=" + completeTime +
+                '}';
+    }
 }

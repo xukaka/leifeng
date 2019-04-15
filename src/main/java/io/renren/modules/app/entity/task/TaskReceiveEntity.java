@@ -43,4 +43,12 @@ public class TaskReceiveEntity extends BaseEntity {
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
     }
+
+    @Override
+    public String toString() {
+        return "TaskReceiveEntity{" +
+                "receiverId=" + receiverId +
+                ", taskId=" + taskId +
+                '}';
+    }
 }

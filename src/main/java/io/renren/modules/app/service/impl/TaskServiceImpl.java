@@ -205,11 +205,17 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public Member receiveTask(Long receiverId, Long taskId) {
+
+        logger.info("=========="+receiverId+"-------"+taskId);
+
         TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
+        logger.info(receive.toString());
         TaskEntity task = this.selectById(taskId);
-      /*  boolean is = task==null;
-        boolean a = task.getStatus() != TaskStatusEnum.published;
-        logger.info(is +","+","+task.getDeleted());*/
+
+        logger.info(task.toString());
+        boolean isnull = task==null;
+        boolean isStatus = task.getStatus() != TaskStatusEnum.published;
+        logger.info(isnull +","+isStatus+","+task.getDeleted());
         if (task == null
                 || task.getStatus() != TaskStatusEnum.published
                 || task.getDeleted()) {
@@ -218,7 +224,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         task.setStatus(TaskStatusEnum.received);
         this.updateById(task);
         taskReceiveDao.insert(receive);
-        return taskReceiveDao.getReceiver(receive.getId());
+
+
+        logger.info("!!!!!!!!!!!!!!!!!!!!"+receive.toString());
+        Member member = taskReceiveDao.getReceiver(receive.getId());
+        logger.info("@@@@@@@@@@@@@@@@@@@@"+member.toString());
+        return member;
     }
 
     @Override

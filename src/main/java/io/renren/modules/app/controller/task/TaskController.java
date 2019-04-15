@@ -71,11 +71,11 @@ public class TaskController {
         return R.ok();
     }
 
-    @Login
+//    @Login
     @GetMapping("/receive")
     @ApiOperation("领取任务")
     public R receiveTask(@RequestParam Long taskId) {
-        Member receiver = taskService.receiveTask(ReqUtils.currentUserId(), taskId);
+        Member receiver = taskService.receiveTask(/*ReqUtils.currentUserId()*/10L, taskId);
         return R.ok().put("result",receiver);
     }
 
