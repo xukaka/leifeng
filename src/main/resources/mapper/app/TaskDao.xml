@@ -49,11 +49,13 @@
         </if>
     </sql>
     <!--任务banner resultMap-->
-    <resultMap type="io.renren.modules.app.dto.TaskDto" id="taskBannerMap">
-        <id property="id" column="id"/>
-        <result property="title" column="title"/>
-        <result property="completeTime" column="complete_time"/>
-        <result property="virtualCurrency" column="virtual_currency"/>
+    <resultMap type="io.renren.modules.app.dto.TaskBannerDto" id="taskBannerMap">
+        <association property="task" javaType="io.renren.modules.app.entity.task.TaskEntity">
+            <id property="id" column="id"/>
+            <result property="title" column="title"/>
+            <result property="completeTime" column="complete_time"/>
+            <result property="virtualCurrency" column="virtual_currency"/>
+        </association>
         <!--关联地址-->
         <association property="address" javaType="io.renren.modules.app.entity.task.TaskAddressEntity">
             <id property="id" column="address_id"/>

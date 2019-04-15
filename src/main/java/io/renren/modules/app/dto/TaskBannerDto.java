@@ -12,9 +12,9 @@ import java.io.Serializable;
 public class TaskBannerDto implements Serializable {
 
     /**
-     * 任务完成人
+     * 任务领取人
      */
-    private Member completer;
+    private Member receiver;
     /**
      * 任务信息
      */
@@ -30,12 +30,12 @@ public class TaskBannerDto implements Serializable {
      */
     private Long completeTime;
 
-    public Member getCompleter() {
-        return completer;
+    public Member getReceiver() {
+        return receiver;
     }
 
-    public void setCompleter(Member completer) {
-        this.completer = completer;
+    public void setReceiver(Member receiver) {
+        this.receiver = receiver;
     }
 
     public TaskEntity getTask() {

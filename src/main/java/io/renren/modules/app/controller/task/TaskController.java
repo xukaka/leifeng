@@ -31,7 +31,6 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @Login
     @GetMapping("/banner")
     @ApiOperation("获取任务横幅列表")
     public R getBanners() {
