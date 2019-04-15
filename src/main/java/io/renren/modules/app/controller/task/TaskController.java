@@ -79,6 +79,23 @@ public class TaskController {
         return R.ok().put("result",receiver);
     }
 
+    @Login
+    @GetMapping("/submit")
+    @ApiOperation("提交任务")
+    public R submitTask(@RequestParam Long taskId) {
+        taskService.submitTask(ReqUtils.currentUserId(), taskId);
+        return R.ok();
+    }
+
+    @Login
+    @GetMapping("/complete")
+    @ApiOperation("完成任务")
+    public R completeTask(@RequestParam Long taskId) {
+        taskService.completeTask(ReqUtils.currentUserId(), taskId);
+        return R.ok();
+    }
+
+
     @GetMapping("/receive/list")
     @ApiOperation("分页获取领取任务列表")
     public R getReceivedTasks(@RequestParam Long receiverId, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
