@@ -5,11 +5,11 @@
 
     <sql id="taskDtoField">
         t.*,
-        a.id AS address_id,
+       <!-- a.id AS address_id,-->
         a.latitude AS address_latitude,
         a.longitude AS address_longitude,
         a.detail AS address_detail,
-        m.id AS creator_id,
+       <!-- m.id AS creator_id,-->
         m.nick_name AS creator_nick_name,
         m.real_name AS creator_real_name,
         m.avatar AS creator_avatar,
@@ -284,18 +284,24 @@
 
 
     <select id="searchTasks" parameterType="map" resultMap="searchTaskMap">
-        SELECT
-        <include refid="taskDtoField"/>
-        FROM t_task t
-        JOIN t_task_address a ON t.address_id = a.id
-        JOIN member m ON t.creator_id = m.id
-        LEFT JOIN r_task_image ri ON t.id = ri.task_id
-        LEFT JOIN r_task_tag rg ON t.id = rg.task_id
+        select task.* ,
+            ri.image_url,
+            tg.name AS tag_name
+        from (
+            SELECT
+            <include refid="taskDtoField"/>
+            FROM t_task t
+            JOIN t_task_address a ON t.address_id = a.id
+            JOIN member m ON t.creator_id = m.id
+            WHERE t.deleted = 0 AND t.status = 'published'
+           <include refid="searchTaskCondition"/>
+            ORDER BY t.create_time desc
+            LIMIT #{page.offset},#{page.limit}
+        ) AS task
+        LEFT JOIN r_task_image ri ON task.id = ri.task_id
+        LEFT JOIN r_task_tag rg ON task.id = rg.task_id
         JOIN t_task_tag tg ON rg.tag_id=tg.id
-        WHERE t.deleted = 0 AND t.status = 'published'
-       <include refid="searchTaskCondition"/>
-        ORDER BY t.create_time desc
-        LIMIT #{page.offset},#{page.limit}
+
     </select>
 
     <!--获取任务总数-根据查询条件-->
