@@ -10,6 +10,7 @@ import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
+import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskReceiveEntity;
@@ -188,9 +189,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         this.updateById(task);
     }
 
+
+    /**
+     * 领取任务，返回领取人信息
+     */
     @Override
     @Transactional
-    public void receiveTask(Long receiverId, Long taskId) {
+    public Member receiveTask(Long receiverId, Long taskId) {
         TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
         TaskEntity task = this.selectById(taskId);
         if (task == null
@@ -201,6 +206,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         task.setStatus(TaskStatusEnum.received);
         this.updateById(task);
         taskReceiveDao.insert(receive);
+        return taskReceiveDao.getReceiver(receive.getId());
     }
 
     @Override

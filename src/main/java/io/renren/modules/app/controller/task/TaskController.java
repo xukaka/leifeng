@@ -5,6 +5,7 @@ import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
+import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
@@ -75,8 +76,8 @@ public class TaskController {
     @PostMapping("/receive")
     @ApiOperation("领取任务")
     public R receiveTask(@RequestBody Long taskId) {
-        taskService.receiveTask(ReqUtils.currentUserId(), taskId);
-        return R.ok();
+        Member receiver = taskService.receiveTask(ReqUtils.currentUserId(), taskId);
+        return R.ok().put("result",receiver);
     }
 
     @GetMapping("/receive/list")
