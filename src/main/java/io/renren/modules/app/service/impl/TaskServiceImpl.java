@@ -198,6 +198,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public Member receiveTask(Long receiverId, Long taskId) {
         TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
         TaskEntity task = this.selectById(taskId);
+        boolean is = task==null;
+        boolean a = task.getStatus() != TaskStatusEnum.published;
+        logger.info(is +","+","+task.getDeleted());
         if (task == null
                 || task.getStatus() != TaskStatusEnum.published
                 || task.getDeleted()) {
