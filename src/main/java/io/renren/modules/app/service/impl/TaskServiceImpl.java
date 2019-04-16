@@ -47,19 +47,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     private static final long TEN_MINUTES = 60 * 10;
 
-  /*  @Override
-    public PageUtils queryPage(Map<String, Object> params) {
-        Page<TaskEntity> page = this.selectPage(
-                new Query<TaskEntity>(params).getPage(),
-                new EntityWrapper<>()
-        );
-
-        return new PageUtils(page);
-    }*/
-
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-   /*     List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+   /*    List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
             if (!CollectionUtils.isEmpty(banners)) {

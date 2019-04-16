@@ -28,7 +28,7 @@ public class TaskBannerDto implements Serializable {
     /**
      * 任务完成时间
      */
-    private Long completeTime;
+//    private Long completeTime;
 
     public Member getReceiver() {
         return receiver;
@@ -46,13 +46,6 @@ public class TaskBannerDto implements Serializable {
         this.task = task;
     }
 
-    public Long getCompleteTime() {
-        return completeTime;
-    }
-
-    public void setCompleteTime(Long completeTime) {
-        this.completeTime = completeTime;
-    }
 
     public TaskAddressEntity getAddress() {
         return address;
