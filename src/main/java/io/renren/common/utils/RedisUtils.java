@@ -22,14 +22,14 @@ public class RedisUtils {
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private ValueOperations<String, String> valueOperations;
-    @Autowired
+/*    @Autowired
     private HashOperations<String, String, Object> hashOperations;
     @Autowired
     private ListOperations<String, Object> listOperations;
     @Autowired
     private SetOperations<String, Object> setOperations;
     @Autowired
-    private ZSetOperations<String, Object> zSetOperations;
+    private ZSetOperations<String, Object> zSetOperations;*/
     /**
      * 默认过期时长，单位：秒
      */
@@ -86,7 +86,8 @@ public class RedisUtils {
 
 
     public <T> void addList(String key, List<T> value, long expire) {
-        listOperations.leftPushAll(key, value);
+        redisTemplate.opsForList().leftPushAll(key,value);
+//        listOperations.leftPushAll(key, value);
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
@@ -97,7 +98,8 @@ public class RedisUtils {
     }
 
     public <T> List<T> getList(String key, Class<T> clazz, long expire) {
-        List<Object> value = listOperations.range(key, 0, -1);
+        List<Object> value =redisTemplate.opsForList().range(key, 0, -1);
+//        List<Object> value = listOperations.range(key, 0, -1);
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }

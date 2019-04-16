@@ -62,17 +62,16 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
    /*     List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
-            redisUtils.addList(RedisKeys.BANNER_KEY, banners, TEN_MINUTES);
+            if (!CollectionUtils.isEmpty(banners)) {
+                redisUtils.addList(RedisKeys.BANNER_KEY, banners, TEN_MINUTES);
+            }
         }
         return banners;*/
-
         List<TaskBannerDto>    banners = this.baseMapper.getTaskBanners();
         if (CollectionUtils.isEmpty(banners)) {
            return new ArrayList<>();
-
         }
         return banners;
-
     }
 
     @Override
@@ -82,9 +81,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
-
         setTastDistance(form, tasks);
-
         int total = this.baseMapper.count(queryMap);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
@@ -205,31 +202,18 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public Member receiveTask(Long receiverId, Long taskId) {
-
-        logger.info("=========="+receiverId+"-------"+taskId);
-
         TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
         logger.info(receive.toString());
         TaskEntity task = this.selectById(taskId);
-
-        logger.info(task.toString());
-        boolean isnull = task==null;
-        boolean isStatus = task.getStatus() != TaskStatusEnum.published;
-        logger.info(isnull +","+isStatus+","+task.getDeleted());
         if (task == null
                 || task.getStatus() != TaskStatusEnum.published
                 || task.getDeleted()) {
-            throw new RRException("任务已被领取");
+            throw new RRException("任务已领取");
         }
         task.setStatus(TaskStatusEnum.received);
         this.updateById(task);
         long receiveId = taskReceiveDao.insert(receive);
-
-
-        logger.info("!!!!!!!!!!!!!!!!!!!!"+receive.toString());
-        Member member = taskReceiveDao.getReceiver(receiveId);
-        logger.info("@@@@@@@@@@@@@@@@@@@@"+member.toString());
-        return member;
+        return taskReceiveDao.getReceiver(receiveId);
     }
 
     @Override
