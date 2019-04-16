@@ -9,13 +9,11 @@ import io.renren.common.utils.RabbitMqHelper;
 import io.renren.common.utils.RedisUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberFeedback;
 import io.renren.modules.app.entity.story.PublishMessageEntity;
-import io.renren.modules.app.form.LocationForm;
-import io.renren.modules.app.form.MemberForm;
-import io.renren.modules.app.form.MemberScoreForm;
-import io.renren.modules.app.form.PageWrapper;
+import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.MemberFeedbackService;
 import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.utils.ReqUtils;
@@ -62,14 +60,23 @@ public class MemberController {
     private RedisTemplate redisTemplate;
 
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     @ApiOperation("搜索用户列表-分页")
-    public R searchMembers(@RequestParam String keyword, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R searchMembers(@RequestBody MemberQueryForm form) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", form.getCurPage());
+        pageMap.put("size", form.getPageSize());
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<Member> members = memberService.searchMembers(form, page);
+//        PageUtils<TaskDto> tasks = taskService.searchTasks(form, page);
+
+/*
+
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.searchMembers(keyword, page);
+        PageUtils<Member> members = memberService.searchMembers(keyword, page);*/
         return R.ok().put("result", members);
     }
 

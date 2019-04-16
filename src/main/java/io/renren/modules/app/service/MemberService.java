@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
-import io.renren.modules.app.form.LocationForm;
-import io.renren.modules.app.form.MemberForm;
-import io.renren.modules.app.form.MemberScoreForm;
-import io.renren.modules.app.form.PageWrapper;
+import io.renren.modules.app.form.*;
 import org.springframework.data.redis.core.query.QueryUtils;
 
 /**
@@ -17,12 +14,12 @@ import org.springframework.data.redis.core.query.QueryUtils;
  */
 public interface MemberService extends IService<Member> {
 	/**
-	 * 根据关键字(雷锋ID/昵称/手机号)搜索用户-分页
-	 * @param keyword
+	 * 根据条件-如关键字(雷锋ID/昵称/手机号)搜索用户-分页
+	 * @param form 搜索条件
 	 * @param page
 	 * @return
 	 */
-	PageUtils<Member> searchMembers(String keyword,PageWrapper page);
+	PageUtils<Member> searchMembers(MemberQueryForm form, PageWrapper page);
 
 	/**
 	 * 获取用户信息-根据id

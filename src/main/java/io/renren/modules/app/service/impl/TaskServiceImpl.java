@@ -49,7 +49,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-   /*    List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+        //TODO reids方式
+ /*      List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
             if (!CollectionUtils.isEmpty(banners)) {
@@ -57,9 +58,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             }
         }
         return banners;*/
-        List<TaskBannerDto>    banners = this.baseMapper.getTaskBanners();
+        List<TaskBannerDto> banners = this.baseMapper.getTaskBanners();
         if (CollectionUtils.isEmpty(banners)) {
-           return new ArrayList<>();
+            return new ArrayList<>();
         }
         return banners;
     }
@@ -80,7 +81,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     private void setTastDistance(TaskQueryForm form, List<TaskDto> tasks) {
         for (TaskDto task : tasks) {
             TaskAddressEntity address = task.getAddress();
-            long  distance= GeoUtils.getDistance(form.getLatitude(), form.getLongitude(), address.getLatitude(), address.getLongitude());
+            long distance = 0L;
+            if (form.getLongitude() != null && form.getLatitude() != null
+                    && address.getLatitude() != null && address.getLongitude() != null) {
+                distance = GeoUtils.getDistance(form.getLatitude(), form.getLongitude(), address.getLatitude(), address.getLongitude());
+            }
             task.setDistance(distance);
         }
     }

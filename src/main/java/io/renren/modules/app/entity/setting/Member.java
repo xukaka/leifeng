@@ -1,11 +1,11 @@
 package io.renren.modules.app.entity.setting;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import io.swagger.annotations.ApiModel;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 注册的用户表
@@ -29,6 +29,9 @@ public class Member implements Serializable {
     private Double lat;
     //经度
     private Double lng;
+    //距离
+    @TableField(exist = false)//不作为数据库字段
+    private Long distance;
     //地址
     private String address;
     //性别0男，1女
@@ -164,5 +167,13 @@ public class Member implements Serializable {
 
     public void setCertificateCount(Integer certificateCount) {
         this.certificateCount = certificateCount;
+    }
+
+    public Long getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Long distance) {
+        this.distance = distance;
     }
 }
