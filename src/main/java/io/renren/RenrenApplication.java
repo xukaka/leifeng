@@ -1,5 +1,6 @@
 package io.renren;
 
+import com.jfinal.kit.PropKit;
 import io.renren.common.io.command.IoWsHandshakeProcessor;
 import io.renren.common.io.listener.ImDemoGroupListener;
 import io.renren.common.io.service.user.handler.UserCloseHandler;
@@ -10,6 +11,7 @@ import io.renren.datasources.DynamicDataSourceConfig;
 import org.apache.commons.lang.StringUtils;
 import org.jim.common.ImConfig;
 import org.jim.common.ImConst;
+import org.jim.common.config.PropertyImConfigBuilder;
 import org.jim.common.packets.Command;
 import org.jim.server.ImServerStarter;
 import org.jim.server.command.CommandManager;
@@ -33,16 +35,14 @@ public class RenrenApplication extends SpringBootServletInitializer {
 
 	private static Logger logger = LoggerFactory.getLogger(RenrenApplication.class);
 	public static void main(String[] args) {
-		ImConfig imConfig = new ImConfig();
-		imConfig.setBindIp("47.94.164.57");
-		imConfig.setBindPort(11805);
-//		imConfig.setIsSSL("on");
-//		try {
-//			initSsl(imConfig);
-//
-//		}catch (Exception e){
-//			logger.error("SSL start failed.");
-//		}
+		ImConfig imConfig = new PropertyImConfigBuilder("jim.properties").build();
+		//初始化SSL;(开启SSL之前,你要保证你有SSL证书哦...)
+		try {
+			initSsl(imConfig);
+
+		}catch (Exception e){
+			logger.error("SSL start failed.");
+		}
 
 		//初始化SSL;(开启SSL之前,你要保证你有SSL证书哦...)
 		//设置群组监听器，非必须，根据需要自己选择性实现;
@@ -81,10 +81,10 @@ public class RenrenApplication extends SpringBootServletInitializer {
 	private static void initSsl(ImConfig imConfig) throws Exception {
 		//开启SSL
 		if(ImConst.ON.equals(imConfig.getIsSSL())){
-			String keyStorePath = "classpath:pet.fangzheng.fun.jks";
+			String keyStorePath = PropKit.get("jim.key.store.path");
 			String keyStoreFile = keyStorePath;
 			String trustStoreFile = keyStorePath;
-			String keyStorePwd = "xukaka";
+			String keyStorePwd = PropKit.get("jim.key.store.pwd");
 			if (StringUtils.isNotBlank(keyStoreFile) && StringUtils.isNotBlank(trustStoreFile)) {
 				SslConfig sslConfig = SslConfig.forServer(keyStoreFile, trustStoreFile, keyStorePwd);
 				imConfig.setSslConfig(sslConfig);
