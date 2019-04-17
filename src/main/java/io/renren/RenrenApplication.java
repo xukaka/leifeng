@@ -34,7 +34,7 @@ public class RenrenApplication extends SpringBootServletInitializer {
 	private static Logger logger = LoggerFactory.getLogger(RenrenApplication.class);
 	public static void main(String[] args) {
 		ImConfig imConfig = new ImConfig();
-		imConfig.setBindIp("47.94.164.57");
+		imConfig.setBindIp("127.0.0.1");
 		imConfig.setBindPort(11805);
 //		imConfig.setIsSSL("on");
 //		try {
