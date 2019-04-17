@@ -3,9 +3,11 @@ package io.renren.modules.app.entity.setting;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.swagger.annotations.ApiModel;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 注册的用户表
@@ -34,6 +36,9 @@ public class Member implements Serializable {
     //距离
     @TableField(exist = false)//不作为数据库字段
     private Long distance;
+    //用户技能标签
+    @TableField(exist = false)//不作为数据库字段
+    private List<String> tags;
     //地址
     private String address;
     //性别0男，1女
@@ -185,5 +190,13 @@ public class Member implements Serializable {
 
     public void setLevel(Integer level) {
         this.level = level;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }

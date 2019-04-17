@@ -1,5 +1,7 @@
 package io.renren.modules.app.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
@@ -11,28 +13,32 @@ import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.setting.MemberTagRelationEntity;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskReceiveEntity;
+import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
 import io.renren.modules.app.service.MemberService;
+import io.renren.modules.app.service.MemberTagRelationService;
 import io.renren.modules.app.service.TaskService;
 import io.renren.modules.app.service.TaskTagService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements TaskService {
@@ -43,6 +49,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Resource
     private TaskTagService taskTagService;
+    @Resource
+    private MemberTagRelationService memberTagRelationService;
 
 
     @Resource
@@ -60,7 +68,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     public List<TaskBannerDto> getTaskBanners() {
         //TODO reids方式
- /*      List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+     /*  List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
             if (!CollectionUtils.isEmpty(banners)) {
@@ -158,11 +166,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
 
     @Override
-    public TaskDto getTask(Long curMemberId,Long id) {
+    public TaskDto getTask(Long curMemberId, Long id) {
         TaskDto task = this.baseMapper.getTask(id);
         if (task != null) {
             //是否关注
-            boolean isFollowed = memberService.isFollowed(curMemberId,task.getCreator().getId());
+            boolean isFollowed = memberService.isFollowed(curMemberId, task.getCreator().getId());
             task.setFollowed(isFollowed);
             task.setCurSystemTime(DateUtils.now());
         }
@@ -258,10 +266,39 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务领取人
 
-                //TODO 给任务领取人添加技能标签
-//                taskTagService.addMemberTagRelation();
+
+                addTag2Member(receiverId, taskId);
 
             });
+        }
+    }
+    //给任务领取人添加技能标签
+    private void addTag2Member(Long receiverId, Long taskId) {
+        List<TaskTagEntity> tags = taskTagService.getTagsByTaskId(taskId);
+        if (!CollectionUtils.isEmpty(tags)) {
+            List<Long> tagIds = tags.stream().map(TaskTagEntity::getId).collect(Collectors.toList());
+            Wrapper<MemberTagRelationEntity> wrapper = new EntityWrapper<>();
+            wrapper.eq("member_id", receiverId)
+                    .in("tag_id", tagIds);
+            List<MemberTagRelationEntity> relations = memberTagRelationService.selectList(wrapper);
+            if (!CollectionUtils.isEmpty(relations)) {
+                for (MemberTagRelationEntity relation : relations) {
+                    relation.setUsageCount(relation.getUsageCount() + 1);
+                    tagIds.remove(relation.getTagId());
+                }
+                memberTagRelationService.updateBatchById(relations);
+            }
+            if (!CollectionUtils.isEmpty(tagIds)) {
+                List<MemberTagRelationEntity> batchRantions = new ArrayList<>();
+                for (Long tagId : tagIds) {
+                    MemberTagRelationEntity relation = new MemberTagRelationEntity();
+                    relation.setTagId(tagId);
+                    relation.setMemberId(receiverId);
+                    relation.setUsageCount(1);
+                    batchRantions.add(relation);
+                }
+                memberTagRelationService.insertBatch(batchRantions);
+            }
         }
     }
 

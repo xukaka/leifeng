@@ -3,6 +3,7 @@ package io.renren.modules.app.dao.setting;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.MemberQueryForm;
 import io.renren.modules.app.form.PageWrapper;
@@ -25,4 +26,6 @@ public interface MemberDao extends BaseMapper<Member> {
     List<Member> searchMembers(@Param("queryMap") Map<String, Object> queryMap, @Param("page")PageWrapper page);
 
     int count(@Param("queryMap") Map<String, Object> queryMap);
+
+    List<String> getMemberTags(@Param("memberId") Long memberId);
 }

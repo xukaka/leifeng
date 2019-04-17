@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -94,5 +95,15 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
         Wrapper<TaskTagEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("name", name);
         return this.selectCount(wrapper) > 0;
+    }
+
+
+    @Override
+    public List<TaskTagEntity> getTagsByTaskId(Long taskId) {
+        List<TaskTagEntity> tags = this.baseMapper.getTagsByTaskId(taskId);
+        if (CollectionUtils.isEmpty(tags)){
+            return new ArrayList<>();
+        }
+        return tags;
     }
 }

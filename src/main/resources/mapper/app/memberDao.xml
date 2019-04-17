@@ -5,7 +5,8 @@
 
     <sql id="searchMemberCondition">
         <if test="queryMap.keyword != null and queryMap.keyword!=''">
-            AND  (m.id = #{queryMap.keyword} or m.mobile = #{queryMap.keyword} or m.nick_name like concat('%',#{queryMap.keyword},'%'))
+            AND (m.id = #{queryMap.keyword} or m.mobile = #{queryMap.keyword} or m.nick_name like
+            concat('%',#{queryMap.keyword},'%'))
         </if>
         <if test="queryMap.minLat != null and queryMap.maxLat != null
                  and queryMap.minLng!=null and queryMap.maxLng != null">
@@ -19,9 +20,9 @@
     </update>
 
 
-    <select id="searchMembers"  resultType="io.renren.modules.app.entity.setting.Member">
+    <select id="searchMembers" resultType="io.renren.modules.app.entity.setting.Member">
         select m.* from member m
-        where  m.status = 1
+        where m.status = 1
         <include refid="searchMemberCondition"/>
         ORDER BY m.create_time DESC
         LIMIT #{page.offset},#{page.limit}
@@ -29,8 +30,18 @@
 
     <select id="count" resultType="int">
         select count(*) from member m
-        where  m.status = 1
+        where m.status = 1
         <include refid="searchMemberCondition"/>
     </select>
+
+    <!--获取用户技能标签 top4-->
+    <select id="getMemberTags" resultType="string">
+        select tt.name from r_member_tag mt
+        join t_task_tag tt on tt.id = mt.tag_id
+        where mt.member_id = #{memberId}
+        order by mt.usage_count desc
+        limit 0,4
+    </select>
+
 
 </mapper>
