@@ -33,6 +33,9 @@ public interface MemberService extends IService<Member> {
 	 */
 	MemberDto getMember(Long curMemberId,Long memberId);
 
+
+	Member getMember(Long memberId);
+
 	/**
 	 * 更新用户信息
 	 * @param form

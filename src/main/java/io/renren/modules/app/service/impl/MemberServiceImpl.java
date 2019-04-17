@@ -127,6 +127,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
+    public Member getMember(Long memberId) {
+       return this.baseMapper.selectById(memberId);
+    }
+
+    @Override
     public void updateMember(MemberForm form) {
         ValidatorUtils.validateEntity(form);
         Member member = this.selectById(form.getId());
