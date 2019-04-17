@@ -13,10 +13,10 @@ public class LocationForm {
     private Long id;
 
     @ApiModelProperty(value = "维度")
-    private String lat;
+    private Double lat;
 
     @ApiModelProperty(value = "经度")
-    private String lng;
+    private Double lng;
 
     public Long getId() {
         return id;
@@ -26,19 +26,18 @@ public class LocationForm {
         this.id = id;
     }
 
-    public String getLat() {
+
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public String getLng() {
-        return lng;
-    }
-
-    public void setLng(String lng) {
+    public void setLng(Double lng) {
         this.lng = lng;
     }
+
+
 }

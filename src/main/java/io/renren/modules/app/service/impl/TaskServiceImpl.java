@@ -1,5 +1,7 @@
 package io.renren.modules.app.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
@@ -11,25 +13,32 @@ import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.setting.MemberTagRelationEntity;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskReceiveEntity;
+import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
+import io.renren.modules.app.service.MemberService;
+import io.renren.modules.app.service.MemberTagRelationService;
 import io.renren.modules.app.service.TaskService;
+import io.renren.modules.app.service.TaskTagService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements TaskService {
@@ -39,6 +48,16 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     private TaskReceiveDao taskReceiveDao;
 
     @Resource
+    private TaskTagService taskTagService;
+    @Resource
+    private MemberTagRelationService memberTagRelationService;
+
+
+    @Resource
+    private MemberService memberService;
+
+
+    @Resource
     private RabbitMqHelper rabbitMqHelper;
 
     @Resource
@@ -46,22 +65,20 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     private static final long TEN_MINUTES = 60 * 10;
 
-  /*  @Override
-    public PageUtils queryPage(Map<String, Object> params) {
-        Page<TaskEntity> page = this.selectPage(
-                new Query<TaskEntity>(params).getPage(),
-                new EntityWrapper<>()
-        );
-
-        return new PageUtils(page);
-    }*/
-
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-        List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+        //TODO reids方式
+     /*  List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
-            redisUtils.addList(RedisKeys.BANNER_KEY, banners, TEN_MINUTES);
+            if (!CollectionUtils.isEmpty(banners)) {
+                redisUtils.addList(RedisKeys.BANNER_KEY, banners, TEN_MINUTES);
+            }
+        }
+        return banners;*/
+        List<TaskBannerDto> banners = this.baseMapper.getTaskBanners();
+        if (CollectionUtils.isEmpty(banners)) {
+            return new ArrayList<>();
         }
         return banners;
     }
@@ -73,9 +90,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
-
         setTastDistance(form, tasks);
-
         int total = this.baseMapper.count(queryMap);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
@@ -84,7 +99,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     private void setTastDistance(TaskQueryForm form, List<TaskDto> tasks) {
         for (TaskDto task : tasks) {
             TaskAddressEntity address = task.getAddress();
-            long  distance= GeoUtils.getDistance(form.getLatitude(), form.getLongitude(), address.getLatitude(), address.getLongitude());
+            long distance = 0L;
+            if (form.getLongitude() != null && form.getLatitude() != null
+                    && address.getLatitude() != null && address.getLongitude() != null) {
+                distance = GeoUtils.getDistance(form.getLatitude(), form.getLongitude(), address.getLatitude(), address.getLongitude());
+            }
             task.setDistance(distance);
         }
     }
@@ -147,9 +166,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
 
     @Override
-    public TaskDto getTask(Long id) {
+    public TaskDto getTask(Long curMemberId, Long id) {
         TaskDto task = this.baseMapper.getTask(id);
         if (task != null) {
+            //是否关注
+            boolean isFollowed = memberService.isFollowed(curMemberId, task.getCreator().getId());
+            task.setFollowed(isFollowed);
             task.setCurSystemTime(DateUtils.now());
         }
         return task;
@@ -197,16 +219,17 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Transactional
     public Member receiveTask(Long receiverId, Long taskId) {
         TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
+        logger.info(receive.toString());
         TaskEntity task = this.selectById(taskId);
         if (task == null
                 || task.getStatus() != TaskStatusEnum.published
                 || task.getDeleted()) {
-            throw new RRException("任务已被领取");
+            throw new RRException("任务已领取");
         }
         task.setStatus(TaskStatusEnum.received);
         this.updateById(task);
-        taskReceiveDao.insert(receive);
-        return taskReceiveDao.getReceiver(receive.getId());
+        long receiveId = taskReceiveDao.insert(receive);
+        return taskReceiveDao.getReceiver(receiveId);
     }
 
     @Override
@@ -242,7 +265,40 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
             ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务领取人
+
+
+                addTag2Member(receiverId, taskId);
+
             });
+        }
+    }
+    //给任务领取人添加技能标签
+    private void addTag2Member(Long receiverId, Long taskId) {
+        List<TaskTagEntity> tags = taskTagService.getTagsByTaskId(taskId);
+        if (!CollectionUtils.isEmpty(tags)) {
+            List<Long> tagIds = tags.stream().map(TaskTagEntity::getId).collect(Collectors.toList());
+            Wrapper<MemberTagRelationEntity> wrapper = new EntityWrapper<>();
+            wrapper.eq("member_id", receiverId)
+                    .in("tag_id", tagIds);
+            List<MemberTagRelationEntity> relations = memberTagRelationService.selectList(wrapper);
+            if (!CollectionUtils.isEmpty(relations)) {
+                for (MemberTagRelationEntity relation : relations) {
+                    relation.setUsageCount(relation.getUsageCount() + 1);
+                    tagIds.remove(relation.getTagId());
+                }
+                memberTagRelationService.updateBatchById(relations);
+            }
+            if (!CollectionUtils.isEmpty(tagIds)) {
+                List<MemberTagRelationEntity> batchRantions = new ArrayList<>();
+                for (Long tagId : tagIds) {
+                    MemberTagRelationEntity relation = new MemberTagRelationEntity();
+                    relation.setTagId(tagId);
+                    relation.setMemberId(receiverId);
+                    relation.setUsageCount(1);
+                    batchRantions.add(relation);
+                }
+                memberTagRelationService.insertBatch(batchRantions);
+            }
         }
     }
 

@@ -9,14 +9,12 @@ import io.renren.common.utils.RabbitMqHelper;
 import io.renren.common.utils.RedisUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberFeedback;
 import io.renren.modules.app.entity.setting.MemberFriend;
 import io.renren.modules.app.entity.story.PublishMessageEntity;
-import io.renren.modules.app.form.LocationForm;
-import io.renren.modules.app.form.MemberForm;
-import io.renren.modules.app.form.MemberScoreForm;
-import io.renren.modules.app.form.PageWrapper;
+import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.MemberFeedbackService;
 import io.renren.modules.app.service.MemberFriendService;
 import io.renren.modules.app.service.MemberService;
@@ -66,14 +64,14 @@ public class MemberController {
     private RedisTemplate redisTemplate;
 
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     @ApiOperation("搜索用户列表-分页")
-    public R searchMembers(@RequestParam String keyword, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R searchMembers(@RequestBody MemberQueryForm form) {
         Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
+        pageMap.put("page", form.getCurPage());
+        pageMap.put("size", form.getPageSize());
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.searchMembers(keyword, page);
+        PageUtils<Member> members = memberService.searchMembers(form, page);
         return R.ok().put("result", members);
     }
 
@@ -133,15 +131,16 @@ public class MemberController {
     }
 
     @Login
-    @PostMapping("/follow")
+    @GetMapping("/follow")
     @ApiOperation("关注用户")
     public R followMember(@RequestParam Long toMemberId) {
         memberService.followMember(ReqUtils.currentUserId(), toMemberId);
+
         return R.ok();
     }
 
     @Login
-    @PostMapping("/unfollow")
+    @GetMapping("/unfollow")
     @ApiOperation("取消关注")
     public R unfollowMember(@RequestParam Long toMemberId) {
         memberService.unfollowMember(ReqUtils.currentUserId(), toMemberId);
@@ -149,7 +148,7 @@ public class MemberController {
     }
 
     @Login
-    @PostMapping("/follow/list")
+    @GetMapping("/follow/list")
     @ApiOperation("分页获取关注的用户列表")
     public R getFollowMembers(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
@@ -162,7 +161,7 @@ public class MemberController {
 
 
     @Login
-    @PostMapping("/fans/list")
+    @GetMapping("/fans/list")
     @ApiOperation("分页获取粉丝用户列表")
     public R getFansMembers(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
@@ -182,9 +181,9 @@ public class MemberController {
         return R.ok();
     }
 
-    @PostMapping("/avatar/phone")
+    @GetMapping("/avatar/phone")
     @ApiOperation("根据手机号获取用户头像")
-    public R getAvatarByPhone(String phone){
+    public R getAvatarByPhone(@RequestParam String phone){
         if(StringUtils.isEmpty(phone)){
             return R.error(HttpStatus.SC_BAD_REQUEST,"手机号不为空");
         }
@@ -200,7 +199,7 @@ public class MemberController {
     @PostMapping("/feedback/save")
     @ApiOperation("用户反馈保存")
     public R feedbackSave(Long memberId , String content){
-        if(memberId == null && memberId.longValue()<=0){
+        if(memberId == null || memberId <=0){
             return R.error(HttpStatus.SC_BAD_REQUEST,"memberId不为空");
         }
         if(StringUtils.isEmpty(content)){

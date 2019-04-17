@@ -5,11 +5,12 @@ import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
-import io.renren.modules.app.form.LocationForm;
-import io.renren.modules.app.form.MemberForm;
-import io.renren.modules.app.form.MemberScoreForm;
-import io.renren.modules.app.form.PageWrapper;
+import io.renren.modules.app.entity.task.TaskTagEntity;
+import io.renren.modules.app.form.*;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.redis.core.query.QueryUtils;
+
+import java.util.List;
 
 /**
  * 用户
@@ -17,12 +18,12 @@ import org.springframework.data.redis.core.query.QueryUtils;
  */
 public interface MemberService extends IService<Member> {
 	/**
-	 * 根据关键字(雷锋ID/昵称/手机号)搜索用户-分页
-	 * @param keyword
+	 * 根据条件-如关键字(雷锋ID/昵称/手机号)搜索用户-分页
+	 * @param form 搜索条件
 	 * @param page
 	 * @return
 	 */
-	PageUtils<Member> searchMembers(String keyword,PageWrapper page);
+	PageUtils<Member> searchMembers(MemberQueryForm form, PageWrapper page);
 
 	/**
 	 * 获取用户信息-根据id
@@ -71,6 +72,14 @@ public interface MemberService extends IService<Member> {
 	 */
 	PageUtils<Member> getFansMembers(Long toMemberId, PageWrapper page);
 
+    /**
+     * 是否关注
+     * @param fromMemberId
+     * @param toMemberId
+     * @return
+     */
+    boolean isFollowed(Long fromMemberId,Long toMemberId);
+
 	/**
 	 * 用户评分
 	 * @param judgeId 评分人id
@@ -81,4 +90,7 @@ public interface MemberService extends IService<Member> {
 	void sendPhoneCode(String phoneNum) throws Exception;
 
 	boolean validatePhoneCode(String phoneNum, String code);
+
+//	//用户技能列表
+//	List<TaskTagEntity> getMemberTags( Long memberId);
 }

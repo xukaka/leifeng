@@ -31,8 +31,7 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @Login
-    @PostMapping("/banner")
+    @GetMapping("/banner")
     @ApiOperation("获取任务横幅列表")
     public R getBanners() {
         List<TaskBannerDto> banners = taskService.getTaskBanners();
@@ -47,10 +46,11 @@ public class TaskController {
         return R.ok();
     }
 
+    @Login
     @GetMapping("/detail/{id}")
     @ApiOperation("获取任务详细信息")
     public R getTask(@PathVariable("id") Long id) {
-        TaskDto task = taskService.getTask(id);
+        TaskDto task = taskService.getTask(ReqUtils.currentUserId(),id);
         return R.ok().put("result", task);
     }
 
@@ -73,12 +73,29 @@ public class TaskController {
     }
 
     @Login
-    @PostMapping("/receive")
+    @GetMapping("/receive")
     @ApiOperation("领取任务")
-    public R receiveTask(@RequestBody Long taskId) {
+    public R receiveTask(@RequestParam Long taskId) {
         Member receiver = taskService.receiveTask(ReqUtils.currentUserId(), taskId);
         return R.ok().put("result",receiver);
     }
+
+    @Login
+    @GetMapping("/submit")
+    @ApiOperation("提交任务")
+    public R submitTask(@RequestParam Long taskId) {
+        taskService.submitTask(ReqUtils.currentUserId(), taskId);
+        return R.ok();
+    }
+
+    @Login
+    @GetMapping("/complete")
+    @ApiOperation("确认完成任务")
+    public R completeTask(@RequestParam Long receiverId,@RequestParam Long taskId) {
+        taskService.completeTask(receiverId, taskId);
+        return R.ok();
+    }
+
 
     @GetMapping("/receive/list")
     @ApiOperation("分页获取领取任务列表")
