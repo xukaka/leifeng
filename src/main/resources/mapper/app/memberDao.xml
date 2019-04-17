@@ -20,7 +20,7 @@
 
 
     <select id="searchMembers"  resultType="io.renren.modules.app.entity.setting.Member">
-        select * from member m
+        select m.* from member m
         where  m.status = 1
         <include refid="searchMemberCondition"/>
         ORDER BY m.create_time DESC

@@ -15,7 +15,8 @@
         m.avatar AS creator_avatar,
         m.self_intro AS creator_self_intro,
         m.mobile AS creator_mobile,
-        m.sex AS creator_sex
+        m.sex AS creator_sex,
+        m.level AS creator_level
         <!--    ri.image_url,
             tg.name AS tag_name-->
     </sql>
@@ -107,6 +108,7 @@
             <result property="selfIntro" column="creator_self_intro"/>
             <result property="mobile" column="creator_mobile"/>
             <result property="sex" column="creator_sex"/>
+            <result property="level" column="creator_level"/>
         </association>
         <!--关联领取人-->
         <association property="receiver" javaType="io.renren.modules.app.entity.setting.Member">
@@ -198,6 +200,7 @@
             <result property="realName" column="creator_real_name"/>
             <result property="avatar" column="creator_avatar"/>
             <result property="sex" column="creator_sex"/>
+            <result property="level" column="creator_level"/>
         </association>
         <!--图片url列表-->
         <collection property="imageUrls" ofType="string">

@@ -25,6 +25,8 @@ public class Member implements Serializable {
     private String avatar;
     //个性说明
     private String selfIntro;
+    //等级
+    private Integer level;
     //维度
     private Double lat;
     //经度
@@ -175,5 +177,13 @@ public class Member implements Serializable {
 
     public void setDistance(Long distance) {
         this.distance = distance;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 }
