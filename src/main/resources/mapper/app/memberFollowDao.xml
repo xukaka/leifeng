@@ -11,7 +11,7 @@
         m.avatar,
         m.sex
         FROM t_member_follow f
-        JOIN member m ON f.from_member_id = m.id and m.status = 1
+        JOIN member m ON f.to_member_id = m.id and m.status = 1
         WHERE f.from_member_id = #{fromMemberId}
         ORDER BY f.create_time desc
         LIMIT #{page.offset},#{page.limit}
@@ -21,7 +21,7 @@
         SELECT
          count(*)
         FROM t_member_follow f
-        JOIN member m ON f.from_member_id = m.id and m.status = 1
+        JOIN member m ON f.to_member_id = m.id and m.status = 1
         WHERE f.from_member_id = #{fromMemberId}
     </select>
 
@@ -33,7 +33,7 @@
         m.avatar,
         m.sex
         FROM t_member_follow f
-        JOIN member m ON f.to_member_id = m.id and m.status = 1
+        JOIN member m ON f.from_member_id = m.id and m.status = 1
         WHERE f.to_member_id = #{toMemberId}
         ORDER BY f.create_time desc
         LIMIT #{page.offset},#{page.limit}
@@ -43,7 +43,7 @@
         SELECT
         count(*)
         FROM t_member_follow f
-        JOIN member m ON f.to_member_id = m.id and m.status = 1
+        JOIN member m ON f.from_member_id = m.id and m.status = 1
         WHERE f.to_member_id = #{toMemberId}
     </select>
 

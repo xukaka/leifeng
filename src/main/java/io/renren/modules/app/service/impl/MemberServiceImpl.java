@@ -8,14 +8,12 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 //import com.github.qcloudsms.SmsSingleSenderResult;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
-import io.renren.common.utils.DateUtils;
-import io.renren.common.utils.GeoUtils;
-import io.renren.common.utils.JsonUtil;
-import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.setting.MemberDao;
 import io.renren.modules.app.dao.setting.MemberFollowDao;
 import io.renren.modules.app.dao.setting.MemberScoreDao;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskCommentDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
@@ -115,8 +113,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public Member getMember(Long memberId) {
-        return this.baseMapper.selectById(memberId);
+    public MemberDto getMember(Long curMemberId,Long memberId) {
+        Member member = this.baseMapper.selectById(memberId);
+        if (member!=null){
+            MemberDto dto= BeanUtil.copy(member,MemberDto.class);
+            //是否关注
+            boolean isFollowed = this.isFollowed(curMemberId, memberId);
+            dto.setFollowed(isFollowed);
+            return dto;
+        }
+        return null;
+
     }
 
     @Override

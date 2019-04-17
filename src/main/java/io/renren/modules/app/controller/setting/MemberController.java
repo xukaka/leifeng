@@ -9,6 +9,7 @@ import io.renren.common.utils.RabbitMqHelper;
 import io.renren.common.utils.RedisUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberFeedback;
@@ -75,7 +76,7 @@ public class MemberController {
     @GetMapping("/detail")
     @ApiOperation("获取用户信息")
     public R getMember(@RequestParam("memberId") Long memberId) {
-        Member member = memberService.getMember(memberId);
+        MemberDto member = memberService.getMember(ReqUtils.currentUserId(),memberId);
         return R.ok().put("result", member);
     }
 
