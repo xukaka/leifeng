@@ -11,12 +11,14 @@ import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberFeedback;
+import io.renren.modules.app.entity.setting.MemberFriend;
 import io.renren.modules.app.entity.story.PublishMessageEntity;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.MemberForm;
 import io.renren.modules.app.form.MemberScoreForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.MemberFeedbackService;
+import io.renren.modules.app.service.MemberFriendService;
 import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
@@ -52,6 +54,8 @@ public class MemberController {
     private MemberService memberService;
     @Autowired
     private MemberFeedbackService memberFeedbackService;
+    @Autowired
+    private MemberFriendService memberFriendService;
 
     @Resource
     private RabbitMqHelper rabbitMqHelper;
@@ -192,6 +196,7 @@ public class MemberController {
         return R.ok().put("result",avatar);
     }
 
+    @Login
     @PostMapping("/feedback/save")
     @ApiOperation("用户反馈保存")
     public R feedbackSave(Long memberId , String content){
@@ -217,5 +222,23 @@ public class MemberController {
         return R.ok().put("result", list)
                 .put("page",page.getCurrPage())
                 .put("size",page.getPageSize());
+    }
+
+    @PostMapping("/friend/save")
+    @ApiOperation("添加好友")
+    public R friendSave(Long memberId, Long friendId){
+        if(memberId == null && memberId.longValue()<=0){
+            return R.error(HttpStatus.SC_BAD_REQUEST,"memberId不为空");
+        }
+        if(friendId == null && friendId.longValue()<=0){
+            return R.error(HttpStatus.SC_BAD_REQUEST,"friendId不为空");
+        }
+
+        MemberFriend memberFriend = new MemberFriend();
+        memberFriend.setMemberId(memberId);
+        memberFriend.setFriendId(friendId);
+        memberFriend.setCreateTime(System.currentTimeMillis());
+        memberFriendService.insert(memberFriend);
+        return R.ok();
     }
 }
