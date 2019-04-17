@@ -36,13 +36,13 @@ public class RenrenApplication extends SpringBootServletInitializer {
 		ImConfig imConfig = new ImConfig();
 		imConfig.setBindIp("127.0.0.1");
 		imConfig.setBindPort(11805);
-//		imConfig.setIsSSL("on");
-//		try {
-//			initSsl(imConfig);
-//
-//		}catch (Exception e){
-//			logger.error("SSL start failed.");
-//		}
+		imConfig.setIsSSL("on");
+		try {
+			initSsl(imConfig);
+
+		}catch (Exception e){
+			logger.error("SSL start failed.");
+		}
 
 		//初始化SSL;(开启SSL之前,你要保证你有SSL证书哦...)
 		//设置群组监听器，非必须，根据需要自己选择性实现;
