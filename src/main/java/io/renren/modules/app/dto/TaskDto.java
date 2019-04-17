@@ -72,6 +72,10 @@ public class TaskDto implements Serializable {
      * 任务创建人
      */
     private Member creator;
+    /**
+     * 是否关注任务创建人
+     */
+    private Boolean isFollowed = false;
 
     /**
      * 任务领取人
@@ -97,6 +101,16 @@ public class TaskDto implements Serializable {
      */
     private Long createTime;
 
+
+
+
+    public Boolean getFollowed() {
+        return isFollowed;
+    }
+
+    public void setFollowed(Boolean followed) {
+        isFollowed = followed;
+    }
 
     public Long getReceiveTime() {
         return receiveTime;

@@ -68,6 +68,14 @@ public interface MemberService extends IService<Member> {
 	 */
 	PageUtils<Member> getFansMembers(Long toMemberId, PageWrapper page);
 
+    /**
+     * 是否关注
+     * @param fromMemberId
+     * @param toMemberId
+     * @return
+     */
+    boolean isFollowed(Long fromMemberId,Long toMemberId);
+
 	/**
 	 * 用户评分
 	 * @param judgeId 评分人id

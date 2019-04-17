@@ -17,7 +17,9 @@ import io.renren.modules.app.entity.task.TaskReceiveEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
+import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.service.TaskService;
+import io.renren.modules.app.service.TaskTagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +40,14 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Resource
     private TaskReceiveDao taskReceiveDao;
+
+    @Resource
+    private TaskTagService taskTagService;
+
+
+    @Resource
+    private MemberService memberService;
+
 
     @Resource
     private RabbitMqHelper rabbitMqHelper;
@@ -148,9 +158,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
 
     @Override
-    public TaskDto getTask(Long id) {
+    public TaskDto getTask(Long curMemberId,Long id) {
         TaskDto task = this.baseMapper.getTask(id);
         if (task != null) {
+            //是否关注
+            boolean isFollowed = memberService.isFollowed(curMemberId,task.getCreator().getId());
+            task.setFollowed(isFollowed);
             task.setCurSystemTime(DateUtils.now());
         }
         return task;
@@ -244,6 +257,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
             ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务领取人
+
+                //TODO 给任务领取人添加技能标签
+//                taskTagService.addMemberTagRelation();
+
             });
         }
     }

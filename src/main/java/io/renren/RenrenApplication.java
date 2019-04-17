@@ -4,12 +4,15 @@ import io.renren.common.io.command.IoWsHandshakeProcessor;
 import io.renren.common.io.listener.ImDemoGroupListener;
 import io.renren.common.io.service.LoginServiceProcessor;
 import io.renren.datasources.DynamicDataSourceConfig;
+import io.renren.modules.app.event.RenrenMsgListener;
 import org.jim.common.ImConfig;
 import org.jim.common.packets.Command;
 import org.jim.server.ImServerStarter;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.HandshakeReqHandler;
 import org.jim.server.command.handler.LoginReqHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -22,7 +25,7 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
 @Import({DynamicDataSourceConfig.class})
 public class RenrenApplication extends SpringBootServletInitializer {
-
+	private static Logger logger = LoggerFactory.getLogger(RenrenApplication.class);
 	public static void main(String[] args) {
 		ImConfig imConfig = new ImConfig();
 		imConfig.setBindPort(8080);
@@ -40,9 +43,8 @@ public class RenrenApplication extends SpringBootServletInitializer {
 		/*****************end *******************************************************************************************/
 		try {
 			imServerStarter.start();
-
 		}catch (Exception e){
-
+			logger.error("IM server start failed.");
 		}
 		SpringApplication.run(RenrenApplication.class, args);
 	}

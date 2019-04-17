@@ -170,6 +170,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
+    public boolean isFollowed(Long fromMemberId, Long toMemberId) {
+        return   memberFollowDao.isFollowed(fromMemberId,toMemberId);
+    }
+
+
+    @Override
     public void score(Long judgeId, MemberScoreForm form) {
         ValidatorUtils.validateEntity(form);
         MemberScoreEntity score = new MemberScoreEntity();

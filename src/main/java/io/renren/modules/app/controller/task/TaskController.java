@@ -46,10 +46,11 @@ public class TaskController {
         return R.ok();
     }
 
+    @Login
     @GetMapping("/detail/{id}")
     @ApiOperation("获取任务详细信息")
     public R getTask(@PathVariable("id") Long id) {
-        TaskDto task = taskService.getTask(id);
+        TaskDto task = taskService.getTask(ReqUtils.currentUserId(),id);
         return R.ok().put("result", task);
     }
 
@@ -89,9 +90,9 @@ public class TaskController {
 
     @Login
     @GetMapping("/complete")
-    @ApiOperation("完成任务")
-    public R completeTask(@RequestParam Long taskId) {
-        taskService.completeTask(ReqUtils.currentUserId(), taskId);
+    @ApiOperation("确认完成任务")
+    public R completeTask(@RequestParam Long receiverId,@RequestParam Long taskId) {
+        taskService.completeTask(receiverId, taskId);
         return R.ok();
     }
 
