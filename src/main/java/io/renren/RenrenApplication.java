@@ -34,7 +34,7 @@ public class RenrenApplication extends SpringBootServletInitializer {
 	private static Logger logger = LoggerFactory.getLogger(RenrenApplication.class);
 	public static void main(String[] args) {
 		ImConfig imConfig = new ImConfig();
-		imConfig.setBindIp("127.0.0.1");
+		imConfig.setBindIp("pet.fangzheng.fun");
 		imConfig.setBindPort(11805);
 		imConfig.setIsSSL("on");
 		try {
@@ -81,7 +81,7 @@ public class RenrenApplication extends SpringBootServletInitializer {
 	private static void initSsl(ImConfig imConfig) throws Exception {
 		//开启SSL
 		if(ImConst.ON.equals(imConfig.getIsSSL())){
-			String keyStorePath = "pet.fangzheng.fun.jks";
+			String keyStorePath = "classpath:pet.fangzheng.fun.jks";
 			String keyStoreFile = keyStorePath;
 			String trustStoreFile = keyStorePath;
 			String keyStorePwd = "xukaka";
