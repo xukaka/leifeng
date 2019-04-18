@@ -243,9 +243,9 @@
         </dependency>
         <!--J-IM-SERVER支持-->
         <dependency>
-            <groupId>org.j-im</groupId>
+            <groupId>lib.jim</groupId>
             <artifactId>jim-server</artifactId>
-            <version>2.6.0.v20190114-RELEASE</version>
+            <version>4.0</version>
         </dependency>
     </dependencies>
 
