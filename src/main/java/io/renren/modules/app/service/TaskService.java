@@ -44,7 +44,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 获取任务-根据id
      */
-    TaskDto getTask(Long id);
+    TaskDto getTask(Long curUserId,Long id);
 
     /**
      * 创建任务

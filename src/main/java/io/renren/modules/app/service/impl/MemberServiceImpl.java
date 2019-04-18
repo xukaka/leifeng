@@ -24,6 +24,7 @@ import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.entity.setting.MemberFollowEntity;
 import io.renren.modules.app.entity.setting.MemberScoreEntity;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
+import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 
 @Service("MemberService")
@@ -75,8 +77,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             return new PageUtils<>();
         }
         int total = this.baseMapper.count(queryMap);
+        setMemberTags(members);
         setMemberDistance(form, members);
         return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
+    }
+
+    //设置用户技能标签
+    private void setMemberTags(List<Member> members) {
+        for (Member member : members) {
+            List<String> tags = this.baseMapper.getMemberTags(member.getId());
+            member.setTags(tags);
+        }
     }
 
     private Map<String, Object> getMemberQueryMap(MemberQueryForm form) {
@@ -96,7 +107,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         for (Member member : members) {
             long distance = 0L;
             if (form.getLatitude() != null && form.getLongitude() != null
-                    && member.getLat() != null && member.getLng() != null){
+                    && member.getLat() != null && member.getLng() != null) {
                 distance = GeoUtils.getDistance(form.getLatitude(), form.getLongitude(), member.getLat(), member.getLng());
             }
             member.setDistance(distance);
@@ -170,6 +181,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
+    public boolean isFollowed(Long fromMemberId, Long toMemberId) {
+        return memberFollowDao.isFollowed(fromMemberId, toMemberId);
+    }
+
+
+    @Override
     public void score(Long judgeId, MemberScoreForm form) {
         ValidatorUtils.validateEntity(form);
         MemberScoreEntity score = new MemberScoreEntity();
@@ -200,5 +217,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             return true;
         return false;
     }
+
 
 }

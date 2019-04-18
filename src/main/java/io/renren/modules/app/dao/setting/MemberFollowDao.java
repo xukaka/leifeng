@@ -45,5 +45,13 @@ public interface MemberFollowDao extends BaseMapper<MemberFollowEntity> {
      */
     int fansCount(@Param("toMemberId") Long toMemberId);
 
+    /**
+     * 是否关注
+     * @param fromMemberId
+     * @param toMemberId
+     * @return
+     */
+    boolean isFollowed(@Param("fromMemberId") Long fromMemberId,@Param("toMemberId") Long toMemberId);
+
 
 }

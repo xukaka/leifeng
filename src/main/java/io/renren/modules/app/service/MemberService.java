@@ -5,8 +5,12 @@ import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
+import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.*;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.redis.core.query.QueryUtils;
+
+import java.util.List;
 
 /**
  * 用户
@@ -68,6 +72,14 @@ public interface MemberService extends IService<Member> {
 	 */
 	PageUtils<Member> getFansMembers(Long toMemberId, PageWrapper page);
 
+    /**
+     * 是否关注
+     * @param fromMemberId
+     * @param toMemberId
+     * @return
+     */
+    boolean isFollowed(Long fromMemberId,Long toMemberId);
+
 	/**
 	 * 用户评分
 	 * @param judgeId 评分人id
@@ -78,4 +90,7 @@ public interface MemberService extends IService<Member> {
 	void sendPhoneCode(String phoneNum) throws Exception;
 
 	boolean validatePhoneCode(String phoneNum, String code);
+
+//	//用户技能列表
+//	List<TaskTagEntity> getMemberTags( Long memberId);
 }

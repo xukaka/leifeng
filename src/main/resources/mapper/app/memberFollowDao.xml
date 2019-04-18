@@ -47,4 +47,11 @@
         WHERE f.to_member_id = #{toMemberId}
     </select>
 
+    <select id="isFollowed" resultType="boolean">
+        SELECT
+        COUNT(*)
+        FROM t_member_follow f
+        WHERE f.from_member_id=#{fromMemberId} AND f.to_member_id=#{toMemberId}
+    </select>
+
 </mapper>
