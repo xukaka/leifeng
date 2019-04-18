@@ -1,5 +1,6 @@
 package io.renren;
 
+import cn.hutool.core.io.resource.ClassPathResource;
 import com.jfinal.kit.PropKit;
 import io.renren.common.io.command.IoWsHandshakeProcessor;
 import io.renren.common.io.listener.ImDemoGroupListener;
@@ -8,7 +9,7 @@ import io.renren.common.io.service.user.handler.UserLoginReqHandler;
 import io.renren.common.io.service.user.processor.impl.UserCloseProcessor;
 import io.renren.common.io.service.user.processor.impl.UserLoginProcessor;
 import io.renren.datasources.DynamicDataSourceConfig;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jim.common.ImConfig;
 import org.jim.common.ImConst;
 import org.jim.common.config.PropertyImConfigBuilder;
@@ -25,6 +26,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Import;
 import org.tio.core.ssl.SslConfig;
+
+import java.io.InputStream;
 
 
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
@@ -79,17 +82,20 @@ public class RenrenApplication extends SpringBootServletInitializer {
 	 * @throws Exception
 	 */
 	private static void initSsl(ImConfig imConfig) throws Exception {
-		//开启SSL
-		if(ImConst.ON.equals(imConfig.getIsSSL())){
+		if(ImConst.ON.equals(imConfig.getIsSSL())) {
 			String keyStorePath = PropKit.get("jim.key.store.path");
+
 			String keyStoreFile = keyStorePath;
 			String trustStoreFile = keyStorePath;
 			String keyStorePwd = PropKit.get("jim.key.store.pwd");
-			if (StringUtils.isNotBlank(keyStoreFile) && StringUtils.isNotBlank(trustStoreFile)) {
-				SslConfig sslConfig = SslConfig.forServer(keyStoreFile, trustStoreFile, keyStorePwd);
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(keyStoreFile) && StringUtils.isNotBlank(trustStoreFile)) {
+				InputStream keyStoreInputStream = null;
+				InputStream trustStoreInputStream = null;
+				keyStoreInputStream = new ClassPathResource(trustStoreFile).getStream();
+				trustStoreInputStream = new ClassPathResource(trustStoreFile).getStream();
+
+				SslConfig sslConfig = SslConfig.forServer(keyStoreInputStream, trustStoreInputStream, keyStorePwd);
 				imConfig.setSslConfig(sslConfig);
 			}
-		}
-	}
-
+		}}
 }
