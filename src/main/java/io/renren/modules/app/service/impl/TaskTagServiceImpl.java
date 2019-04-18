@@ -100,7 +100,7 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
 
     @Override
     public List<TaskTagEntity> getTagsByTaskId(Long taskId) {
-        List<TaskTagEntity> tags = this.baseMapper.getTagsByTaskId(taskId);
+        List<TaskTagEntity> tags = baseMapper.getTagsByTaskId(taskId);
         if (CollectionUtils.isEmpty(tags)){
             return new ArrayList<>();
         }

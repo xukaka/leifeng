@@ -76,12 +76,12 @@ public class PublishMessageServiceImpl extends ServiceImpl<PublishMessageDao, Pu
 
     @Override
     public List<PublishMessageEntity> getPage(HashMap<String, Object> param) {
-        return this.baseMapper.getPage(param);
+        return baseMapper.getPage(param);
     }
 
     @Override
     public PublishMessageEntity getById(Long id) {
-        return this.baseMapper.getById(id);
+        return baseMapper.getById(id);
     }
 
 }

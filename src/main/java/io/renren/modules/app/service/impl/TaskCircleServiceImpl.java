@@ -41,7 +41,7 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
 
     @Override
     public TaskCircleDto getCircle(Long id) {
-        TaskCircleDto circle = this.baseMapper.getCircle(id);
+        TaskCircleDto circle = baseMapper.getCircle(id);
         return circle;
     }
 

@@ -46,24 +46,18 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Resource
     private TaskReceiveDao taskReceiveDao;
-
     @Resource
     private TaskTagService taskTagService;
     @Resource
     private MemberTagRelationService memberTagRelationService;
-
-
     @Resource
     private MemberService memberService;
-
-
     @Resource
     private RabbitMqHelper rabbitMqHelper;
-
     @Resource
     private RedisUtils redisUtils;
 
-    private static final long TEN_MINUTES = 60 * 10;
+    private static final long EXPIRE = 60 * 10;//10分钟
 
     @Override
     public List<TaskBannerDto> getTaskBanners() {
@@ -76,7 +70,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             }
         }
         return banners;*/
-        List<TaskBannerDto> banners = this.baseMapper.getTaskBanners();
+        List<TaskBannerDto> banners = baseMapper.getTaskBanners();
         if (CollectionUtils.isEmpty(banners)) {
             return new ArrayList<>();
         }
@@ -86,12 +80,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     public PageUtils<TaskDto> searchTasks(TaskQueryForm form, PageWrapper page) {
         Map<String, Object> queryMap = getTaskQueryMap(form);
-        List<TaskDto> tasks = this.baseMapper.searchTasks(queryMap, page);
+        List<TaskDto> tasks = baseMapper.searchTasks(queryMap, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
         setTastDistance(form, tasks);
-        int total = this.baseMapper.count(queryMap);
+        int total = baseMapper.count(queryMap);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
@@ -146,28 +140,28 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public PageUtils<TaskDto> getPublishedTasks(Long publisherId, PageWrapper page) {
-        List<TaskDto> tasks = this.baseMapper.getPublishedTasks(publisherId, page);
+        List<TaskDto> tasks = baseMapper.getPublishedTasks(publisherId, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
-        int total = this.baseMapper.publishCount(publisherId);
+        int total = baseMapper.publishCount(publisherId);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
     @Override
     public PageUtils<TaskDto> getReceivedTasks(Long receiverId, PageWrapper page) {
-        List<TaskDto> tasks = this.baseMapper.getReceivedTasks(receiverId, page);
+        List<TaskDto> tasks = baseMapper.getReceivedTasks(receiverId, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
-        int total = this.baseMapper.receiveCount(receiverId);
+        int total = baseMapper.receiveCount(receiverId);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
 
     @Override
     public TaskDto getTask(Long curMemberId, Long id) {
-        TaskDto task = this.baseMapper.getTask(id);
+        TaskDto task = baseMapper.getTask(id);
         if (task != null) {
             //是否关注
             boolean isFollowed = memberService.isFollowed(curMemberId, task.getCreator().getId());
@@ -186,10 +180,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         task.setCreatorId(creatorId);
         task.setStatus(TaskStatusEnum.published);
         task.setCreateTime(DateUtils.now());
-        this.insert(task);
-        this.addTaskImageRelation(task.getId(), form.getImageUrls());
-        this.addTaskTagRelation(task.getId(), form.getTagIds());
-        this.addTaskNotifiedUserRelation(task.getId(), form.getNotifiedUserIds());
+        insert(task);
+        addTaskImageRelation(task.getId(), form.getImageUrls());
+        addTaskTagRelation(task.getId(), form.getTagIds());
+        addTaskNotifiedUserRelation(task.getId(), form.getNotifiedUserIds());
     }
 
 
@@ -198,17 +192,17 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         ValidatorUtils.validateEntity(form);
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);
-        this.updateById(task);
+        updateById(task);
     }
 
     @Override
     public void deleteTask(Long id) {
-        TaskEntity task = this.selectById(id);
+        TaskEntity task = selectById(id);
         if (task == null || task.getStatus() == TaskStatusEnum.received || task.getStatus() == TaskStatusEnum.submitted) {
-            throw new RRException("任务已领取");
+            throw new RRException("任务已领取",0);
         }
         task.setDeleted(true);
-        this.updateById(task);
+        updateById(task);
     }
 
 
@@ -224,10 +218,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (task == null
                 || task.getStatus() != TaskStatusEnum.published
                 || task.getDeleted()) {
-            throw new RRException("任务已领取");
+            throw new RRException("任务已领取",0);
         }
         task.setStatus(TaskStatusEnum.received);
-        this.updateById(task);
+        updateById(task);
         long receiveId = taskReceiveDao.insert(receive);
         return taskReceiveDao.getReceiver(receiveId);
     }
@@ -235,11 +229,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void submitTask(Long receiverId, Long taskId) {
-        boolean isSubmitable = this.baseMapper.isSubmitableTask(receiverId, taskId);
+        boolean isSubmitable = baseMapper.isSubmitableTask(receiverId, taskId);
         if (!isSubmitable) {
             throw new RRException("任务不可提交");
         }
-        TaskEntity task = this.selectById(taskId);
+        TaskEntity task = selectById(taskId);
         if (task != null) {
             task.setStatus(TaskStatusEnum.submitted);
             this.updateById(task);
@@ -254,14 +248,14 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void completeTask(Long receiverId, Long taskId) {
-        boolean isCompletable = this.baseMapper.isCompletableTask(receiverId, taskId);
+        boolean isCompletable = baseMapper.isCompletableTask(receiverId, taskId);
         if (!isCompletable) {
             throw new RRException("任务不可完成");
         }
-        TaskEntity task = this.selectById(taskId);
+        TaskEntity task = selectById(taskId);
         if (task != null) {
             task.setStatus(TaskStatusEnum.completed);
-            this.updateById(task);
+            updateById(task);
 
             ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务领取人
@@ -303,44 +297,24 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
 
-/*
-
-    @Override
-    @Transactional
-    public void completeTask(Long receiverId, Long taskId) {
-        TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
-        TaskEntity task = this.selectById(taskId);
-        if (task == null
-                || task.getStatus() != 1//非领取状态
-                || task.getDeleted()) {
-            throw new RRException("任务已被领取");
-        }
-        task.setStatus(1);//设置为领取状态
-        this.updateById(task);
-        taskReceiveDao.insert(receive);
-    }
-*/
-
-
     //任务-图片关系
     private void addTaskImageRelation(Long taskId, List<String> imageUrls) {
         if (!CollectionUtils.isEmpty(imageUrls)) {
-            this.baseMapper.insertTaskImageRelation(taskId, imageUrls);
+            baseMapper.insertTaskImageRelation(taskId, imageUrls);
         }
     }
 
     //任务-标签关系
     private void addTaskTagRelation(Long taskId, List<Long> tagIds) {
         if (!CollectionUtils.isEmpty(tagIds)) {
-            this.baseMapper.insertTaskTagRelation(taskId, tagIds);
+            baseMapper.insertTaskTagRelation(taskId, tagIds);
         }
     }
-
 
     //任务-提示用户关系
     private void addTaskNotifiedUserRelation(Long taskId, List<Long> userIds) {
         if (!CollectionUtils.isEmpty(userIds)) {
-            this.baseMapper.insertTaskNotifiedUserRelation(taskId, userIds);
+            baseMapper.insertTaskNotifiedUserRelation(taskId, userIds);
         }
     }
 

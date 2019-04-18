@@ -26,13 +26,16 @@ import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StringUtils;
+
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -43,9 +46,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 
-@Service("MemberService")
+@Service
 public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements MemberService {
-
+    private static Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
     @Resource
     private MemberAuthsService memberAuthsService;
     @Resource
@@ -68,22 +71,22 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     private ConcurrentHashMap<String, String> phoneCodeMap = new ConcurrentHashMap<>();
 
     @Override
-    public PageUtils<Member> searchMembers(MemberQueryForm form, PageWrapper page) {
+    public PageUtils<MemberDto> searchMembers(MemberQueryForm form, PageWrapper page) {
         Map<String, Object> queryMap = getMemberQueryMap(form);
-        List<Member> members = this.baseMapper.searchMembers(queryMap, page);
+        List<MemberDto> members = baseMapper.searchMembers(queryMap, page);
         if (CollectionUtils.isEmpty(members)) {
             return new PageUtils<>();
         }
-        int total = this.baseMapper.count(queryMap);
+        int total = baseMapper.count(queryMap);
         setMemberTags(members);
         setMemberDistance(form, members);
         return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
     }
 
     //设置用户技能标签
-    private void setMemberTags(List<Member> members) {
-        for (Member member : members) {
-            List<String> tags = this.baseMapper.getMemberTags(member.getId());
+    private void setMemberTags(List<MemberDto> members) {
+        for (MemberDto member : members) {
+            List<String> tags = baseMapper.getMemberTags(member.getId());
             member.setTags(tags);
         }
     }
@@ -101,8 +104,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     //计算距离
-    private void setMemberDistance(MemberQueryForm form, List<Member> members) {
-        for (Member member : members) {
+    private void setMemberDistance(MemberQueryForm form, List<MemberDto> members) {
+        for (MemberDto member : members) {
             long distance = 0L;
             if (form.getLatitude() != null && form.getLongitude() != null
                     && member.getLat() != null && member.getLng() != null) {
@@ -113,10 +116,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public MemberDto getMember(Long curMemberId,Long memberId) {
-        Member member = this.baseMapper.selectById(memberId);
-        if (member!=null){
-            MemberDto dto= BeanUtil.copy(member,MemberDto.class);
+    public MemberDto getMember(Long curMemberId, Long memberId) {
+        Member member = baseMapper.selectById(memberId);
+        if (member != null) {
+            MemberDto dto = new MemberDto();
+            BeanUtils.copyProperties(member, dto);
             //是否关注
             boolean isFollowed = this.isFollowed(curMemberId, memberId);
             dto.setFollowed(isFollowed);
@@ -127,14 +131,20 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public Member getMember(Long memberId) {
-       return this.baseMapper.selectById(memberId);
+    public MemberDto getMember(Long memberId) {
+        Member member = baseMapper.selectById(memberId);
+        if (member != null) {
+            MemberDto dto = new MemberDto();
+            BeanUtils.copyProperties(member, dto);
+            return dto;
+        }
+        return null;
     }
 
     @Override
     public void updateMember(MemberForm form) {
         ValidatorUtils.validateEntity(form);
-        Member member = this.selectById(form.getId());
+        Member member = selectById(form.getId());
         if (member != null) {
             member.setNickName(form.getNickName());
             member.setAvatar(form.getAvatar());
@@ -155,7 +165,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     @Override
     public void updateLocationNumber(LocationForm locationForm) {
-        this.baseMapper.updateLocationNumber(locationForm);
+        baseMapper.updateLocationNumber(locationForm);
     }
 
     @Override
@@ -173,8 +183,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public PageUtils<Member> getFollowMembers(Long fromMemberId, PageWrapper page) {
-        List<Member> members = memberFollowDao.getFollowMembers(fromMemberId, page);
+    public PageUtils<MemberDto> getFollowMembers(Long fromMemberId, PageWrapper page) {
+        List<MemberDto> members = memberFollowDao.getFollowMembers(fromMemberId, page);
         if (CollectionUtils.isEmpty(members)) {
             return new PageUtils<>();
         }
@@ -183,8 +193,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public PageUtils<Member> getFansMembers(Long toMemberId, PageWrapper page) {
-        List<Member> members = memberFollowDao.getFansMembers(toMemberId, page);
+    public PageUtils<MemberDto> getFansMembers(Long toMemberId, PageWrapper page) {
+        List<MemberDto> members = memberFollowDao.getFansMembers(toMemberId, page);
         if (CollectionUtils.isEmpty(members)) {
             return new PageUtils<>();
         }
@@ -194,7 +204,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     @Override
     public boolean isFollowed(Long fromMemberId, Long toMemberId) {
-        return memberFollowDao.isFollowed(fromMemberId, toMemberId);
+        int count = memberFollowDao.isFollowed(fromMemberId, toMemberId);
+        return count > 0;
     }
 
 
@@ -217,17 +228,16 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         SmsSingleSender ssender = new SmsSingleSender(appid, appkey);
         SmsSingleSenderResult result = ssender.sendWithParam("86", phoneNum,
                 templateId, params, signName, "", "");
-        System.out.println("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));
+        logger.info("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));
         phoneCodeMap.put(phoneNum, code);
     }
 
     @Override
     public boolean validatePhoneCode(String phoneNum, String code) {
-        System.out.println("phoneCodeMap的内容为：" + JsonUtil.Java2Json(phoneCodeMap));
+        logger.info("phoneCodeMap的内容为：" + JsonUtil.Java2Json(phoneCodeMap));
         String originCode = phoneCodeMap.get(phoneNum);
-        if (!StringUtils.isEmpty(code) && code.equals(originCode))
-            return true;
-        return false;
+        return StringUtils.equals(code, originCode);
+
     }
 
 

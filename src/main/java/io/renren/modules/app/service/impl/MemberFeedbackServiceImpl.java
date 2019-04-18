@@ -22,18 +22,17 @@ import java.util.Map;
 public class MemberFeedbackServiceImpl extends ServiceImpl<MemberFeedbackDao, MemberFeedback> implements MemberFeedbackService {
 
     @Override
-    public PageUtils queryPage(Map<String, Object> params) {
+    public PageUtils<MemberFeedback> queryPage(Map<String, Object> params) {
         Page<MemberFeedback> page = this.selectPage(
                 new Query<MemberFeedback>(params).getPage(),
-                new EntityWrapper<MemberFeedback>()
+                new EntityWrapper<>()
         );
-
-        return new PageUtils(page);
+        return new PageUtils<>(page);
     }
 
     @Override
     public List<MemberFeedback> getPage(HashMap<String, Object> param) {
-        return this.baseMapper.getPage(param);
+        return baseMapper.getPage(param);
     }
 
 }

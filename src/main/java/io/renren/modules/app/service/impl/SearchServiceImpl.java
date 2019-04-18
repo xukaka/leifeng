@@ -32,17 +32,17 @@ import java.util.List;
 public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntity> implements SearchService {
     private final static Logger logger = LoggerFactory.getLogger(SearchServiceImpl.class);
 
-    @Autowired
+    @Resource
     private SearchDao searchDao;
 
     @Override
     public void saveHistory(Long userId, String keyword) {
+
         if (existsHistory(userId, keyword)) {
             updateHistory(userId, keyword);
         } else {
             addHistory(userId, keyword);
         }
-
         addSearchLog(keyword);
 
     }

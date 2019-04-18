@@ -32,12 +32,12 @@ public class MsgCommentServiceImpl extends ServiceImpl<MsgCommentDao, MsgComment
 
     @Override
     public List<CommentDto> getPage(HashMap params) {
-        return this.baseMapper.getPage(params);
+        return baseMapper.getPage(params);
     }
 
     @Override
     public List<CommentDto> querySubThroughParentId(Long fsmId, Long parentId) {
-        return this.baseMapper.querySubThroughParentId(fsmId,parentId);
+        return baseMapper.querySubThroughParentId(fsmId,parentId);
     }
 
 }

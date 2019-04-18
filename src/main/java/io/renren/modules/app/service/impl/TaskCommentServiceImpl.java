@@ -32,12 +32,12 @@ public class TaskCommentServiceImpl extends ServiceImpl<TaskCommentDao, TaskComm
 
     @Override
     public PageUtils<TaskCommentDto> getComments(Long taskId, PageWrapper page) {
-        List<TaskCommentDto> comments = this.baseMapper.getComments(taskId, page);
+        List<TaskCommentDto> comments = baseMapper.getComments(taskId, page);
         if (CollectionUtils.isEmpty(comments)) {
             return new PageUtils<>();
         }
         setCommentRepies(comments);
-        int total = this.baseMapper.count(taskId);
+        int total = baseMapper.count(taskId);
         return new PageUtils<>(comments, total, page.getPageSize(), page.getCurrPage());
     }
 

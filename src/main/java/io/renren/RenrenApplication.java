@@ -16,14 +16,12 @@ import org.jim.common.packets.Command;
 import org.jim.server.ImServerStarter;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.HandshakeReqHandler;
-import org.jim.server.command.handler.LoginReqHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Import;
 import org.tio.core.ssl.SslConfig;

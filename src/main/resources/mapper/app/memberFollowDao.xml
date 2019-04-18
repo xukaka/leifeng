@@ -3,7 +3,7 @@
 
 <mapper namespace="io.renren.modules.app.dao.setting.MemberFollowDao">
 
-    <select id="getFollowMembers" resultType="io.renren.modules.app.entity.setting.Member">
+    <select id="getFollowMembers" resultType="io.renren.modules.app.dto.MemberDto">
         SELECT
         m.id,
         m.nick_name AS nickName,
@@ -25,7 +25,7 @@
         WHERE f.from_member_id = #{fromMemberId}
     </select>
 
-    <select id="getFansMembers" resultType="io.renren.modules.app.entity.setting.Member">
+    <select id="getFansMembers" resultType="io.renren.modules.app.dto.MemberDto">
         SELECT
         m.id,
         m.nick_name AS nickName,
@@ -47,7 +47,7 @@
         WHERE f.to_member_id = #{toMemberId}
     </select>
 
-    <select id="isFollowed" resultType="boolean">
+    <select id="isFollowed" resultType="int">
         SELECT
         COUNT(*)
         FROM t_member_follow f

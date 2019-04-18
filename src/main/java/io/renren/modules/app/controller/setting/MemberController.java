@@ -68,7 +68,7 @@ public class MemberController {
         pageMap.put("page", form.getCurPage());
         pageMap.put("size", form.getPageSize());
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.searchMembers(form, page);
+        PageUtils<MemberDto> members = memberService.searchMembers(form, page);
         return R.ok().put("result", members);
     }
 
@@ -152,7 +152,7 @@ public class MemberController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.getFollowMembers(ReqUtils.currentUserId(), page);
+        PageUtils<MemberDto> members = memberService.getFollowMembers(ReqUtils.currentUserId(), page);
         return R.ok().put("result", members);
     }
 
@@ -165,7 +165,7 @@ public class MemberController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.getFansMembers(ReqUtils.currentUserId(), page);
+        PageUtils<MemberDto> members = memberService.getFansMembers(ReqUtils.currentUserId(), page);
         return R.ok().put("result", members);
     }
 

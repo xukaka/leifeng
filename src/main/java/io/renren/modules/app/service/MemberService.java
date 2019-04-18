@@ -6,12 +6,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
-import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.*;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.data.redis.core.query.QueryUtils;
-
-import java.util.List;
 
 /**
  * 用户
@@ -24,7 +19,7 @@ public interface MemberService extends IService<Member> {
 	 * @param page
 	 * @return
 	 */
-	PageUtils<Member> searchMembers(MemberQueryForm form, PageWrapper page);
+	PageUtils<MemberDto> searchMembers(MemberQueryForm form, PageWrapper page);
 
 	/**
 	 * 获取用户信息-根据id
@@ -34,7 +29,7 @@ public interface MemberService extends IService<Member> {
 	MemberDto getMember(Long curMemberId,Long memberId);
 
 
-	Member getMember(Long memberId);
+	MemberDto getMember(Long memberId);
 
 	/**
 	 * 更新用户信息
@@ -68,13 +63,13 @@ public interface MemberService extends IService<Member> {
 	 * 分页获取关注的用户列表
 	 * @param fromMemberId
 	 */
-	PageUtils<Member> getFollowMembers(Long fromMemberId, PageWrapper page);
+	PageUtils<MemberDto > getFollowMembers(Long fromMemberId, PageWrapper page);
 
 	/**
 	 * 分页获取粉丝用户列表
 	 * @param toMemberId
 	 */
-	PageUtils<Member> getFansMembers(Long toMemberId, PageWrapper page);
+	PageUtils<MemberDto > getFansMembers(Long toMemberId, PageWrapper page);
 
     /**
      * 是否关注
@@ -95,6 +90,4 @@ public interface MemberService extends IService<Member> {
 
 	boolean validatePhoneCode(String phoneNum, String code);
 
-//	//用户技能列表
-//	List<TaskTagEntity> getMemberTags( Long memberId);
 }
