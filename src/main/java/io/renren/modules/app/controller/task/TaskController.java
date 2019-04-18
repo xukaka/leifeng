@@ -70,7 +70,7 @@ public class TaskController {
         return R.ok();
     }
 
-//    @Login
+    @Login
     @GetMapping("/receive")
     @ApiOperation("领取任务")
     public R receiveTask(@RequestParam Long taskId) {
@@ -78,7 +78,7 @@ public class TaskController {
         return R.ok().put("result",receiver);
     }
 
-//    @Login
+    @Login
     @GetMapping("/submit")
     @ApiOperation("提交任务")
     public R submitTask(@RequestParam Long taskId) {
@@ -86,7 +86,7 @@ public class TaskController {
         return R.ok();
     }
 
-//    @Login
+    @Login
     @GetMapping("/complete")
     @ApiOperation("确认完成任务")
     public R completeTask(@RequestParam Long receiverId,@RequestParam Long taskId) {
