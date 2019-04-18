@@ -8,6 +8,7 @@ import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
@@ -61,7 +62,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-       List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+        List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
             if (!CollectionUtils.isEmpty(banners)) {
@@ -198,7 +199,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public void deleteTask(Long id) {
         TaskEntity task = selectById(id);
         if (task == null || task.getStatus() == TaskStatusEnum.received || task.getStatus() == TaskStatusEnum.submitted) {
-            throw new RRException("任务已领取",0);
+            throw new RRException("任务已领取", 0);
         }
         task.setDeleted(true);
         updateById(task);
@@ -210,27 +211,26 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
      */
     @Override
     @Transactional
-    public Member receiveTask(Long receiverId, Long taskId) {
-        TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
-        logger.info(receive.toString());
-        TaskEntity task = this.selectById(taskId);
-        if (task == null
-                || task.getStatus() != TaskStatusEnum.published
-                || task.getDeleted()) {
-            throw new RRException("任务已领取",0);
+    public MemberDto receiveTask(Long receiverId, Long taskId) {
+        boolean isReceiveable = isReceiveableTask(taskId);
+        if (!isReceiveable) {
+            throw new RRException("任务不可领取", 0);
         }
+        TaskEntity task = selectById(taskId);
         task.setStatus(TaskStatusEnum.received);
         updateById(task);
-        long receiveId = taskReceiveDao.insert(receive);
-        return taskReceiveDao.getReceiver(receiveId);
+        TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
+        taskReceiveDao.insert(receive);
+        return taskReceiveDao.getReceiver(receive.getId());
+
     }
 
     @Override
     @Transactional
     public void submitTask(Long receiverId, Long taskId) {
-        boolean isSubmitable = baseMapper.isSubmitableTask(receiverId, taskId);
+        boolean isSubmitable =isSubmitableTask(receiverId, taskId);
         if (!isSubmitable) {
-            throw new RRException("任务不可提交");
+            throw new RRException("任务不可提交", 0);
         }
         TaskEntity task = selectById(taskId);
         if (task != null) {
@@ -247,7 +247,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void completeTask(Long receiverId, Long taskId) {
-        boolean isCompletable = baseMapper.isCompletableTask(receiverId, taskId);
+        boolean isCompletable =isCompletableTask(receiverId,taskId);
         if (!isCompletable) {
             throw new RRException("任务不可完成");
         }
@@ -265,6 +265,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             });
         }
     }
+
     //给任务领取人添加技能标签
     private void addTag2Member(Long receiverId, Long taskId) {
         List<TaskTagEntity> tags = taskTagService.getTagsByTaskId(taskId);
@@ -315,6 +316,19 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (!CollectionUtils.isEmpty(userIds)) {
             baseMapper.insertTaskNotifiedUserRelation(taskId, userIds);
         }
+    }
+
+    private boolean isReceiveableTask(Long taskId) {
+        int count = baseMapper.isReceiveableTask(taskId);
+        return count > 0;
+    }
+    private boolean isSubmitableTask(Long receiverId, Long taskId) {
+        int count = baseMapper.isSubmitableTask(receiverId, taskId);
+        return count > 0;
+    }
+    private boolean isCompletableTask(Long receiverId, Long taskId) {
+        int count = baseMapper.isCompletableTask(receiverId, taskId);
+        return count > 0;
     }
 
 }

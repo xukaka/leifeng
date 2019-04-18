@@ -2,6 +2,7 @@ package io.renren.modules.app.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.setting.Member;
@@ -64,7 +65,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 领取任务
      */
-    Member receiveTask(Long receiverId, Long taskId);
+    MemberDto  receiveTask(Long receiverId, Long taskId);
 
     /**
      * 提交任务（申请完成任务）

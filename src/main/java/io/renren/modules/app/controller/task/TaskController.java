@@ -3,17 +3,15 @@ package io.renren.modules.app.controller.task;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
-import io.renren.modules.app.entity.setting.Member;
-import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
 import io.renren.modules.app.service.TaskService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -72,15 +70,15 @@ public class TaskController {
         return R.ok();
     }
 
-    @Login
+//    @Login
     @GetMapping("/receive")
     @ApiOperation("领取任务")
     public R receiveTask(@RequestParam Long taskId) {
-        Member receiver = taskService.receiveTask(ReqUtils.currentUserId(), taskId);
+        MemberDto receiver = taskService.receiveTask(ReqUtils.currentUserId(), taskId);
         return R.ok().put("result",receiver);
     }
 
-    @Login
+//    @Login
     @GetMapping("/submit")
     @ApiOperation("提交任务")
     public R submitTask(@RequestParam Long taskId) {
@@ -88,7 +86,7 @@ public class TaskController {
         return R.ok();
     }
 
-    @Login
+//    @Login
     @GetMapping("/complete")
     @ApiOperation("确认完成任务")
     public R completeTask(@RequestParam Long receiverId,@RequestParam Long taskId) {

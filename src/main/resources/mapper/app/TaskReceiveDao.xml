@@ -3,7 +3,7 @@
 
 <mapper namespace="io.renren.modules.app.dao.task.TaskReceiveDao">
     <!--获取任务领取人-->
-    <select id="getReceiver" resultType="io.renren.modules.app.entity.setting.Member">
+    <select id="getReceiver" resultType="io.renren.modules.app.dto.MemberDto">
         SELECT
           m.*
         FROM t_task_receive re

@@ -3,7 +3,6 @@ package io.renren.modules.app.dto;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
-import io.renren.modules.app.entity.task.TaskTagEntity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -29,7 +28,6 @@ public class TaskDto implements Serializable {
      * 图片url列表
      */
     private List<String> imageUrls;
-
     /**
      * 标签名称
      */
@@ -38,7 +36,6 @@ public class TaskDto implements Serializable {
      * 任务开始时间
      */
     private Long startTime;
-
     /**
      * 任务过期时间
      */
@@ -47,13 +44,10 @@ public class TaskDto implements Serializable {
      * 当前当前系统时间
      */
     private Long curSystemTime;
-
     /**
      * 任务领取时间
      */
     private Long receiveTime;
-
-
     /**
      * 虚拟货币(雷锋币)
      */
@@ -62,13 +56,11 @@ public class TaskDto implements Serializable {
      * 任务地址
      */
     private TaskAddressEntity address;
-
     /**
      * 距离，根据经纬度计算
      */
     private Long distance;
-
-    /**
+    /*
      * 任务创建人
      */
     private Member creator;
@@ -76,12 +68,10 @@ public class TaskDto implements Serializable {
      * 是否关注任务创建人
      */
     private Boolean isFollowed = false;
-
     /**
      * 任务领取人
      */
     private Member receiver;
-
     /**
      * 状态
      */
@@ -95,14 +85,10 @@ public class TaskDto implements Serializable {
      * 点赞数
      */
     private Integer likeCount;
-
     /**
      * 创建时间
      */
     private Long createTime;
-
-
-
 
     public Boolean getFollowed() {
         return isFollowed;
