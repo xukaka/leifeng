@@ -61,20 +61,19 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-        //TODO reids方式
-     /*  List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+       List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
             if (!CollectionUtils.isEmpty(banners)) {
-                redisUtils.addList(RedisKeys.BANNER_KEY, banners, TEN_MINUTES);
+                redisUtils.addList(RedisKeys.BANNER_KEY, banners, EXPIRE);
             }
         }
-        return banners;*/
-        List<TaskBannerDto> banners = baseMapper.getTaskBanners();
+        return banners;
+  /*      List<TaskBannerDto> banners = baseMapper.getTaskBanners();
         if (CollectionUtils.isEmpty(banners)) {
             return new ArrayList<>();
         }
-        return banners;
+        return banners;*/
     }
 
     @Override

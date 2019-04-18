@@ -55,6 +55,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     private MemberFollowDao memberFollowDao;
     @Resource
     private MemberScoreDao memberScoreDao;
+    @Resource
+    private RedisUtils redisUtils;
 
     @Value("${sms.appid}")
     private int appid;
@@ -68,7 +70,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     @Value("${sms.signName}")
     private String signName;
 
-    private ConcurrentHashMap<String, String> phoneCodeMap = new ConcurrentHashMap<>();
+//    private ConcurrentHashMap<String, String> phoneCodeMap = new ConcurrentHashMap<>();
 
     @Override
     public PageUtils<MemberDto> searchMembers(MemberQueryForm form, PageWrapper page) {
@@ -229,13 +231,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         SmsSingleSenderResult result = ssender.sendWithParam("86", phoneNum,
                 templateId, params, signName, "", "");
         logger.info("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));
-        phoneCodeMap.put(phoneNum, code);
+        redisUtils.set(RedisKeys.PHONE_CODE_KEY + phoneNum, code, 100);//100s过期
+//        phoneCodeMap.put(phoneNum, code);
     }
 
     @Override
     public boolean validatePhoneCode(String phoneNum, String code) {
-        logger.info("phoneCodeMap的内容为：" + JsonUtil.Java2Json(phoneCodeMap));
-        String originCode = phoneCodeMap.get(phoneNum);
+//        logger.info("phoneCodeMap的内容为：" + JsonUtil.Java2Json(phoneCodeMap));
+        String originCode = redisUtils.get(RedisKeys.PHONE_CODE_KEY + phoneNum);
         return StringUtils.equals(code, originCode);
 
     }

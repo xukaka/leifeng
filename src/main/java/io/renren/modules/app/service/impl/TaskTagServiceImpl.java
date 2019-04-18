@@ -29,7 +29,7 @@ public class TaskTagServiceImpl extends ServiceImpl<TaskTagDao, TaskTagEntity> i
         Wrapper<TaskTagEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("deleted", false)
                 .orderBy("usageCount", false);
-        List<TaskTagEntity> tags = this.selectList(wrapper);
+        List<TaskTagEntity> tags = selectList(wrapper);
         if (CollectionUtils.isEmpty(tags)) {
             return new ArrayList<>();
         }

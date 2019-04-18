@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +58,10 @@ public class MemberController {
 
     @Autowired
     private RedisUtils redisUtils;
-    @Autowired
-    private RedisTemplate redisTemplate;
+
+
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
 
 
     @PostMapping("/list")

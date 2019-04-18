@@ -10,6 +10,7 @@ package io.renren.common.utils;
 public class RedisKeys {
 
     public static String BANNER_KEY = "redis:task:banner:key";
+    public static String PHONE_CODE_KEY = "redis:validate:phonecode:key:";//短信验证
 
     public static String getSysConfigKey(String key){
         return "sys:config:" + key;

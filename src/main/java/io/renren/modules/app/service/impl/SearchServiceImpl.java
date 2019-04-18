@@ -53,7 +53,7 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
         Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("user_id", userId)
                 .orderBy("create_time", false);
-        List<SearchHistoryEntity> histories = this.selectList(wrapper);
+        List<SearchHistoryEntity> histories = selectList(wrapper);
         if (CollectionUtils.isEmpty(histories)) {
             return new ArrayList<>();
         }

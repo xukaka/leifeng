@@ -5,6 +5,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,15 +83,17 @@ public class RedisUtils {
     }
 
 
-
     public <T> void addList(String key, List<T> value) {
         addList(key,value,DEFAULT_EXPIRE);
     }
 
 
-    public <T> void addList(String key, List<T> value, long expire) {
-        redisTemplate.opsForList().leftPushAll(key,value);
-//        listOperations.leftPushAll(key, value);
+    public <T> void addList(String key, List<T> values, long expire) {
+        if (!CollectionUtils.isEmpty(values)){
+            for (T val : values){
+                redisTemplate.opsForList().leftPush(key,val);
+            }
+        }
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
@@ -102,7 +105,6 @@ public class RedisUtils {
 
     public <T> List<T> getList(String key, Class<T> clazz, long expire) {
         List<Object> value =redisTemplate.opsForList().range(key, 0, -1);
-//        List<Object> value = listOperations.range(key, 0, -1);
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }

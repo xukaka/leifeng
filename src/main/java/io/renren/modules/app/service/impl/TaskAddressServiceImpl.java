@@ -56,7 +56,7 @@ public class TaskAddressServiceImpl extends ServiceImpl<TaskAddressDao, TaskAddr
         wrapper.eq("creator_id", creatorId)
                 .eq("deleted", false)
                 .orderBy("create_time", false);
-        List<TaskAddressEntity> addresses = this.selectList(wrapper);
+        List<TaskAddressEntity> addresses = selectList(wrapper);
         if (CollectionUtils.isEmpty(addresses)) {
             return new ArrayList<>();
         }
@@ -68,7 +68,7 @@ public class TaskAddressServiceImpl extends ServiceImpl<TaskAddressDao, TaskAddr
         ValidatorUtils.validateEntity(form);
         TaskAddressEntity address = new TaskAddressEntity();
         BeanUtils.copyProperties(form, address);
-        this.updateById(address);
+        updateById(address);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class TaskAddressServiceImpl extends ServiceImpl<TaskAddressDao, TaskAddr
         TaskAddressEntity address = this.selectById(id);
         if (address != null) {
             address.setDeleted(true);
-            this.updateById(address);
+            updateById(address);
         }
     }
 }
