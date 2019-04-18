@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -80,6 +82,7 @@ public class RedisUtils {
     }
 
 
+
     public <T> void addList(String key, List<T> value) {
         addList(key,value,DEFAULT_EXPIRE);
     }
@@ -104,6 +107,30 @@ public class RedisUtils {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
         return BeanUtil.copy(value, clazz);
+    }
+    /**
+     * 有序集合添加
+     * @param key
+     * @param value
+     * @param scoure
+     */
+    public void zAdd(String key,Object value,double scoure){
+        ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
+        zset.add(key,value,scoure);
+    }
+
+    /**
+     * 有序集合获取
+     * @param key
+
+     * @return
+     */
+    public <T> List<T> rangeByScore(String key,Class<T> clazz){
+        ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
+        Set<Object> set = zset.range(key, 0, -1);
+        List<Object> value = new ArrayList<>(set);
+
+        return  BeanUtil.copy(value, clazz);
     }
 
     /**
