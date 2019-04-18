@@ -35,6 +35,8 @@ public class RenrenApplication extends SpringBootServletInitializer {
 	public static void main(String[] args) {
 		ImConfig imConfig = new PropertyImConfigBuilder("jim.properties").build();
 		//初始化SSL;(开启SSL之前,你要保证你有SSL证书哦...)
+		imConfig.setIsSSL("on");
+
 		try {
 			initSsl(imConfig);
 
