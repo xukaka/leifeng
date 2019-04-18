@@ -65,7 +65,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 领取任务
      */
-    MemberDto  receiveTask(Long receiverId, Long taskId);
+    void  receiveTask(Long receiverId, Long taskId);
 
     /**
      * 提交任务（申请完成任务）

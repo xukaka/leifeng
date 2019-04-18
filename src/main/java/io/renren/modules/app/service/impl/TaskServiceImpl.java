@@ -211,7 +211,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
      */
     @Override
     @Transactional
-    public MemberDto receiveTask(Long receiverId, Long taskId) {
+    public void receiveTask(Long receiverId, Long taskId) {
         boolean isReceiveable = isReceiveableTask(taskId);
         if (!isReceiveable) {
             throw new RRException("任务不可领取", 0);
@@ -221,7 +221,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         updateById(task);
         TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
         taskReceiveDao.insert(receive);
-        return taskReceiveDao.getReceiver(receive.getId());
+//        return taskReceiveDao.getReceiver(receive.getId());
 
     }
 

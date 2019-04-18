@@ -74,8 +74,8 @@ public class TaskController {
     @GetMapping("/receive")
     @ApiOperation("领取任务")
     public R receiveTask(@RequestParam Long taskId) {
-        MemberDto receiver = taskService.receiveTask(ReqUtils.currentUserId(), taskId);
-        return R.ok().put("result",receiver);
+        taskService.receiveTask(ReqUtils.currentUserId(), taskId);
+        return R.ok();
     }
 
     @Login

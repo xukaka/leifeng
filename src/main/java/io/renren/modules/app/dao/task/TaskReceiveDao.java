@@ -16,6 +16,6 @@ public interface TaskReceiveDao extends BaseMapper<TaskReceiveEntity> {
     /**
      * 获取任务领取人
      */
-    MemberDto getReceiver(@Param("receiveId") Long receiveId);
+//    MemberDto getReceiver(@Param("receiveId") Long receiveId);
 
 }
