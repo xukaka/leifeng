@@ -131,7 +131,6 @@ public class MemberController {
     @ApiOperation("关注用户")
     public R followMember(@RequestParam Long toMemberId) {
         memberService.followMember(ReqUtils.currentUserId(), toMemberId);
-
         return R.ok();
     }
 
