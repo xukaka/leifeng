@@ -12,7 +12,7 @@ public class MemberScoreEntity extends BaseEntity {
     /**
      * 评分人id
      */
-    private Long judgeId;
+    private Long judgerId;
     /**
      * 被评分用户id
      */
@@ -30,7 +30,7 @@ public class MemberScoreEntity extends BaseEntity {
     /**
      * 奖状id
      */
-    private Long certificateId;
+//    private Long certificateId;
 
     /**
      * 鲜花数
@@ -45,12 +45,12 @@ public class MemberScoreEntity extends BaseEntity {
     public MemberScoreEntity() {
     }
 
-    public Long getJudgeId() {
-        return judgeId;
+    public Long getJudgerId() {
+        return judgerId;
     }
 
-    public void setJudgeId(Long judgeId) {
-        this.judgeId = judgeId;
+    public void setJudgerId(Long judgerId) {
+        this.judgerId = judgerId;
     }
 
     public Long getMemberId() {
@@ -75,14 +75,6 @@ public class MemberScoreEntity extends BaseEntity {
 
     public void setScore(Integer score) {
         this.score = score;
-    }
-
-    public Long getCertificateId() {
-        return certificateId;
-    }
-
-    public void setCertificateId(Long certificateId) {
-        this.certificateId = certificateId;
     }
 
     public Integer getFlowerCount() {

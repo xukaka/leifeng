@@ -4,25 +4,19 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-//import com.github.qcloudsms.SmsSingleSender;
-//import com.github.qcloudsms.SmsSingleSenderResult;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
+import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.setting.MemberDao;
 import io.renren.modules.app.dao.setting.MemberFollowDao;
 import io.renren.modules.app.dao.setting.MemberScoreDao;
 import io.renren.modules.app.dto.MemberDto;
-import io.renren.modules.app.dto.TaskCommentDto;
-import io.renren.modules.app.dto.TaskDto;
-import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.entity.setting.MemberFollowEntity;
 import io.renren.modules.app.entity.setting.MemberScoreEntity;
-import io.renren.modules.app.entity.task.TaskAddressEntity;
-import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
@@ -30,20 +24,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.beans.factory.annotation.Value;
-
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
+//import com.github.qcloudsms.SmsSingleSender;
+//import com.github.qcloudsms.SmsSingleSenderResult;
 
 
 @Service
@@ -212,14 +205,31 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
 
     @Override
-    public void score(Long judgeId, MemberScoreForm form) {
+    @Transactional
+    public void score(Long judgerId, MemberScoreForm form) {
         ValidatorUtils.validateEntity(form);
+        sendFlowers(judgerId, form);
         MemberScoreEntity score = new MemberScoreEntity();
         BeanUtils.copyProperties(form, score);
+        score.setJudgerId(judgerId);
         score.setCreateTime(DateUtils.now());
         memberScoreDao.insert(score);
 
         //TODO 发送消息给被评分人
+    }
+
+    private void sendFlowers(Long judgerId, MemberScoreForm form) {
+        Integer giveFlowerCount = form.getFlowerCount();
+        if (giveFlowerCount == null ){
+            return;
+        }
+        Member judger = selectById(judgerId);
+        Integer judgerFlowerCount = judger.getFlowerCount();
+        if (judgerFlowerCount < giveFlowerCount){
+            throw new RRException("insufficient flower count.",0);
+        }
+        baseMapper.incFlowerCount(judgerId, -giveFlowerCount);
+        baseMapper.incFlowerCount(form.getMemberId(), giveFlowerCount);
     }
 
     @Override

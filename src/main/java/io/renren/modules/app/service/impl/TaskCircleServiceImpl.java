@@ -17,8 +17,11 @@ import io.renren.modules.app.service.TaskCircleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 
 @Service
@@ -26,7 +29,7 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
     private final static Logger logger = LoggerFactory.getLogger(TaskCircleServiceImpl.class);
 
 
-    @Autowired
+    @Resource
     private TaskCircleMemberDao taskCircleMemberDao;
 
     @Override
@@ -69,7 +72,12 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
 
     @Override
     public PageUtils<TaskCircleDto> getCircles(String circleName, PageWrapper page) {
-        return null;
+        List<TaskCircleDto> circles = baseMapper.getCircles(circleName,page);
+        if (CollectionUtils.isEmpty(circles)) {
+            return new PageUtils<>();
+        }
+        int total = baseMapper.count(circleName,page);
+        return new PageUtils<>(circles, total, page.getPageSize(), page.getCurrPage());
     }
 
 

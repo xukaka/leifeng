@@ -91,10 +91,10 @@ public interface MemberService extends IService<Member> {
     /**
      * 用户评分
      *
-     * @param judgeId 评分人id
+     * @param judgerId 评分人id
      * @param form
      */
-    void score(Long judgeId, MemberScoreForm form);
+    void score(Long judgerId, MemberScoreForm form);
 
     void sendPhoneCode(String phoneNum) throws Exception;
 

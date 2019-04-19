@@ -8,12 +8,10 @@ import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
-import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
-import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberTagRelationEntity;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
@@ -70,11 +68,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             }
         }
         return banners;
-  /*      List<TaskBannerDto> banners = baseMapper.getTaskBanners();
-        if (CollectionUtils.isEmpty(banners)) {
-            return new ArrayList<>();
-        }
-        return banners;*/
     }
 
     @Override
@@ -221,8 +214,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         updateById(task);
         TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
         taskReceiveDao.insert(receive);
-//        return taskReceiveDao.getReceiver(receive.getId());
-
     }
 
     @Override
@@ -254,11 +245,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         TaskEntity task = selectById(taskId);
         if (task != null) {
             task.setStatus(TaskStatusEnum.completed);
+            task.setCompleteTime(DateUtils.now());
             updateById(task);
 
             ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务领取人
-
 
                 addTag2Member(receiverId, taskId);
 

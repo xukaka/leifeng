@@ -1,6 +1,7 @@
 package io.renren.modules.app.dao.task;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.TaskCircleDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskCircleEntity;
@@ -20,6 +21,18 @@ public interface TaskCircleDao extends BaseMapper<TaskCircleEntity> {
 
     //获取任务圈详情
     TaskCircleDto getCircle(@Param("circleId") Long circleId);
+
+
+    /**
+     * 分页获取任务圈列表
+     * @param circleName
+     * @param page
+     * @return
+     */
+    List<TaskCircleDto> getCircles(@Param("circleName") String circleName, @Param("page") PageWrapper page);
+
+    //任务圈总数
+    int count(@Param("circleName") String circleName, @Param("page") PageWrapper page);
 
 
 }

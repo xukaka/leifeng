@@ -26,7 +26,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/app/im")
-@Api(tags = "搜索")
+@Api(tags = "IM")
 public class ImController {
     private final static Logger logger = LoggerFactory.getLogger(ImController.class);
 

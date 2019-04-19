@@ -26,21 +26,21 @@ import java.util.List;
 @ApiModel(value = "任务圈表单")
 public class TaskCircleForm {
 
-    @ApiModelProperty(value = "ID", example = "")
+    @ApiModelProperty(value = "圈id", example = "")
     private Long id;
 
-    @ApiModelProperty(value = "圈名称", example = "")
+    @ApiModelProperty(value = "圈名称", example = "深圳大学跑腿队")
     @NotBlank
     private String name;
 
     @ApiModelProperty(value = "圈头像", example = "")
     private String avatar;
 
-    @ApiModelProperty(value = "圈描述", example = "")
+    @ApiModelProperty(value = "圈描述", example = "专业跑腿30年")
     @NotBlank
     private String description;
 
-    @ApiModelProperty(value = "是否需要审核", example = "")
+    @ApiModelProperty(value = "是否需要审核", example = "true")
     @NotNull
     private Boolean needReview;
 
