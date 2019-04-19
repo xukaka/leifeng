@@ -117,6 +117,7 @@ public class TaskController {
         return R.ok().put("result", tasks);
     }
 
+    @Login
     @PostMapping("/search/list")
     @ApiOperation("搜索任务列表-分页")
     public R searchTasks(@RequestBody TaskQueryForm form) {

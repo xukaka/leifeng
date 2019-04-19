@@ -14,13 +14,13 @@ import javax.validation.constraints.NotNull;
 public class MessageTypeForm {
     @ApiModelProperty(value = "发送人ID", example = "")
     @NotNull
-    Long fromId;
+    private Long fromId;
     @ApiModelProperty(value = "接受人ID", example = "")
     @NotNull
-    Long toId;
+    private  Long toId;
     @ApiModelProperty(value = "类型", example = "")
     @NotNull
-    int type;
+    private int type;
 
 
 
