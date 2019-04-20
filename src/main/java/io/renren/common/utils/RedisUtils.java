@@ -7,9 +7,7 @@ import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -127,12 +125,23 @@ public class RedisUtils {
 
      * @return
      */
-    public <T> List<T> rangeByScore(String key,Class<T> clazz){
+    public List rangeByScore(String key,Class  clazz){
+        List<Map> list=new ArrayList<>();
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
-        Set<Object> set = zset.range(key, 0, -1);
-        List<Object> value = new ArrayList<>(set);
+        Set<ZSetOperations.TypedTuple<Object>> tuples = zset.rangeWithScores(key, 0, -1);
+        Iterator<ZSetOperations.TypedTuple<Object>> iterator = tuples.iterator();
+        while (iterator.hasNext()) {
+            ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();
+            Object value = typedTuple.getValue();
+            double score = typedTuple.getScore();
 
-        return  BeanUtil.copy(value, clazz);
+            LinkedHashMap map=new LinkedHashMap();
+            map.put("value", Long.parseLong(value.toString()));
+            map.put("score", score);
+            list.add(map);
+        }
+
+        return list;
     }
 
     /**
