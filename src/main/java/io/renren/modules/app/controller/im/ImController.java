@@ -63,6 +63,7 @@ public class ImController {
         if(messageTypeForm.getType()==1){
             redisUtils.zAdd("unread:"+messageTypeForm.getToId(),messageTypeForm.getFromId(),messageTypeForm.getType());
         }else{
+            redisUtils.zAdd("unread:"+messageTypeForm.getToId(),messageTypeForm.getFromId(),messageTypeForm.getType());
             redisUtils.zAdd("unread:"+messageTypeForm.getFromId(),messageTypeForm.getToId(),messageTypeForm.getType());
         }
         return R.ok();
