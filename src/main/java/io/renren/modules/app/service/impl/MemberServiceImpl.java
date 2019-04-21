@@ -150,6 +150,23 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
+    public void wxUpdateMember(Long memberId, String nickName, String avatar, Integer sex) {
+        Member member = selectById(memberId);
+        if (member != null) {
+            if (StringUtils.isEmpty(member.getNickName())) {
+                member.setNickName(nickName);
+            }
+            if (StringUtils.isEmpty(member.getAvatar())) {
+                member.setAvatar(avatar);
+            }
+            if (member.getSex() == null) {
+                member.setSex(sex);
+            }
+            this.updateById(member);
+        }
+    }
+
+    @Override
     @Transactional
     public void registerMemberWithAuth(Member member, MemberAuths auths) {
         //插入用户基本信息
@@ -220,13 +237,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     private void sendFlowers(Long judgerId, MemberScoreForm form) {
         Integer giveFlowerCount = form.getFlowerCount();
-        if (giveFlowerCount == null ){
+        if (giveFlowerCount == null) {
             return;
         }
         Member judger = selectById(judgerId);
         Integer judgerFlowerCount = judger.getFlowerCount();
-        if (judgerFlowerCount < giveFlowerCount){
-            throw new RRException("insufficient flower count.",0);
+        if (judgerFlowerCount < giveFlowerCount) {
+            throw new RRException("insufficient flower count.", 0);
         }
         baseMapper.incFlowerCount(judgerId, -giveFlowerCount);
         baseMapper.incFlowerCount(form.getMemberId(), giveFlowerCount);

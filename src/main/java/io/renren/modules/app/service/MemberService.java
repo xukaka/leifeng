@@ -7,6 +7,7 @@ import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.form.*;
+import io.renren.modules.app.utils.ReqUtils;
 
 /**
  * 用户
@@ -40,6 +41,11 @@ public interface MemberService extends IService<Member> {
      * @param form
      */
     void updateMember(MemberForm form);
+
+    /**
+     * 更新用户信息-根据微信用户信息
+     */
+    void wxUpdateMember(Long memberId,String nickName,String avatar,Integer sex);
 
     /**
      * 同时写入member表和member_auths表

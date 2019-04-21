@@ -63,6 +63,12 @@ public interface TaskService extends IService<TaskEntity> {
     void deleteTask(Long id);
 
     /**
+     * 分页获取任务领取人列表
+     */
+    PageUtils<MemberDto>  getTaskReceivers( Long taskId,PageWrapper page);
+
+
+    /**
      * 领取任务
      */
     void  receiveTask(Long receiverId, Long taskId);
@@ -77,5 +83,18 @@ public interface TaskService extends IService<TaskEntity> {
      */
     void completeTask(Long receiverId,Long taskId);
 
+    /**
+     * 选择任务领取人
+     * @param taskId
+     * @param receiverId
+     */
+    void chooseTaskReceiver(Long taskId, Long receiverId);
+
+    /**
+     * 开始执行任务
+     * @param taskId
+     * @param receiverId
+     */
+    void executeTask(Long taskId, Long receiverId);
 }
 

@@ -85,6 +85,11 @@ public class TaskDto implements Serializable {
      * 点赞数
      */
     private Integer likeCount;
+
+    /**
+     * 浏览数
+     */
+    private Integer viewCount = 0;
     /**
      * 创建时间
      */
@@ -242,5 +247,13 @@ public class TaskDto implements Serializable {
 
     public void setExpireTime(Long expireTime) {
         this.expireTime = expireTime;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
     }
 }

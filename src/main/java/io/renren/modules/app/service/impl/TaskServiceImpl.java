@@ -8,6 +8,7 @@ import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
@@ -198,47 +199,112 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         updateById(task);
     }
 
+    @Override
+    public PageUtils<MemberDto> getTaskReceivers(Long taskId, PageWrapper page) {
+        List<MemberDto> members = baseMapper.getTaskReceivers(taskId, page);
+        if (CollectionUtils.isEmpty(members)) {
+            return new PageUtils<>();
+        }
+        int total = baseMapper.receiverCount(taskId);
+        return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
+    }
 
     /**
-     * 领取任务，返回领取人信息
+     * 领取任务
      */
     @Override
     @Transactional
     public void receiveTask(Long receiverId, Long taskId) {
         boolean isReceiveable = isReceiveableTask(taskId);
         if (!isReceiveable) {
-            throw new RRException("任务不可领取", 0);
+            throw new RRException("任务已开始，不能领取了", 0);
         }
-        TaskEntity task = selectById(taskId);
+    /*    TaskEntity task = selectById(taskId);
         task.setStatus(TaskStatusEnum.received);
-        updateById(task);
-        TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
+        updateById(task);*/
+        long curTime = DateUtils.now();
+        TaskReceiveEntity receive = new TaskReceiveEntity(curTime, receiverId, taskId);
+        receive.setUpdateTime(curTime);
         taskReceiveDao.insert(receive);
+    }
+
+
+    @Override
+    @Transactional
+    public void chooseTaskReceiver(Long taskId, Long receiverId) {
+        boolean isChooseable = isChooseableReceiver(taskId, receiverId);
+        if (!isChooseable) {
+            throw new RRException("任务已开始，不能选择人了", 0);
+        }
+
+        TaskReceiveEntity receive = new TaskReceiveEntity();
+        receive.setStatus(TaskStatusEnum.received);
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("receiver_id", receiverId);
+        Integer result = taskReceiveDao.update(receive, wrapper);
+        if (result != null && result > 0) {
+            updateTaskStatus(taskId, TaskStatusEnum.received);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public void executeTask(Long taskId, Long receiverId) {
+        boolean isExecutable = isExecutableTask(taskId, receiverId);
+        if (!isExecutable) {
+            throw new RRException("任务不可执行", 0);
+        }
+
+        TaskReceiveEntity receive = new TaskReceiveEntity();
+        receive.setStatus(TaskStatusEnum.executing);
+        receive.setUpdateTime(DateUtils.now());
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("receiver_id", receiverId);
+        Integer result = taskReceiveDao.update(receive, wrapper);
+        if (result != null && result > 0) {
+            updateTaskStatus(taskId, TaskStatusEnum.executing);
+        }
+    }
+
+    //任务是否可执行
+    private boolean isExecutableTask(Long taskId, Long receiverId) {
+        int count = baseMapper.isExecutableTask(taskId, receiverId);
+        return count > 0;
     }
 
     @Override
     @Transactional
     public void submitTask(Long receiverId, Long taskId) {
-        boolean isSubmitable =isSubmitableTask(receiverId, taskId);
+        boolean isSubmitable = isSubmitableTask(receiverId, taskId);
         if (!isSubmitable) {
-            throw new RRException("任务不可提交", 0);
+            throw new RRException("不是执行中任务，不可提交", 0);
         }
-        TaskEntity task = selectById(taskId);
-        if (task != null) {
-            task.setStatus(TaskStatusEnum.submitted);
-            this.updateById(task);
+
+        TaskReceiveEntity receive = new TaskReceiveEntity();
+        receive.setStatus(TaskStatusEnum.submitted);
+        receive.setUpdateTime(DateUtils.now());
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("receiver_id", receiverId);
+        Integer result = taskReceiveDao.update(receive, wrapper);
+        if (result != null && result > 0) {
+            updateTaskStatus(taskId, TaskStatusEnum.submitted);
 
             ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务创建人
                 rabbitMqHelper.sendMessage("test", "132");
             });
         }
+
     }
 
     @Override
     @Transactional
     public void completeTask(Long receiverId, Long taskId) {
-        boolean isCompletable =isCompletableTask(receiverId,taskId);
+        boolean isCompletable = isCompletableTask(receiverId, taskId);
         if (!isCompletable) {
             throw new RRException("任务不可完成");
         }
@@ -313,13 +379,29 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         int count = baseMapper.isReceiveableTask(taskId);
         return count > 0;
     }
+
+    private boolean isChooseableReceiver(Long taskId, Long receiverId) {
+        int count = baseMapper.isChooseableReceiver(taskId, receiverId);
+        return count > 0;
+    }
+
     private boolean isSubmitableTask(Long receiverId, Long taskId) {
         int count = baseMapper.isSubmitableTask(receiverId, taskId);
         return count > 0;
     }
+
     private boolean isCompletableTask(Long receiverId, Long taskId) {
         int count = baseMapper.isCompletableTask(receiverId, taskId);
         return count > 0;
     }
 
+
+    //更新任务状态
+    private void updateTaskStatus(Long taskId, TaskStatusEnum status) {
+        TaskEntity task = new TaskEntity();
+        task.setStatus(status);
+        Wrapper<TaskEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("id", taskId);
+        baseMapper.update(task, wrapper);
+    }
 }

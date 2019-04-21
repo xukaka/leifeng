@@ -70,6 +70,23 @@ public class TaskController {
         return R.ok();
     }
 
+    @GetMapping("/receiver/list")
+    @ApiOperation("分页获取任务领取人列表")
+    public R getTaskReceivers(@RequestParam Long taskId, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<MemberDto> tasks = taskService.getTaskReceivers(taskId, page);
+        return R.ok().put("result", tasks);
+    }
+
+    @GetMapping("/receiver/choose")
+    @ApiOperation("选择确定任务领取人")
+    public R chooseTaskReceiver(@RequestParam Long taskId, @RequestParam Long receiverId) {
+        taskService.chooseTaskReceiver(taskId, receiverId);
+        return R.ok();
+    }
     @Login
     @GetMapping("/receive")
     @ApiOperation("领取任务")

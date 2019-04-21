@@ -85,6 +85,15 @@ public class MemberController {
         return R.ok();
     }
 
+
+    @Login
+    @GetMapping("/wxUpdate")
+    @ApiOperation("微信更新用户信息(昵称，头像，性别)")
+    public R updateMember(@RequestParam String nickName ,@RequestParam String avatar,@RequestParam Integer sex) {
+        memberService.wxUpdateMember(ReqUtils.currentUserId(),nickName,avatar,sex);
+        return R.ok();
+    }
+
     @Login
     @PutMapping("/location")
     @ApiOperation("更新用户位置")

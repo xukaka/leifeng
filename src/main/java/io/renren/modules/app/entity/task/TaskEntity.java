@@ -46,6 +46,11 @@ public class TaskEntity extends BaseEntity {
      * 评论数
      */
     private Integer commentCount = 0;
+
+    /**
+     * 浏览数
+     */
+    private Integer viewCount = 0;
     /**
      * 状态
      */
@@ -147,20 +152,13 @@ public class TaskEntity extends BaseEntity {
         this.completeTime = completeTime;
     }
 
-    @Override
-    public String toString() {
-        return "TaskEntity{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", startTime=" + startTime +
-                ", expireTime=" + expireTime +
-                ", virtualCurrency=" + virtualCurrency +
-                ", addressId=" + addressId +
-                ", creatorId=" + creatorId +
-                ", likeCount=" + likeCount +
-                ", commentCount=" + commentCount +
-                ", status=" + status +
-                ", completeTime=" + completeTime +
-                '}';
+    public Integer getViewCount() {
+        return viewCount;
     }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+    }
+
+
 }
