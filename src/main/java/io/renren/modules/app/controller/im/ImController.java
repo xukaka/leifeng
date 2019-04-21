@@ -60,7 +60,11 @@ public class ImController {
      */
     public R  setMessageType(@RequestBody MessageTypeForm messageTypeForm){
         logger.info("[ImController.info] 请求参数id={}",messageTypeForm.getFromId(),messageTypeForm.getToId());
-        redisUtils.zAdd("unread:"+messageTypeForm.getToId(),messageTypeForm.getFromId(),messageTypeForm.getType());
+        if(messageTypeForm.getType()==1){
+            redisUtils.zAdd("unread:"+messageTypeForm.getToId(),messageTypeForm.getFromId(),messageTypeForm.getType());
+        }else{
+            redisUtils.zAdd("unread:"+messageTypeForm.getFromId(),messageTypeForm.getToId(),messageTypeForm.getType());
+        }
         return R.ok();
     }
 }
