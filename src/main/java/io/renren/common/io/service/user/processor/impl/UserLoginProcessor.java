@@ -53,11 +53,11 @@ public class UserLoginProcessor implements UserLoginServer {
 
         List<Group> groups =   new ArrayList<Group>();
         RedisUtils redisUtils =SocketServiceUtil.getBean(RedisUtils.class);
-        List<String> list = redisUtils.getList("follow"+user.getId(),String.class);
+        List<Integer> list = redisUtils.getList("follow:"+user.getId(),Integer.class);
         groups.add(new Group("100","雷锋通讯组"));
         if(list!=null){
-            for(String str:list){
-                groups.add(new Group(str,str+"通讯组"));
+            for(Integer integer:list){
+                groups.add(new Group(integer.toString(),integer+"通讯组"));
             }
         }
         return groups;
