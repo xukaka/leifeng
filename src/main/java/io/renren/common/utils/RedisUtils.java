@@ -118,9 +118,13 @@ public class RedisUtils {
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
+        System.out.println(value.size());
         return BeanUtil.copy(value, clazz);
     }
-
+    public  List getList(String key) {
+        List<Object> value =redisTemplate.opsForList().range(key, 0, -1);
+        return value;
+    }
     /**
      * 有序集合添加
      * @param key
