@@ -25,7 +25,7 @@ import java.util.List;
 
 @ApiModel(value = "任务表单")
 public class TaskForm {
-    @ApiModelProperty(value = "任务ID", example = "")
+    @ApiModelProperty(value = "任务id[创建时id不填，更新时id必填]", example = "")
     private Long id;
     @ApiModelProperty(value = "主题", example = "帮忙抢火车票")
     @NotBlank
@@ -54,6 +54,7 @@ public class TaskForm {
     private Integer virtualCurrency;
 
     @ApiModelProperty(value = "任务地址id", example = "")
+    @NotNull
     private Long addressId;
 
     @ApiModelProperty(value = "被通知的用户id列表", example = "")
@@ -129,5 +130,13 @@ public class TaskForm {
 
     public void setNotifiedUserIds(List<Long> notifiedUserIds) {
         this.notifiedUserIds = notifiedUserIds;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

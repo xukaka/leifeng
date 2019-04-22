@@ -33,12 +33,7 @@ public class Member implements Serializable {
     private Double lat;
     //经度
     private Double lng;
-    //距离
-    @TableField(exist = false)//不作为数据库字段
-    private Long distance;
-    //用户技能标签
-    @TableField(exist = false)//不作为数据库字段
-    private List<String> tags;
+
     //地址
     private String address;
     //性别0男，1女
@@ -176,14 +171,6 @@ public class Member implements Serializable {
         this.certificateCount = certificateCount;
     }
 
-    public Long getDistance() {
-        return distance;
-    }
-
-    public void setDistance(Long distance) {
-        this.distance = distance;
-    }
-
     public Integer getLevel() {
         return level;
     }
@@ -192,11 +179,4 @@ public class Member implements Serializable {
         this.level = level;
     }
 
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
 }

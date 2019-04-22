@@ -2,6 +2,7 @@ package io.renren.modules.app.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.setting.Member;
@@ -62,9 +63,15 @@ public interface TaskService extends IService<TaskEntity> {
     void deleteTask(Long id);
 
     /**
+     * 分页获取任务领取人列表
+     */
+    PageUtils<MemberDto>  getTaskReceivers( Long taskId,PageWrapper page);
+
+
+    /**
      * 领取任务
      */
-    Member receiveTask(Long receiverId, Long taskId);
+    void  receiveTask(Long receiverId, Long taskId);
 
     /**
      * 提交任务（申请完成任务）
@@ -76,5 +83,18 @@ public interface TaskService extends IService<TaskEntity> {
      */
     void completeTask(Long receiverId,Long taskId);
 
+    /**
+     * 选择任务领取人
+     * @param taskId
+     * @param receiverId
+     */
+    void chooseTaskReceiver(Long taskId, Long receiverId);
+
+    /**
+     * 开始执行任务
+     * @param taskId
+     * @param receiverId
+     */
+    void executeTask(Long taskId, Long receiverId);
 }
 

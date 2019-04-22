@@ -42,10 +42,6 @@ public interface TaskCommentService extends IService<TaskCommentEntity> {
      */
     void deleteCommentReply(Long replyId);
 
-    /**
-     * 获取评论的回复列表
-     */
-//    List<TaskCommentReplyDto> getCommentReplies(Long commentId);
 
 }
 

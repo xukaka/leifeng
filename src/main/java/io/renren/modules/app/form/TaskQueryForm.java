@@ -27,6 +27,8 @@ import java.util.List;
 @ApiModel(value = "任务查询表单")
 public class TaskQueryForm {
 
+    @ApiModelProperty(value = "圈id", example = "")
+    private Long circleId;
     @ApiModelProperty(value = "关键字", example = "")
     private String keyword;
     @ApiModelProperty(value = "当前位置经度", example = "")
@@ -109,5 +111,13 @@ public class TaskQueryForm {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public Long getCircleId() {
+        return circleId;
+    }
+
+    public void setCircleId(Long circleId) {
+        this.circleId = circleId;
     }
 }

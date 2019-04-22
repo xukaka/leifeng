@@ -2,6 +2,7 @@ package io.renren.modules.app.entity.task;
 
 import com.baomidou.mybatisplus.annotations.TableName;
 import io.renren.modules.app.entity.BaseEntity;
+import io.renren.modules.app.entity.TaskStatusEnum;
 
 /**
  * 任务领取表
@@ -17,6 +18,16 @@ public class TaskReceiveEntity extends BaseEntity {
      * 任务id
      */
     private Long taskId;
+
+    /**
+     * 任务状态
+     */
+    private TaskStatusEnum status;
+
+    /**
+     * 更新时间
+     */
+    private Long updateTime;
 
 
     public TaskReceiveEntity() {
@@ -44,11 +55,19 @@ public class TaskReceiveEntity extends BaseEntity {
         this.taskId = taskId;
     }
 
-    @Override
-    public String toString() {
-        return "TaskReceiveEntity{" +
-                "receiverId=" + receiverId +
-                ", taskId=" + taskId +
-                '}';
+    public TaskStatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatusEnum status) {
+        this.status = status;
+    }
+
+    public Long getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
     }
 }

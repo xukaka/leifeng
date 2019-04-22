@@ -9,6 +9,7 @@ import io.renren.common.utils.RabbitMqHelper;
 import io.renren.common.utils.RedisUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberFeedback;
@@ -32,6 +33,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,11 +59,8 @@ public class MemberController {
 
     @Resource
     private RabbitMqHelper rabbitMqHelper;
-
     @Autowired
     private RedisUtils redisUtils;
-    @Autowired
-    private RedisTemplate redisTemplate;
 
 
     @PostMapping("/list")
@@ -71,7 +70,7 @@ public class MemberController {
         pageMap.put("page", form.getCurPage());
         pageMap.put("size", form.getPageSize());
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.searchMembers(form, page);
+        PageUtils<MemberDto> members = memberService.searchMembers(form, page);
         return R.ok().put("result", members);
     }
 
@@ -79,7 +78,7 @@ public class MemberController {
     @GetMapping("/detail")
     @ApiOperation("获取用户信息")
     public R getMember(@RequestParam("memberId") Long memberId) {
-        Member member = memberService.getMember(memberId);
+        MemberDto member = memberService.getMember(ReqUtils.currentUserId(),memberId);
         return R.ok().put("result", member);
     }
 
@@ -88,6 +87,15 @@ public class MemberController {
     @ApiOperation("更新用户信息")
     public R updateMember(@RequestBody MemberForm form) {
         memberService.updateMember(form);
+        return R.ok();
+    }
+
+
+    @Login
+    @GetMapping("/wxUpdate")
+    @ApiOperation("微信更新用户信息(昵称，头像，性别)")
+    public R updateMember(@RequestParam String nickName ,@RequestParam String avatar,@RequestParam Integer sex) {
+        memberService.wxUpdateMember(ReqUtils.currentUserId(),nickName,avatar,sex);
         return R.ok();
     }
 
@@ -155,7 +163,7 @@ public class MemberController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.getFollowMembers(ReqUtils.currentUserId(), page);
+        PageUtils<MemberDto> members = memberService.getFollowMembers(ReqUtils.currentUserId(), page);
         return R.ok().put("result", members);
     }
 
@@ -168,16 +176,16 @@ public class MemberController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<Member> members = memberService.getFansMembers(ReqUtils.currentUserId(), page);
+        PageUtils<MemberDto> members = memberService.getFansMembers(ReqUtils.currentUserId(), page);
         return R.ok().put("result", members);
     }
 
 
-    @Login
+//    @Login
     @PostMapping("/score")
     @ApiOperation("用户评分")
     public R socre(@RequestBody MemberScoreForm form) {
-        memberService.score(ReqUtils.currentUserId(), form);
+        memberService.score(11L, form);
         return R.ok();
     }
 

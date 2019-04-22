@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 
@@ -19,14 +20,14 @@ import java.util.List;
 @Api(tags = "搜索")
 public class SearchController {
 
-    @Autowired
+    @Resource
     private SearchService searchService;
 
 
     @Login
     @PostMapping("/history")
     @ApiOperation("保存搜索历史")
-    public R saveHistory( @RequestParam String keyword) {
+    public R saveHistory( @RequestBody String keyword) {
         searchService.saveHistory(ReqUtils.currentUserId(), keyword);
         return R.ok();
     }

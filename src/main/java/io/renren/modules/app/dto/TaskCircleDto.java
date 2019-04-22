@@ -34,7 +34,7 @@ public class TaskCircleDto implements Serializable {
     private Boolean needReview;
 
     /**
-     * 任务数
+     * 成员数
      */
     private Integer memberCount;
 

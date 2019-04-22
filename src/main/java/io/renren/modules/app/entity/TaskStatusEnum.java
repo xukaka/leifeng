@@ -6,11 +6,13 @@ public enum TaskStatusEnum {
 
     received(1, "已领取"),
 
-    submitted(2, "已提交"),
+    executing(2, "执行中"),
 
-    completed(3, "已完成"),
+    submitted(3, "已提交"),
 
-    cancelled(4, "已取消");
+    completed(4, "已完成"),
+
+    cancelled(5, "已取消");
 
     private int value;
 

@@ -1,5 +1,7 @@
 package io.renren;
 
+import cn.hutool.core.io.resource.ClassPathResource;
+import com.jfinal.kit.PropKit;
 import io.renren.common.io.command.IoWsHandshakeProcessor;
 import io.renren.common.io.listener.ImDemoGroupListener;
 import io.renren.common.io.service.user.handler.UserCloseHandler;
@@ -7,24 +9,25 @@ import io.renren.common.io.service.user.handler.UserLoginReqHandler;
 import io.renren.common.io.service.user.processor.impl.UserCloseProcessor;
 import io.renren.common.io.service.user.processor.impl.UserLoginProcessor;
 import io.renren.datasources.DynamicDataSourceConfig;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jim.common.ImConfig;
 import org.jim.common.ImConst;
+import org.jim.common.config.PropertyImConfigBuilder;
 import org.jim.common.packets.Command;
 import org.jim.server.ImServerStarter;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.HandshakeReqHandler;
-import org.jim.server.command.handler.LoginReqHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Import;
 import org.tio.core.ssl.SslConfig;
+
+import java.io.InputStream;
 
 
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
@@ -33,16 +36,14 @@ public class RenrenApplication extends SpringBootServletInitializer {
 
 	private static Logger logger = LoggerFactory.getLogger(RenrenApplication.class);
 	public static void main(String[] args) {
-		ImConfig imConfig = new ImConfig();
-		imConfig.setBindIp("47.94.164.57");
-		imConfig.setBindPort(11805);
-//		imConfig.setIsSSL("on");
-//		try {
-//			initSsl(imConfig);
-//
-//		}catch (Exception e){
-//			logger.error("SSL start failed.");
-//		}
+		ImConfig imConfig = new PropertyImConfigBuilder("jim.properties").build();
+		imConfig.setIsSSL("on");
+		try {
+			initSsl(imConfig);
+
+		}catch (Exception e){
+            logger.error("发生异常 msg={}","原因",e);
+		}
 
 		//初始化SSL;(开启SSL之前,你要保证你有SSL证书哦...)
 		//设置群组监听器，非必须，根据需要自己选择性实现;
@@ -79,17 +80,20 @@ public class RenrenApplication extends SpringBootServletInitializer {
 	 * @throws Exception
 	 */
 	private static void initSsl(ImConfig imConfig) throws Exception {
-		//开启SSL
-		if(ImConst.ON.equals(imConfig.getIsSSL())){
-			String keyStorePath = "classpath:pet.fangzheng.fun.jks";
+		if(ImConst.ON.equals(imConfig.getIsSSL())) {
+			String keyStorePath = PropKit.get("jim.key.store.path");
+
 			String keyStoreFile = keyStorePath;
 			String trustStoreFile = keyStorePath;
-			String keyStorePwd = "xukaka";
-			if (StringUtils.isNotBlank(keyStoreFile) && StringUtils.isNotBlank(trustStoreFile)) {
-				SslConfig sslConfig = SslConfig.forServer(keyStoreFile, trustStoreFile, keyStorePwd);
+			String keyStorePwd = PropKit.get("jim.key.store.pwd");
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(keyStoreFile) && StringUtils.isNotBlank(trustStoreFile)) {
+				InputStream keyStoreInputStream = null;
+				InputStream trustStoreInputStream = null;
+				keyStoreInputStream = new ClassPathResource(trustStoreFile).getStream();
+				trustStoreInputStream = new ClassPathResource(trustStoreFile).getStream();
+
+				SslConfig sslConfig = SslConfig.forServer(keyStoreInputStream, trustStoreInputStream, keyStorePwd);
 				imConfig.setSslConfig(sslConfig);
 			}
-		}
-	}
-
+		}}
 }

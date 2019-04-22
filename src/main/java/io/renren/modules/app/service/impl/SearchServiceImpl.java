@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.DateUtils;
+import io.renren.common.utils.RedisKeys;
+import io.renren.common.utils.RedisUtils;
 import io.renren.config.SwaggerConfig;
 import io.renren.modules.app.dao.search.SearchDao;
 import io.renren.modules.app.dao.task.TaskTagDao;
 import io.renren.modules.app.dto.HotSearchDto;
+import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.entity.search.SearchHistoryEntity;
 import io.renren.modules.app.entity.search.SearchLogEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
@@ -32,17 +35,20 @@ import java.util.List;
 public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntity> implements SearchService {
     private final static Logger logger = LoggerFactory.getLogger(SearchServiceImpl.class);
 
-    @Autowired
+    @Resource
     private SearchDao searchDao;
+
+    @Resource
+    private RedisUtils redisUtils;
 
     @Override
     public void saveHistory(Long userId, String keyword) {
+
         if (existsHistory(userId, keyword)) {
             updateHistory(userId, keyword);
         } else {
             addHistory(userId, keyword);
         }
-
         addSearchLog(keyword);
 
     }
@@ -53,7 +59,7 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
         Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("user_id", userId)
                 .orderBy("create_time", false);
-        List<SearchHistoryEntity> histories = this.selectList(wrapper);
+        List<SearchHistoryEntity> histories = selectList(wrapper);
         if (CollectionUtils.isEmpty(histories)) {
             return new ArrayList<>();
         }
@@ -72,18 +78,19 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
             }
             this.updateBatchById(histories);
         }
-
-
     }
 
     @Override
     public List<HotSearchDto> getHotSearch() {
-        //TODO redis保存热门搜索列表，过期时间为1天
-        List<HotSearchDto> dtos = searchDao.getHotSearch();
-        if (CollectionUtils.isEmpty(dtos)){
-            return new ArrayList<>();
+        //redis保存热门搜索列表，过期时间为1天
+        List<HotSearchDto> hotSearchs =  redisUtils.getList(RedisKeys.HOT_SEARCH,HotSearchDto.class);
+        if (CollectionUtils.isEmpty(hotSearchs)) {
+            hotSearchs = searchDao.getHotSearch();
+            if (!CollectionUtils.isEmpty(hotSearchs)) {
+                redisUtils.addList(RedisKeys.HOT_SEARCH, hotSearchs);
+            }
         }
-        return dtos;
+        return hotSearchs;
     }
 
 

@@ -3,17 +3,15 @@ package io.renren.modules.app.controller.task;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
-import io.renren.modules.app.entity.setting.Member;
-import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
 import io.renren.modules.app.service.TaskService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -72,12 +70,29 @@ public class TaskController {
         return R.ok();
     }
 
+    @GetMapping("/receiver/list")
+    @ApiOperation("分页获取任务领取人列表")
+    public R getTaskReceivers(@RequestParam Long taskId, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<MemberDto> tasks = taskService.getTaskReceivers(taskId, page);
+        return R.ok().put("result", tasks);
+    }
+
+    @GetMapping("/receiver/choose")
+    @ApiOperation("选择确定任务领取人")
+    public R chooseTaskReceiver(@RequestParam Long taskId, @RequestParam Long receiverId) {
+        taskService.chooseTaskReceiver(taskId, receiverId);
+        return R.ok();
+    }
     @Login
     @GetMapping("/receive")
     @ApiOperation("领取任务")
     public R receiveTask(@RequestParam Long taskId) {
-        Member receiver = taskService.receiveTask(ReqUtils.currentUserId(), taskId);
-        return R.ok().put("result",receiver);
+        taskService.receiveTask(ReqUtils.currentUserId(), taskId);
+        return R.ok();
     }
 
     @Login
@@ -119,6 +134,7 @@ public class TaskController {
         return R.ok().put("result", tasks);
     }
 
+    @Login
     @PostMapping("/search/list")
     @ApiOperation("搜索任务列表-分页")
     public R searchTasks(@RequestBody TaskQueryForm form) {

@@ -38,9 +38,9 @@ public class MemberScoreForm {
     @ApiModelProperty(value = "分数", example = "4")
     @NotNull
     private Integer score;
-
+/*
     @ApiModelProperty(value = "奖状id", example = "")
-    private Long certificateId;
+    private Long certificateId;*/
 
 
     @ApiModelProperty(value = "鲜花数", example = "")
@@ -73,14 +73,6 @@ public class MemberScoreForm {
 
     public void setScore(Integer score) {
         this.score = score;
-    }
-
-    public Long getCertificateId() {
-        return certificateId;
-    }
-
-    public void setCertificateId(Long certificateId) {
-        this.certificateId = certificateId;
     }
 
     public Integer getFlowerCount() {

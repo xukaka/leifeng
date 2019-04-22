@@ -13,7 +13,6 @@
         <result property="needReview" column="need_review"/>
         <result property="memberCount" column="member_count"/>
         <result property="taskCount" column="task_count"/>
-        <result property="commentCount" column="comment_count"/>
         <!--关联创建人-->
         <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
             <id property="id" column="member_id"/>
@@ -37,5 +36,21 @@
         FROM t_task_circle tc
         JOIN member m ON tc.creator_id = m.id
         WHERE tc.id = #{circleId}
+    </select>
+
+    <!--分页查询任务圈列表-->
+    <select id="getCircles" resultMap="taskCircleMap">
+        SELECT
+        tc.*,
+        m.id AS member_id,
+        m.nick_name,
+        m.real_name,
+        m.avatar AS member_avatar,
+        m.sex AS member_sex
+        FROM t_task_circle tc
+        JOIN member m ON tc.creator_id = m.id
+        WHERE tc.id = #{circleId} AND tc.name LIKE concat('%', #{circleName} ,'%')
+        ORDER BY tc.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
     </select>
 </mapper>

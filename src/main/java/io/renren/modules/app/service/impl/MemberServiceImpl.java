@@ -4,56 +4,52 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-//import com.github.qcloudsms.SmsSingleSender;
-//import com.github.qcloudsms.SmsSingleSenderResult;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
-import io.renren.common.utils.DateUtils;
-import io.renren.common.utils.GeoUtils;
-import io.renren.common.utils.JsonUtil;
-import io.renren.common.utils.PageUtils;
+import io.renren.common.exception.RRException;
+import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.setting.MemberDao;
 import io.renren.modules.app.dao.setting.MemberFollowDao;
 import io.renren.modules.app.dao.setting.MemberScoreDao;
-import io.renren.modules.app.dto.TaskCommentDto;
-import io.renren.modules.app.dto.TaskDto;
-import io.renren.modules.app.entity.TaskDifficultyEnum;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.entity.setting.MemberFollowEntity;
 import io.renren.modules.app.entity.setting.MemberScoreEntity;
-import io.renren.modules.app.entity.task.TaskAddressEntity;
-import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
+//import com.github.qcloudsms.SmsSingleSender;
+//import com.github.qcloudsms.SmsSingleSenderResult;
 
 
-@Service("MemberService")
+@Service
 public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements MemberService {
-
+    private static Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
     @Resource
     private MemberAuthsService memberAuthsService;
     @Resource
     private MemberFollowDao memberFollowDao;
     @Resource
     private MemberScoreDao memberScoreDao;
+    @Resource
+    private RedisUtils redisUtils;
 
     @Value("${sms.appid}")
     private int appid;
@@ -67,25 +63,25 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     @Value("${sms.signName}")
     private String signName;
 
-    private ConcurrentHashMap<String, String> phoneCodeMap = new ConcurrentHashMap<>();
+//    private ConcurrentHashMap<String, String> phoneCodeMap = new ConcurrentHashMap<>();
 
     @Override
-    public PageUtils<Member> searchMembers(MemberQueryForm form, PageWrapper page) {
+    public PageUtils<MemberDto> searchMembers(MemberQueryForm form, PageWrapper page) {
         Map<String, Object> queryMap = getMemberQueryMap(form);
-        List<Member> members = this.baseMapper.searchMembers(queryMap, page);
+        List<MemberDto> members = baseMapper.searchMembers(queryMap, page);
         if (CollectionUtils.isEmpty(members)) {
             return new PageUtils<>();
         }
-        int total = this.baseMapper.count(queryMap);
+        int total = baseMapper.count(queryMap);
         setMemberTags(members);
         setMemberDistance(form, members);
         return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
     }
 
     //设置用户技能标签
-    private void setMemberTags(List<Member> members) {
-        for (Member member : members) {
-            List<String> tags = this.baseMapper.getMemberTags(member.getId());
+    private void setMemberTags(List<MemberDto> members) {
+        for (MemberDto member : members) {
+            List<String> tags = baseMapper.getMemberTags(member.getId());
             member.setTags(tags);
         }
     }
@@ -103,8 +99,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     //计算距离
-    private void setMemberDistance(MemberQueryForm form, List<Member> members) {
-        for (Member member : members) {
+    private void setMemberDistance(MemberQueryForm form, List<MemberDto> members) {
+        for (MemberDto member : members) {
             long distance = 0L;
             if (form.getLatitude() != null && form.getLongitude() != null
                     && member.getLat() != null && member.getLng() != null) {
@@ -115,19 +111,57 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public Member getMember(Long memberId) {
-        return this.baseMapper.selectById(memberId);
+    public MemberDto getMember(Long curMemberId, Long memberId) {
+        Member member = baseMapper.selectById(memberId);
+        if (member != null) {
+            MemberDto dto = new MemberDto();
+            BeanUtils.copyProperties(member, dto);
+            //是否关注
+            boolean isFollowed = this.isFollowed(curMemberId, memberId);
+            dto.setFollowed(isFollowed);
+            return dto;
+        }
+        return null;
+
+    }
+
+    @Override
+    public MemberDto getMember(Long memberId) {
+        Member member = baseMapper.selectById(memberId);
+        if (member != null) {
+            MemberDto dto = new MemberDto();
+            BeanUtils.copyProperties(member, dto);
+            return dto;
+        }
+        return null;
     }
 
     @Override
     public void updateMember(MemberForm form) {
         ValidatorUtils.validateEntity(form);
-        Member member = this.selectById(form.getId());
+        Member member = selectById(form.getId());
         if (member != null) {
             member.setNickName(form.getNickName());
             member.setAvatar(form.getAvatar());
             member.setSex(form.getSex());
             member.setSelfIntro(form.getSelfIntro());
+            this.updateById(member);
+        }
+    }
+
+    @Override
+    public void wxUpdateMember(Long memberId, String nickName, String avatar, Integer sex) {
+        Member member = selectById(memberId);
+        if (member != null) {
+            if (StringUtils.isEmpty(member.getNickName())) {
+                member.setNickName(nickName);
+            }
+            if (StringUtils.isEmpty(member.getAvatar())) {
+                member.setAvatar(avatar);
+            }
+            if (member.getSex() == null) {
+                member.setSex(sex);
+            }
             this.updateById(member);
         }
     }
@@ -143,7 +177,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     @Override
     public void updateLocationNumber(LocationForm locationForm) {
-        this.baseMapper.updateLocationNumber(locationForm);
+        baseMapper.updateLocationNumber(locationForm);
     }
 
     @Override
@@ -161,8 +195,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public PageUtils<Member> getFollowMembers(Long fromMemberId, PageWrapper page) {
-        List<Member> members = memberFollowDao.getFollowMembers(fromMemberId, page);
+    public PageUtils<MemberDto> getFollowMembers(Long fromMemberId, PageWrapper page) {
+        List<MemberDto> members = memberFollowDao.getFollowMembers(fromMemberId, page);
         if (CollectionUtils.isEmpty(members)) {
             return new PageUtils<>();
         }
@@ -171,8 +205,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public PageUtils<Member> getFansMembers(Long toMemberId, PageWrapper page) {
-        List<Member> members = memberFollowDao.getFansMembers(toMemberId, page);
+    public PageUtils<MemberDto> getFansMembers(Long toMemberId, PageWrapper page) {
+        List<MemberDto> members = memberFollowDao.getFansMembers(toMemberId, page);
         if (CollectionUtils.isEmpty(members)) {
             return new PageUtils<>();
         }
@@ -182,19 +216,37 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     @Override
     public boolean isFollowed(Long fromMemberId, Long toMemberId) {
-        return memberFollowDao.isFollowed(fromMemberId, toMemberId);
+        int count = memberFollowDao.isFollowed(fromMemberId, toMemberId);
+        return count > 0;
     }
 
 
     @Override
-    public void score(Long judgeId, MemberScoreForm form) {
+    @Transactional
+    public void score(Long judgerId, MemberScoreForm form) {
         ValidatorUtils.validateEntity(form);
+        sendFlowers(judgerId, form);
         MemberScoreEntity score = new MemberScoreEntity();
         BeanUtils.copyProperties(form, score);
+        score.setJudgerId(judgerId);
         score.setCreateTime(DateUtils.now());
         memberScoreDao.insert(score);
 
         //TODO 发送消息给被评分人
+    }
+
+    private void sendFlowers(Long judgerId, MemberScoreForm form) {
+        Integer giveFlowerCount = form.getFlowerCount();
+        if (giveFlowerCount == null) {
+            return;
+        }
+        Member judger = selectById(judgerId);
+        Integer judgerFlowerCount = judger.getFlowerCount();
+        if (judgerFlowerCount < giveFlowerCount) {
+            throw new RRException("insufficient flower count.", 0);
+        }
+        baseMapper.incFlowerCount(judgerId, -giveFlowerCount);
+        baseMapper.incFlowerCount(form.getMemberId(), giveFlowerCount);
     }
 
     @Override
@@ -205,17 +257,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         SmsSingleSender ssender = new SmsSingleSender(appid, appkey);
         SmsSingleSenderResult result = ssender.sendWithParam("86", phoneNum,
                 templateId, params, signName, "", "");
-        System.out.println("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));
-        phoneCodeMap.put(phoneNum, code);
+        logger.info("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));
+        redisUtils.set(RedisKeys.PHONE_CODE_KEY + phoneNum, code, 100);//100s过期
+//        phoneCodeMap.put(phoneNum, code);
     }
 
     @Override
     public boolean validatePhoneCode(String phoneNum, String code) {
-        System.out.println("phoneCodeMap的内容为：" + JsonUtil.Java2Json(phoneCodeMap));
-        String originCode = phoneCodeMap.get(phoneNum);
-        if (!StringUtils.isEmpty(code) && code.equals(originCode))
-            return true;
-        return false;
+//        logger.info("phoneCodeMap的内容为：" + JsonUtil.Java2Json(phoneCodeMap));
+        String originCode = redisUtils.get(RedisKeys.PHONE_CODE_KEY + phoneNum);
+        return StringUtils.equals(code, originCode);
+
     }
 
 

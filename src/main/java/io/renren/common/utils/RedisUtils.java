@@ -5,10 +5,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -82,15 +81,17 @@ public class RedisUtils {
     }
 
 
-
     public <T> void addList(String key, List<T> value) {
         addList(key,value,DEFAULT_EXPIRE);
     }
 
 
-    public <T> void addList(String key, List<T> value, long expire) {
-        redisTemplate.opsForList().leftPushAll(key,value);
-//        listOperations.leftPushAll(key, value);
+    public <T> void addList(String key, List<T> values, long expire) {
+        if (!CollectionUtils.isEmpty(values)){
+            for (T val : values){
+                redisTemplate.opsForList().leftPush(key,val);
+            }
+        }
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
@@ -102,7 +103,6 @@ public class RedisUtils {
 
     public <T> List<T> getList(String key, Class<T> clazz, long expire) {
         List<Object> value =redisTemplate.opsForList().range(key, 0, -1);
-//        List<Object> value = listOperations.range(key, 0, -1);
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
@@ -125,12 +125,23 @@ public class RedisUtils {
 
      * @return
      */
-    public <T> List<T> rangeByScore(String key,Class<T> clazz){
+    public List rangeByScore(String key,Class  clazz){
+        List<Map> list=new ArrayList<>();
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
-        Set<Object> set = zset.range(key, 0, -1);
-        List<Object> value = new ArrayList<>(set);
+        Set<ZSetOperations.TypedTuple<Object>> tuples = zset.rangeWithScores(key, 0, -1);
+        Iterator<ZSetOperations.TypedTuple<Object>> iterator = tuples.iterator();
+        while (iterator.hasNext()) {
+            ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();
+            Object value = typedTuple.getValue();
+            double score = typedTuple.getScore();
 
-        return  BeanUtil.copy(value, clazz);
+            LinkedHashMap map=new LinkedHashMap();
+            map.put("value", Long.parseLong(value.toString()));
+            map.put("score", score);
+            list.add(map);
+        }
+
+        return list;
     }
 
     /**

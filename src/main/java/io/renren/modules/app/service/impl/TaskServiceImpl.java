@@ -8,11 +8,11 @@ import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
-import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberTagRelationEntity;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
@@ -46,39 +46,27 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Resource
     private TaskReceiveDao taskReceiveDao;
-
     @Resource
     private TaskTagService taskTagService;
     @Resource
     private MemberTagRelationService memberTagRelationService;
-
-
     @Resource
     private MemberService memberService;
-
-
     @Resource
     private RabbitMqHelper rabbitMqHelper;
-
     @Resource
     private RedisUtils redisUtils;
 
-    private static final long TEN_MINUTES = 60 * 10;
+    private static final long EXPIRE = 60 * 10;//10分钟
 
     @Override
     public List<TaskBannerDto> getTaskBanners() {
-        //TODO reids方式
-     /*  List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
+        List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
             banners = this.baseMapper.getTaskBanners();
             if (!CollectionUtils.isEmpty(banners)) {
-                redisUtils.addList(RedisKeys.BANNER_KEY, banners, TEN_MINUTES);
+                redisUtils.addList(RedisKeys.BANNER_KEY, banners, EXPIRE);
             }
-        }
-        return banners;*/
-        List<TaskBannerDto> banners = this.baseMapper.getTaskBanners();
-        if (CollectionUtils.isEmpty(banners)) {
-            return new ArrayList<>();
         }
         return banners;
     }
@@ -86,12 +74,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     public PageUtils<TaskDto> searchTasks(TaskQueryForm form, PageWrapper page) {
         Map<String, Object> queryMap = getTaskQueryMap(form);
-        List<TaskDto> tasks = this.baseMapper.searchTasks(queryMap, page);
+        List<TaskDto> tasks = baseMapper.searchTasks(queryMap, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
         setTastDistance(form, tasks);
-        int total = this.baseMapper.count(queryMap);
+        int total = baseMapper.count(queryMap);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
@@ -146,28 +134,28 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public PageUtils<TaskDto> getPublishedTasks(Long publisherId, PageWrapper page) {
-        List<TaskDto> tasks = this.baseMapper.getPublishedTasks(publisherId, page);
+        List<TaskDto> tasks = baseMapper.getPublishedTasks(publisherId, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
-        int total = this.baseMapper.publishCount(publisherId);
+        int total = baseMapper.publishCount(publisherId);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
     @Override
     public PageUtils<TaskDto> getReceivedTasks(Long receiverId, PageWrapper page) {
-        List<TaskDto> tasks = this.baseMapper.getReceivedTasks(receiverId, page);
+        List<TaskDto> tasks = baseMapper.getReceivedTasks(receiverId, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
-        int total = this.baseMapper.receiveCount(receiverId);
+        int total = baseMapper.receiveCount(receiverId);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
 
     @Override
     public TaskDto getTask(Long curMemberId, Long id) {
-        TaskDto task = this.baseMapper.getTask(id);
+        TaskDto task = baseMapper.getTask(id);
         if (task != null) {
             //是否关注
             boolean isFollowed = memberService.isFollowed(curMemberId, task.getCreator().getId());
@@ -186,10 +174,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         task.setCreatorId(creatorId);
         task.setStatus(TaskStatusEnum.published);
         task.setCreateTime(DateUtils.now());
-        this.insert(task);
-        this.addTaskImageRelation(task.getId(), form.getImageUrls());
-        this.addTaskTagRelation(task.getId(), form.getTagIds());
-        this.addTaskNotifiedUserRelation(task.getId(), form.getNotifiedUserIds());
+        insert(task);
+        addTaskImageRelation(task.getId(), form.getImageUrls());
+        addTaskTagRelation(task.getId(), form.getTagIds());
+        addTaskNotifiedUserRelation(task.getId(), form.getNotifiedUserIds());
     }
 
 
@@ -198,80 +186,143 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         ValidatorUtils.validateEntity(form);
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);
-        this.updateById(task);
+        updateById(task);
     }
 
     @Override
     public void deleteTask(Long id) {
-        TaskEntity task = this.selectById(id);
+        TaskEntity task = selectById(id);
         if (task == null || task.getStatus() == TaskStatusEnum.received || task.getStatus() == TaskStatusEnum.submitted) {
-            throw new RRException("任务已领取");
+            throw new RRException("任务已领取", 0);
         }
         task.setDeleted(true);
-        this.updateById(task);
+        updateById(task);
     }
 
+    @Override
+    public PageUtils<MemberDto> getTaskReceivers(Long taskId, PageWrapper page) {
+        List<MemberDto> members = baseMapper.getTaskReceivers(taskId, page);
+        if (CollectionUtils.isEmpty(members)) {
+            return new PageUtils<>();
+        }
+        int total = baseMapper.receiverCount(taskId);
+        return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
+    }
 
     /**
-     * 领取任务，返回领取人信息
+     * 领取任务
      */
     @Override
     @Transactional
-    public Member receiveTask(Long receiverId, Long taskId) {
-        TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
-        logger.info(receive.toString());
-        TaskEntity task = this.selectById(taskId);
-        if (task == null
-                || task.getStatus() != TaskStatusEnum.published
-                || task.getDeleted()) {
-            throw new RRException("任务已领取");
+    public void receiveTask(Long receiverId, Long taskId) {
+        boolean isReceiveable = isReceiveableTask(taskId);
+        if (!isReceiveable) {
+            throw new RRException("任务已开始，不能领取了", 0);
         }
+    /*    TaskEntity task = selectById(taskId);
         task.setStatus(TaskStatusEnum.received);
-        this.updateById(task);
-        long receiveId = taskReceiveDao.insert(receive);
-        return taskReceiveDao.getReceiver(receiveId);
+        updateById(task);*/
+        long curTime = DateUtils.now();
+        TaskReceiveEntity receive = new TaskReceiveEntity(curTime, receiverId, taskId);
+        receive.setUpdateTime(curTime);
+        taskReceiveDao.insert(receive);
+    }
+
+
+    @Override
+    @Transactional
+    public void chooseTaskReceiver(Long taskId, Long receiverId) {
+        boolean isChooseable = isChooseableReceiver(taskId, receiverId);
+        if (!isChooseable) {
+            throw new RRException("任务已开始，不能选择人了", 0);
+        }
+
+        TaskReceiveEntity receive = new TaskReceiveEntity();
+        receive.setStatus(TaskStatusEnum.received);
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("receiver_id", receiverId);
+        Integer result = taskReceiveDao.update(receive, wrapper);
+        if (result != null && result > 0) {
+            updateTaskStatus(taskId, TaskStatusEnum.received);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public void executeTask(Long taskId, Long receiverId) {
+        boolean isExecutable = isExecutableTask(taskId, receiverId);
+        if (!isExecutable) {
+            throw new RRException("任务不可执行", 0);
+        }
+
+        TaskReceiveEntity receive = new TaskReceiveEntity();
+        receive.setStatus(TaskStatusEnum.executing);
+        receive.setUpdateTime(DateUtils.now());
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("receiver_id", receiverId);
+        Integer result = taskReceiveDao.update(receive, wrapper);
+        if (result != null && result > 0) {
+            updateTaskStatus(taskId, TaskStatusEnum.executing);
+        }
+    }
+
+    //任务是否可执行
+    private boolean isExecutableTask(Long taskId, Long receiverId) {
+        int count = baseMapper.isExecutableTask(taskId, receiverId);
+        return count > 0;
     }
 
     @Override
     @Transactional
     public void submitTask(Long receiverId, Long taskId) {
-        boolean isSubmitable = this.baseMapper.isSubmitableTask(receiverId, taskId);
+        boolean isSubmitable = isSubmitableTask(receiverId, taskId);
         if (!isSubmitable) {
-            throw new RRException("任务不可提交");
+            throw new RRException("不是执行中任务，不可提交", 0);
         }
-        TaskEntity task = this.selectById(taskId);
-        if (task != null) {
-            task.setStatus(TaskStatusEnum.submitted);
-            this.updateById(task);
+
+        TaskReceiveEntity receive = new TaskReceiveEntity();
+        receive.setStatus(TaskStatusEnum.submitted);
+        receive.setUpdateTime(DateUtils.now());
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("receiver_id", receiverId);
+        Integer result = taskReceiveDao.update(receive, wrapper);
+        if (result != null && result > 0) {
+            updateTaskStatus(taskId, TaskStatusEnum.submitted);
 
             ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务创建人
                 rabbitMqHelper.sendMessage("test", "132");
             });
         }
+
     }
 
     @Override
     @Transactional
     public void completeTask(Long receiverId, Long taskId) {
-        boolean isCompletable = this.baseMapper.isCompletableTask(receiverId, taskId);
+        boolean isCompletable = isCompletableTask(receiverId, taskId);
         if (!isCompletable) {
             throw new RRException("任务不可完成");
         }
-        TaskEntity task = this.selectById(taskId);
+        TaskEntity task = selectById(taskId);
         if (task != null) {
             task.setStatus(TaskStatusEnum.completed);
-            this.updateById(task);
+            task.setCompleteTime(DateUtils.now());
+            updateById(task);
 
             ThreadPoolUtils.execute(() -> {
                 //TODO 发送消息给任务领取人
-
 
                 addTag2Member(receiverId, taskId);
 
             });
         }
     }
+
     //给任务领取人添加技能标签
     private void addTag2Member(Long receiverId, Long taskId) {
         List<TaskTagEntity> tags = taskTagService.getTagsByTaskId(taskId);
@@ -303,45 +354,54 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
 
-/*
-
-    @Override
-    @Transactional
-    public void completeTask(Long receiverId, Long taskId) {
-        TaskReceiveEntity receive = new TaskReceiveEntity(DateUtils.now(), receiverId, taskId);
-        TaskEntity task = this.selectById(taskId);
-        if (task == null
-                || task.getStatus() != 1//非领取状态
-                || task.getDeleted()) {
-            throw new RRException("任务已被领取");
-        }
-        task.setStatus(1);//设置为领取状态
-        this.updateById(task);
-        taskReceiveDao.insert(receive);
-    }
-*/
-
-
     //任务-图片关系
     private void addTaskImageRelation(Long taskId, List<String> imageUrls) {
         if (!CollectionUtils.isEmpty(imageUrls)) {
-            this.baseMapper.insertTaskImageRelation(taskId, imageUrls);
+            baseMapper.insertTaskImageRelation(taskId, imageUrls);
         }
     }
 
     //任务-标签关系
     private void addTaskTagRelation(Long taskId, List<Long> tagIds) {
         if (!CollectionUtils.isEmpty(tagIds)) {
-            this.baseMapper.insertTaskTagRelation(taskId, tagIds);
+            baseMapper.insertTaskTagRelation(taskId, tagIds);
         }
     }
-
 
     //任务-提示用户关系
     private void addTaskNotifiedUserRelation(Long taskId, List<Long> userIds) {
         if (!CollectionUtils.isEmpty(userIds)) {
-            this.baseMapper.insertTaskNotifiedUserRelation(taskId, userIds);
+            baseMapper.insertTaskNotifiedUserRelation(taskId, userIds);
         }
     }
 
+    private boolean isReceiveableTask(Long taskId) {
+        int count = baseMapper.isReceiveableTask(taskId);
+        return count > 0;
+    }
+
+    private boolean isChooseableReceiver(Long taskId, Long receiverId) {
+        int count = baseMapper.isChooseableReceiver(taskId, receiverId);
+        return count > 0;
+    }
+
+    private boolean isSubmitableTask(Long receiverId, Long taskId) {
+        int count = baseMapper.isSubmitableTask(receiverId, taskId);
+        return count > 0;
+    }
+
+    private boolean isCompletableTask(Long receiverId, Long taskId) {
+        int count = baseMapper.isCompletableTask(receiverId, taskId);
+        return count > 0;
+    }
+
+
+    //更新任务状态
+    private void updateTaskStatus(Long taskId, TaskStatusEnum status) {
+        TaskEntity task = new TaskEntity();
+        task.setStatus(status);
+        Wrapper<TaskEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("id", taskId);
+        baseMapper.update(task, wrapper);
+    }
 }

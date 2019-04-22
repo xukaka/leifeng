@@ -20,7 +20,7 @@
     </update>
 
 
-    <select id="searchMembers" resultType="io.renren.modules.app.entity.setting.Member">
+    <select id="searchMembers" resultType="io.renren.modules.app.dto.MemberDto">
         select m.* from member m
         where m.status = 1
         <include refid="searchMemberCondition"/>
@@ -42,6 +42,10 @@
         order by mt.usage_count desc
         limit 0,4
     </select>
+
+    <update id="incFlowerCount">
+        update member m set m.flower_count = m.flower_count + #{inc} where m.id = #{memberId}
+    </update>
 
 
 </mapper>

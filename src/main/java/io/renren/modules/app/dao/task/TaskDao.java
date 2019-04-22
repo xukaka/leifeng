@@ -1,6 +1,7 @@
 package io.renren.modules.app.dao.task;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.task.TaskEntity;
@@ -78,19 +79,49 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
 
 
     /**
+     * 是否可领取任务
+     * @param taskId
+     * @return
+     */
+    int isReceiveableTask(@Param("taskId")Long taskId );
+    /**
      * 是否可提交任务
      * @param receiverId
      * @param taskId
      * @return
      */
-    boolean isSubmitableTask(@Param("receiverId")Long receiverId,@Param("taskId")Long taskId );
+    int isSubmitableTask(@Param("receiverId")Long receiverId,@Param("taskId")Long taskId );
 
 
     /**
      * 是否可完成任务
      */
-    boolean isCompletableTask(@Param("receiverId")Long receiverId,@Param("taskId")Long taskId );
+    int isCompletableTask(@Param("receiverId")Long receiverId,@Param("taskId")Long taskId );
 
+    /**
+     * 分页获取任务领取人列表
+     * @return
+     */
+    List<MemberDto> getTaskReceivers(@Param("taskId") Long taskId, @Param("page") PageWrapper page);
 
+    /**
+     * 任务领取人总数
+     * @return
+     */
+    int receiverCount(@Param("taskId") Long taskId);
 
+    /**
+     * 是否可选择任务领取人
+     * @param taskId
+     * @return
+     */
+    int isChooseableReceiver(@Param("taskId")Long taskId ,@Param("receiverId")Long receiverId);
+
+    /**
+     * 任务是否可执行
+     * @param taskId
+     * @param receiverId
+     * @return
+     */
+    int isExecutableTask(@Param("taskId")Long taskId ,@Param("receiverId")Long receiverId);
 }

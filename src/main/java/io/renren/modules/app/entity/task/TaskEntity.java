@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import io.renren.modules.app.entity.BaseEntity;
 import io.renren.modules.app.entity.TaskStatusEnum;
 
-import java.util.List;
-
 /**
  * 任务表
  */
@@ -20,15 +18,6 @@ public class TaskEntity extends BaseEntity {
      * 描述
      */
     private String description;
-    /**
-     * 图片url列表
-     */
-//    private List<String> imageUrls;
-
-    /**
-     * 标签ids
-     */
-//    private List<Long> tagIds;
     /**
      * 任务开始时间
      */
@@ -45,32 +34,27 @@ public class TaskEntity extends BaseEntity {
      * 任务地址id
      */
     private Long addressId;
-
-    /**
-     * 被通知的用户id列表
-     */
-//    private List<Long> notifiedUserIds;
-
     /**
      * 创建者ID
      */
     private Long creatorId;
-
     /**
      * 点赞数
      */
     private Integer likeCount = 0;
-
     /**
      * 评论数
      */
     private Integer commentCount = 0;
 
     /**
+     * 浏览数
+     */
+    private Integer viewCount = 0;
+    /**
      * 状态
      */
     private TaskStatusEnum status;
-
     /**
      * 完成时间
      */
@@ -92,7 +76,6 @@ public class TaskEntity extends BaseEntity {
     public void setDescription(String description) {
         this.description = description;
     }
-
 
 
     public Long getStartTime() {
@@ -136,7 +119,6 @@ public class TaskEntity extends BaseEntity {
     }
 
 
-
     public Integer getLikeCount() {
         return likeCount;
     }
@@ -170,20 +152,13 @@ public class TaskEntity extends BaseEntity {
         this.completeTime = completeTime;
     }
 
-    @Override
-    public String toString() {
-        return "TaskEntity{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", startTime=" + startTime +
-                ", expireTime=" + expireTime +
-                ", virtualCurrency=" + virtualCurrency +
-                ", addressId=" + addressId +
-                ", creatorId=" + creatorId +
-                ", likeCount=" + likeCount +
-                ", commentCount=" + commentCount +
-                ", status=" + status +
-                ", completeTime=" + completeTime +
-                '}';
+    public Integer getViewCount() {
+        return viewCount;
     }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+    }
+
+
 }
