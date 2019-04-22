@@ -18,7 +18,6 @@ import org.jim.common.packets.Command;
 import org.jim.server.ImServerStarter;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.HandshakeReqHandler;
-import org.jim.server.command.handler.processor.group.GroupCmdProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
