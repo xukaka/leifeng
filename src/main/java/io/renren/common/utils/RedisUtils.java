@@ -121,6 +121,7 @@ public class RedisUtils {
         System.out.println(value.size());
         return BeanUtil.copy(value, clazz);
     }
+    //获取单一值List，如String，Long等
     public  List getList(String key) {
         List<Object> value =redisTemplate.opsForList().range(key, 0, -1);
         return value;
