@@ -4,6 +4,7 @@ import cn.hutool.core.io.resource.ClassPathResource;
 import com.jfinal.kit.PropKit;
 import io.renren.common.io.command.IoWsHandshakeProcessor;
 import io.renren.common.io.listener.ImDemoGroupListener;
+import io.renren.common.io.service.group.UserGroupHandler;
 import io.renren.common.io.service.user.handler.UserCloseHandler;
 import io.renren.common.io.service.user.handler.UserLoginReqHandler;
 import io.renren.common.io.service.user.processor.impl.UserCloseProcessor;
@@ -17,6 +18,7 @@ import org.jim.common.packets.Command;
 import org.jim.server.ImServerStarter;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.HandshakeReqHandler;
+import org.jim.server.command.handler.processor.group.GroupCmdProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -57,6 +59,7 @@ public class RenrenApplication extends SpringBootServletInitializer {
 		UserLoginReqHandler userHandler = CommandManager.getCommand(Command.COMMAND_LOGIN_REQ, UserLoginReqHandler.class);
 		//添加登录业务处理器;
 		userHandler.addProcessor(new UserLoginProcessor());
+		UserGroupHandler userGroupHandler = CommandManager.getCommand(Command.addAndGet("COMMAND_JOIN_USER_GROUP_REQ",22), UserGroupHandler.class);
 		UserCloseHandler userCloseHandler = CommandManager.getCommand(Command.COMMAND_CLOSE_REQ,UserCloseHandler.class);
 		userCloseHandler.addProcessor(new UserCloseProcessor());
 		/*****************end *******************************************************************************************/

@@ -11,16 +11,21 @@ import io.renren.modules.app.service.MemberService;
 import org.jim.common.ImPacket;
 import org.jim.common.ImSessionContext;
 import org.jim.common.ImStatus;
+import org.jim.common.cache.redis.RedisCache;
+import org.jim.common.cache.redis.RedisCacheManager;
 import org.jim.common.packets.Command;
 import org.jim.common.packets.Group;
 import org.jim.common.packets.User;
 import org.jim.common.utils.JsonKit;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.JoinGroupReqHandler;
+import org.jim.server.helper.redis.RedisMessageHelper;
 import org.tio.core.ChannelContext;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.jim.common.ImConst.GROUP;
 
 /**
  * @auther: Easy
@@ -28,10 +33,13 @@ import java.util.List;
  * @description:
  */
 public class UserLoginProcessor implements UserLoginServer {
+    private RedisMessageHelper redisMessageHelper = new RedisMessageHelper();
+    private RedisCache userCache =  RedisCacheManager.getCache(GROUP);;
+    private final String SUBFIX = ":";
 
     public  User getUser(Long memberId){
         RedisUtils redisUtils =SocketServiceUtil.getBean(RedisUtils.class);
-        User user=redisUtils.get("online:"+memberId,User.class);
+        User user=redisUtils.get("user:"+memberId+":info",User.class);
         MemberService memberService= SocketServiceUtil.getBean(MemberService.class);
         //demo中用map，生产环境需要用cache
         if(user==null){
@@ -42,9 +50,11 @@ public class UserLoginProcessor implements UserLoginServer {
                 user.setNick(member.getNickName());
                 user.setAvatar(member.getAvatar());
                 user.setGroups(initGroups(user));
-                redisUtils.set("online:"+memberId,user);
                 return user;
             }
+        }else{
+            List<Group> groups = redisMessageHelper.getAllGroupUsers(user.getId(),2);
+            user.setGroups(groups);
         }
         return user;
     }

@@ -188,16 +188,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         memberFollowDao.insert(follow);
         redisUtils.addList("follow:"+toMemberId, fromMemberId);
         redisUtils.addList("follow-currentUser:"+fromMemberId, toMemberId);
-
-        String message = redisUtils.get("group:"+toMemberId+":info");
-        if(org.springframework.util.StringUtils.isEmpty(message)){
-            ImGroupMemer imGroupMemer = new ImGroupMemer();
-            imGroupMemer.setGroup_id(toMemberId.toString());
-            imGroupMemer.setName("关注用户组"+toMemberId);
-            redisUtils.set("group:"+toMemberId+":info",imGroupMemer);
-        }
-        redisUtils.addList("group:"+toMemberId+":user", ReqUtils.currentUserId());
-        redisUtils.addList("user:"+ReqUtils.currentUserId()+":group",toMemberId);
     }
 
     @Override
@@ -208,8 +198,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         memberFollowDao.delete(wrapper);
         redisUtils.delListKey("follow-currentUser:"+fromMemberId, toMemberId);
         redisUtils.delListKey("follow:"+toMemberId, fromMemberId);
-        redisUtils.delListKey("group:"+toMemberId+":user", fromMemberId);
-        redisUtils.delListKey("user:"+fromMemberId+":group", toMemberId);
     }
 
     @Override
