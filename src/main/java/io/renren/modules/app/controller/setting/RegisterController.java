@@ -163,16 +163,23 @@ public class RegisterController {
 
     @PostMapping("/phone/validate")
     @ApiOperation("验证手机号和验证码是否一致")
-    public R phoneValidate(String phone, String code ,String memberId){
+    public R phoneValidate(String phone, String code){
         boolean success = memberService.validatePhoneCode(phone, code);
         if(success){
-            Member member = memberService.selectById(memberId);
-            member.setMobile(phone);
-            memberService.updateById(member);
             return R.ok();
         }
         return R.error(HttpStatus.SC_FORBIDDEN,"验证码错误");
     }
-
+    @PostMapping("/phone/bindPhone")
+    @ApiOperation("用户绑定手机号")
+    public R bindPhone(String phone, String memberId){
+        Member member = memberService.selectById(memberId);
+        if(member!=null){
+            member.setMobile(phone);
+            memberService.updateById(member);
+            return R.ok();
+        }
+        return R.error(HttpStatus.SC_FORBIDDEN,"没有查询到用户");
+    }
 
 }
