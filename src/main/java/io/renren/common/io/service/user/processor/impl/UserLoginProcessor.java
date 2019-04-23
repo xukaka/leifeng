@@ -55,8 +55,10 @@ public class UserLoginProcessor implements UserLoginServer {
         RedisUtils redisUtils =SocketServiceUtil.getBean(RedisUtils.class);
         List<String> list = redisUtils.getList("follow"+user.getId(),String.class);
         groups.add(new Group("100","雷锋通讯组"));
-        for(String str:list){
-            groups.add(new Group(str,str+"通讯组"));
+        if(list.size()>0){
+            for(String str:list){
+                groups.add(new Group(str,str+"通讯组"));
+            }
         }
         return groups;
     }
