@@ -278,13 +278,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     /**
      * 签到
-     *
      * @param memberId
      */
     @Override
+    @Transactional
     public void checkIn(Long memberId, Integer experience) {
         String checkedIn = redisUtils.get(RedisKeys.CHECK_IN + memberId);
-        if (StringUtils.isEmpty(checkedIn) || Boolean.valueOf(checkedIn)) {
+        if (StringUtils.isEmpty(checkedIn) || !Boolean.valueOf(checkedIn)) {
             redisUtils.set(RedisKeys.CHECK_IN + memberId, true, DateUtils.secondsLeftToday());
             MemberCheckInEntity checkIn = new MemberCheckInEntity();
             checkIn.setMemberId(memberId);
