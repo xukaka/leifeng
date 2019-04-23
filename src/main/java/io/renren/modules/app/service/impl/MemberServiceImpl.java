@@ -187,10 +187,10 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         memberFollowDao.insert(follow);
         String message = redisUtils.get("group:"+toMemberId+":info");
         if(org.springframework.util.StringUtils.isEmpty(message)){
-            redisUtils.set("group:"+toMemberId+":info","{group_id:"+toMemberId+",name:"+toMemberId+"关注}");
+            redisUtils.set("group:"+toMemberId+":info","{"+"\"group_id:"+toMemberId+"\","+"\"name:"+toMemberId+",关注"+"\"}");
         }
         redisUtils.zAdd("group:"+toMemberId+":user", ReqUtils.currentUserId(),ReqUtils.currentUserId());
-        redisUtils.zAdd("user:"+ReqUtils.currentUserId()+":group",toMemberId,ReqUtils.currentUserId());
+        redisUtils.lPush("user:"+ReqUtils.currentUserId()+":group",toMemberId,ReqUtils.currentUserId());
     }
 
     @Override

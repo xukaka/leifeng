@@ -109,6 +109,17 @@ public class RedisUtils {
         return BeanUtil.copy(value, clazz);
     }
     /**
+     * 列表添加
+     * @param key
+     * @param value
+     * @param scoure
+     */
+    public void lPush(String key,Object value,double scoure){
+        ListOperations<String, Object> zset = redisTemplate.opsForList();
+
+        zset.leftPush(key,value,scoure);
+    }
+    /**
      * 有序集合添加
      * @param key
      * @param value
