@@ -63,6 +63,8 @@ public class MemberController {
     private RedisUtils redisUtils;
 
 
+
+
     @PostMapping("/list")
     @ApiOperation("搜索用户列表-分页")
     public R searchMembers(@RequestBody MemberQueryForm form) {
@@ -72,6 +74,14 @@ public class MemberController {
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<MemberDto> members = memberService.searchMembers(form, page);
         return R.ok().put("result", members);
+    }
+
+    @Login
+    @GetMapping("/checkIn")
+    @ApiOperation("用户签到")
+    public R checkIn() {
+        memberService.checkIn(ReqUtils.currentUserId(),5);
+        return R.ok();
     }
 
     @Login

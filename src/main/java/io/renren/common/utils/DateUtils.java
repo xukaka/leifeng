@@ -23,7 +23,9 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * 日期处理
@@ -180,4 +182,19 @@ public class DateUtils {
     public static long now(){
         return System.currentTimeMillis();
     }
+
+    /**
+     * 计算今天剩余多少秒
+     */
+    public static long secondsLeftToday(){
+        Calendar curDate = Calendar.getInstance();
+        Calendar tommorowDate = new GregorianCalendar(curDate
+                .get(Calendar.YEAR), curDate.get(Calendar.MONTH), curDate
+                .get(Calendar.DATE) + 1, 0, 0, 0);
+        return (tommorowDate.getTimeInMillis() - curDate .getTimeInMillis()) / 1000;
+
+    }
+
+
+
 }

@@ -48,4 +48,9 @@
     </update>
 
 
+    <update id="incMemberExperience">
+        update member m set m.experience = m.experience + #{experience} where m.id = #{memberId}
+    </update>
+
+
 </mapper>

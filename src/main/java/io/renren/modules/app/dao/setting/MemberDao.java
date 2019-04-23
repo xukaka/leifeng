@@ -36,4 +36,7 @@ public interface MemberDao extends BaseMapper<Member> {
      * @param inc 增量
      */
     void incFlowerCount(@Param("memberId")Long memberId,@Param("inc")int inc);
+
+    //增加用户经验值
+    void incMemberExperience(@Param("memberId")Long memberId, @Param("experience")Integer experience);
 }

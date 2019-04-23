@@ -106,4 +106,9 @@ public interface MemberService extends IService<Member> {
 
     boolean validatePhoneCode(String phoneNum, String code);
 
+    /**
+     * 签到
+     * @param memberId
+     */
+    void checkIn(Long memberId,Integer experience);
 }

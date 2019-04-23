@@ -48,6 +48,8 @@ public class Member implements Serializable {
     private Integer flowerCount = 0;
     //奖状数
     private Integer certificateCount = 0;
+
+    private Integer experience = 0;
     //创建时间
     private Long createTime;
 
@@ -179,4 +181,12 @@ public class Member implements Serializable {
         this.level = level;
     }
 
+
+    public Integer getExperience() {
+        return experience;
+    }
+
+    public void setExperience(Integer experience) {
+        this.experience = experience;
+    }
 }

@@ -9,15 +9,13 @@ import com.github.qcloudsms.SmsSingleSenderResult;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.modules.app.dao.setting.MemberCheckInDao;
 import io.renren.modules.app.dao.setting.MemberDao;
 import io.renren.modules.app.dao.setting.MemberFollowDao;
 import io.renren.modules.app.dao.setting.MemberScoreDao;
 import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.entity.im.ImGroupMemer;
-import io.renren.modules.app.entity.setting.Member;
-import io.renren.modules.app.entity.setting.MemberAuths;
-import io.renren.modules.app.entity.setting.MemberFollowEntity;
-import io.renren.modules.app.entity.setting.MemberScoreEntity;
+import io.renren.modules.app.entity.setting.*;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
@@ -50,6 +48,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     private MemberFollowDao memberFollowDao;
     @Resource
     private MemberScoreDao memberScoreDao;
+    @Resource
+    private MemberCheckInDao memberCheckInDao;
     @Resource
     private RedisUtils redisUtils;
 
@@ -186,8 +186,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     public void followMember(Long fromMemberId, Long toMemberId) {
         MemberFollowEntity follow = new MemberFollowEntity(DateUtils.now(), fromMemberId, toMemberId);
         memberFollowDao.insert(follow);
-        redisUtils.addList("follow:"+toMemberId, fromMemberId);
-        redisUtils.addList("follow-currentUser:"+fromMemberId, toMemberId);
+        redisUtils.addList("follow:" + toMemberId, fromMemberId);
+        redisUtils.addList("follow-currentUser:" + fromMemberId, toMemberId);
     }
 
     @Override
@@ -196,8 +196,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         wrapper.eq("from_member_id", fromMemberId)
                 .eq("to_member_id", toMemberId);
         memberFollowDao.delete(wrapper);
-        redisUtils.delListKey("follow-currentUser:"+fromMemberId, toMemberId);
-        redisUtils.delListKey("follow:"+toMemberId, fromMemberId);
+        redisUtils.delListKey("follow-currentUser:" + fromMemberId, toMemberId);
+        redisUtils.delListKey("follow:" + toMemberId, fromMemberId);
     }
 
     @Override
@@ -276,5 +276,27 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     }
 
+    /**
+     * 签到
+     *
+     * @param memberId
+     */
+    @Override
+    public void checkIn(Long memberId, Integer experience) {
+        String checkedIn = redisUtils.get(RedisKeys.CHECK_IN + memberId);
+        if (StringUtils.isEmpty(checkedIn) || Boolean.valueOf(checkedIn)) {
+            redisUtils.set(RedisKeys.CHECK_IN + memberId, true, DateUtils.secondsLeftToday());
+            MemberCheckInEntity checkIn = new MemberCheckInEntity();
+            checkIn.setMemberId(memberId);
+            checkIn.setExperience(experience);
+            memberCheckInDao.insert(checkIn);
+            incMemberExperience(memberId, experience);
+        }
 
+    }
+
+    //增加用户经验值
+    private void incMemberExperience(Long memberId, Integer experience) {
+        baseMapper.incMemberExperience(memberId, experience);
+    }
 }
