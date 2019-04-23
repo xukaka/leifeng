@@ -20,6 +20,7 @@ import io.renren.modules.app.entity.setting.MemberScoreEntity;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
+import io.renren.modules.app.utils.ReqUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,6 +185,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     public void followMember(Long fromMemberId, Long toMemberId) {
         MemberFollowEntity follow = new MemberFollowEntity(DateUtils.now(), fromMemberId, toMemberId);
         memberFollowDao.insert(follow);
+        String message = redisUtils.get("group:"+toMemberId+":info");
+        if(org.springframework.util.StringUtils.isEmpty(message)){
+            redisUtils.set("group:"+toMemberId+":info","{group_id:"+toMemberId+",name:"+toMemberId+"关注}");
+        }
+        redisUtils.zAdd("group:"+toMemberId+":user", ReqUtils.currentUserId(),ReqUtils.currentUserId());
+        redisUtils.zAdd("user:"+ReqUtils.currentUserId()+":group",toMemberId,ReqUtils.currentUserId());
     }
 
     @Override

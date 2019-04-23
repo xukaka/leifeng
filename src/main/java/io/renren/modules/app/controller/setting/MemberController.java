@@ -142,12 +142,6 @@ public class MemberController {
     @GetMapping("/follow")
     @ApiOperation("关注用户")
     public R followMember(@RequestParam Long toMemberId) {
-        String message = redisUtils.get("group:"+toMemberId+":info");
-        if(!StringUtils.isEmpty(message)){
-            redisUtils.set("group:"+toMemberId+":info","{group_id:"+toMemberId+",name:"+toMemberId+"关注}");
-        }
-        redisUtils.zAdd("group:"+toMemberId+":user",ReqUtils.currentUserId(),ReqUtils.currentUserId());
-        redisUtils.zAdd("user:"+ReqUtils.currentUserId()+"group",toMemberId,ReqUtils.currentUserId());
         memberService.followMember(ReqUtils.currentUserId(), toMemberId);
         return R.ok();
     }
