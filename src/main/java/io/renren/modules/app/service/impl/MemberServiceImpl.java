@@ -190,7 +190,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             redisUtils.set("group:"+toMemberId+":info","{"+"\"group_id:"+toMemberId+"\","+"\"name:"+toMemberId+",关注"+"\"}");
         }
         redisUtils.zAdd("group:"+toMemberId+":user", ReqUtils.currentUserId(),ReqUtils.currentUserId());
-        redisUtils.lPush("user:"+ReqUtils.currentUserId()+":group",toMemberId,ReqUtils.currentUserId());
+        redisUtils.addList("user:"+ReqUtils.currentUserId()+":group",toMemberId,ReqUtils.currentUserId());
     }
 
     @Override

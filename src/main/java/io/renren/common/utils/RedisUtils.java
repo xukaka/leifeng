@@ -84,7 +84,16 @@ public class RedisUtils {
     public <T> void addList(String key, List<T> value) {
         addList(key,value,DEFAULT_EXPIRE);
     }
-
+    /**
+     * 列表单键添加
+     * @param key
+     * @param value
+     * @param scoure
+     */
+    public void addList(String key,Object value,double scoure){
+        ListOperations<String, Object> zset = redisTemplate.opsForList();
+        zset.leftPush(key,value,scoure);
+    }
 
     public <T> void addList(String key, List<T> values, long expire) {
         if (!CollectionUtils.isEmpty(values)){
@@ -108,17 +117,7 @@ public class RedisUtils {
         }
         return BeanUtil.copy(value, clazz);
     }
-    /**
-     * 列表添加
-     * @param key
-     * @param value
-     * @param scoure
-     */
-    public void lPush(String key,Object value,double scoure){
-        ListOperations<String, Object> zset = redisTemplate.opsForList();
 
-        zset.leftPush(key,value,scoure);
-    }
     /**
      * 有序集合添加
      * @param key
