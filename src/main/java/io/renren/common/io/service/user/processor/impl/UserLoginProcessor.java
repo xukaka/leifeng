@@ -50,7 +50,13 @@ public class UserLoginProcessor implements UserLoginServer {
     }
     public List<Group> initGroups(User user){
         //模拟的群组;正式根据业务去查数据库或者缓存;
-        List<Group> groups = new ArrayList<Group>();
+
+        List<Group> groups =   new ArrayList<Group>();
+        RedisUtils redisUtils =SocketServiceUtil.getBean(RedisUtils.class);
+        List<String> list = redisUtils.getList("follow"+user.getId(),String.class);
+        for(String str:list){
+            groups.add(new Group(str,str+"通讯组"));
+        }
         groups.add(new Group("100","雷锋通讯组"));
         return groups;
     }

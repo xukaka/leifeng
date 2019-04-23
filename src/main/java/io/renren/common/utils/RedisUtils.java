@@ -93,7 +93,11 @@ public class RedisUtils {
         ListOperations<String, Object> zset = redisTemplate.opsForList();
         zset.leftPush(key,value);
     }
+   public void delListKey(String key,Object value){
+       ListOperations<String, Object> zset = redisTemplate.opsForList();
 
+       zset.remove(key,0,value);
+    }
     public <T> void addList(String key, List<T> values, long expire) {
         if (!CollectionUtils.isEmpty(values)){
             for (T val : values){
