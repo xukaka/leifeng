@@ -13,6 +13,7 @@ import io.renren.modules.app.dao.setting.MemberDao;
 import io.renren.modules.app.dao.setting.MemberFollowDao;
 import io.renren.modules.app.dao.setting.MemberScoreDao;
 import io.renren.modules.app.dto.MemberDto;
+import io.renren.modules.app.entity.im.ImGroupMemer;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.entity.setting.MemberFollowEntity;
@@ -187,10 +188,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         memberFollowDao.insert(follow);
         String message = redisUtils.get("group:"+toMemberId+":info");
         if(org.springframework.util.StringUtils.isEmpty(message)){
-            redisUtils.set("group:"+toMemberId+":info","{"+"\"group_id:"+toMemberId+"\","+"\"name:"+toMemberId+",关注"+"\"}");
+            ImGroupMemer imGroupMemer = new ImGroupMemer();
+            imGroupMemer.setGroup_id(toMemberId.toString());
+            imGroupMemer.setName("关注用户组"+toMemberId);
+            redisUtils.set("group:"+toMemberId+":info",imGroupMemer);
         }
         redisUtils.zAdd("group:"+toMemberId+":user", ReqUtils.currentUserId(),ReqUtils.currentUserId());
-        redisUtils.addList("user:"+ReqUtils.currentUserId()+":group",toMemberId,ReqUtils.currentUserId());
+        redisUtils.addList("user:"+ReqUtils.currentUserId()+":group",toMemberId);
     }
 
     @Override

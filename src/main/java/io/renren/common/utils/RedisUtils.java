@@ -88,11 +88,10 @@ public class RedisUtils {
      * 列表单键添加
      * @param key
      * @param value
-     * @param scoure
      */
-    public void addList(String key,Object value,double scoure){
+    public void addList(String key,Object value){
         ListOperations<String, Object> zset = redisTemplate.opsForList();
-        zset.leftPush(key,value,scoure);
+        zset.leftPush(key,value);
     }
 
     public <T> void addList(String key, List<T> values, long expire) {
