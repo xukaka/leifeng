@@ -38,7 +38,7 @@ public class ImController {
     @ApiOperation("获取联系人历史列表")
     public R  getHistoryMember(Long memberId){
         logger.info("[ImController.info] 请求参数id={}",memberId);
-        redisUtils.zAdd("unread:"+memberId,11,0);
+//        redisUtils.zAdd("unread:"+memberId,11,0);
         List<ImHistoryMember> members = new ArrayList<>();
         List<Map> list =new ArrayList<>();
         list = redisUtils.rangeByScore("unread:"+memberId,ImHistoryMember.class);
