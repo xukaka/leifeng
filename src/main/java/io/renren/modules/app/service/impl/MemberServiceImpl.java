@@ -193,7 +193,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             imGroupMemer.setName("关注用户组"+toMemberId);
             redisUtils.set("group:"+toMemberId+":info",imGroupMemer);
         }
-        redisUtils.zAdd("group:"+toMemberId+":user", ReqUtils.currentUserId(),ReqUtils.currentUserId());
+        redisUtils.addList("group:"+toMemberId+":user", ReqUtils.currentUserId());
         redisUtils.addList("user:"+ReqUtils.currentUserId()+":group",toMemberId);
     }
 
