@@ -77,7 +77,6 @@ public class TaskEntity extends BaseEntity {
         this.description = description;
     }
 
-
     public Long getStartTime() {
         return startTime;
     }
@@ -118,7 +117,6 @@ public class TaskEntity extends BaseEntity {
         this.creatorId = creatorId;
     }
 
-
     public Integer getLikeCount() {
         return likeCount;
     }
@@ -143,7 +141,6 @@ public class TaskEntity extends BaseEntity {
         this.status = status;
     }
 
-
     public Long getCompleteTime() {
         return completeTime;
     }
@@ -159,6 +156,5 @@ public class TaskEntity extends BaseEntity {
     public void setViewCount(Integer viewCount) {
         this.viewCount = viewCount;
     }
-
 
 }

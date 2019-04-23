@@ -1,11 +1,13 @@
 package io.renren.modules.app.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
 import io.renren.modules.app.dto.MemberDto;
@@ -178,6 +180,24 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         addTaskImageRelation(task.getId(), form.getImageUrls());
         addTaskTagRelation(task.getId(), form.getTagIds());
         addTaskNotifiedUserRelation(task.getId(), form.getNotifiedUserIds());
+        if (!CollectionUtils.isEmpty(form.getNotifiedUserIds())) {
+            //推送消息给被提醒用户
+        }
+
+        ThreadPoolUtils.execute(() -> {
+            //推送消息给关注我的所有人
+            MemberDto creator = memberService.getMember(creatorId);
+            JSONObject extras = new JSONObject();
+            extras.put("businessCode", "0");//0，发布任务
+            extras.put("taskId", task.getId());
+            extras.put("taskTitle", task.getTitle());
+            extras.put("taskCreatorId", creator.getId());
+            extras.put("taskCreatorAvatar", creator.getAvatar());
+            extras.put("taskCreatorNickName", creator.getNickName());
+            extras.put("groupId", creator.getId());
+            logger.info("推消息到关注我的组，extras=" + extras.toJSONString());
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+        });
     }
 
 
@@ -192,8 +212,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     public void deleteTask(Long id) {
         TaskEntity task = selectById(id);
-        if (task == null || task.getStatus() == TaskStatusEnum.received || task.getStatus() == TaskStatusEnum.submitted) {
-            throw new RRException("任务已领取", 0);
+        if (task == null || task.getStatus() == TaskStatusEnum.executing || task.getStatus() == TaskStatusEnum.submitted) {
+            throw new RRException("当前任务状态,不可删除", 0);
         }
         task.setDeleted(true);
         updateById(task);
@@ -219,13 +239,26 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (!isReceiveable) {
             throw new RRException("任务已开始，不能领取了", 0);
         }
-    /*    TaskEntity task = selectById(taskId);
-        task.setStatus(TaskStatusEnum.received);
-        updateById(task);*/
+        TaskEntity task = baseMapper.selectById(taskId);
         long curTime = DateUtils.now();
         TaskReceiveEntity receive = new TaskReceiveEntity(curTime, receiverId, taskId);
         receive.setUpdateTime(curTime);
         taskReceiveDao.insert(receive);
+
+        ThreadPoolUtils.execute(() -> {
+            //推送消息给任务发布人
+            MemberDto receiver = memberService.getMember(receiverId);
+            JSONObject extras = new JSONObject();
+            extras.put("businessCode", "1");//1，领取任务
+            extras.put("taskId", task.getId());
+            extras.put("taskTitle", task.getTitle());
+            extras.put("taskCreatorId", task.getCreatorId());
+            extras.put("taskReceiverId", receiver.getId());
+            extras.put("taskReceiverAvatar", receiver.getAvatar());
+            extras.put("taskReceiverNickName", receiver.getNickName());
+            logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+        });
     }
 
 
@@ -245,7 +278,24 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.received);
+
+            ThreadPoolUtils.execute(() -> {
+                //推送消息给任务接收人
+                TaskDto task = baseMapper.getTask(taskId);
+                JSONObject extras = new JSONObject();
+                extras.put("businessCode", "2");//2，确认领取任务
+                extras.put("taskId", task.getId());
+                extras.put("taskTitle", task.getTitle());
+                extras.put("taskCreatorId", task.getCreator().getId());
+                extras.put("taskCreatorAvatar", task.getCreator().getAvatar());
+                extras.put("taskCreatorNickName", task.getCreator().getNickName());
+                extras.put("taskReceiverId", receiverId);
+                logger.info("推送消息给任务接收人，extras=" + extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+            });
         }
+
+
     }
 
 
@@ -256,7 +306,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (!isExecutable) {
             throw new RRException("任务不可执行", 0);
         }
-
         TaskReceiveEntity receive = new TaskReceiveEntity();
         receive.setStatus(TaskStatusEnum.executing);
         receive.setUpdateTime(DateUtils.now());
@@ -266,8 +315,27 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.executing);
+            //推送消息给任务发布人
+            MemberDto receiver = memberService.getMember(receiverId);
+            TaskDto taskDto = baseMapper.getTask(taskId);
+            JSONObject extras = new JSONObject();
+            extras.put("businessCode", "3");//执行任务
+            extras.put("taskId", taskDto.getId());
+            extras.put("taskTitle", taskDto.getTitle());
+            extras.put("taskCreatorId", taskDto.getCreator().getId());
+            extras.put("taskReceiverId", receiver.getId());
+            extras.put("taskReceiverAvatar", receiver.getAvatar());
+            extras.put("taskReceiverNickName", receiver.getNickName());
+            logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
         }
     }
+
+ /*   @Override
+    @Transactional
+    public void cancelTaskByReceiver(Long receiverId, Long taskId) {
+
+    }*/
 
     //任务是否可执行
     private boolean isExecutableTask(Long taskId, Long receiverId) {
@@ -294,8 +362,19 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             updateTaskStatus(taskId, TaskStatusEnum.submitted);
 
             ThreadPoolUtils.execute(() -> {
-                //TODO 发送消息给任务创建人
-                rabbitMqHelper.sendMessage("test", "132");
+                //推送消息给任务创建人
+                MemberDto receiver = memberService.getMember(receiverId);
+                TaskDto task = baseMapper.getTask(taskId);
+                JSONObject extras = new JSONObject();
+                extras.put("businessCode", "4");//提交任务
+                extras.put("taskId", task.getId());
+                extras.put("taskTitle", task.getTitle());
+                extras.put("taskReceiverId", receiver.getId());
+                extras.put("taskReceiverAvatar", receiver.getAvatar());
+                extras.put("taskReceiverNickName", receiver.getNickName());
+                extras.put("taskCreatorId", task.getCreator().getId());
+                logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
             });
         }
 
@@ -308,19 +387,34 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (!isCompletable) {
             throw new RRException("任务不可完成");
         }
-        TaskEntity task = selectById(taskId);
-        if (task != null) {
-            task.setStatus(TaskStatusEnum.completed);
-            task.setCompleteTime(DateUtils.now());
-            updateById(task);
 
+        Wrapper<TaskEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("id", taskId);
+        TaskEntity task = new TaskEntity();
+        task.setStatus(TaskStatusEnum.completed);
+        task.setCompleteTime(DateUtils.now());
+        Integer result = baseMapper.update(task, wrapper);
+        if (result != null && result > 0) {
             ThreadPoolUtils.execute(() -> {
-                //TODO 发送消息给任务领取人
+                //发送消息给任务领取人
+                TaskDto taskDto = baseMapper.getTask(taskId);
+                JSONObject extras = new JSONObject();
+                extras.put("businessCode", "5");//确认任务完成
+                extras.put("taskId", taskDto.getId());
+                extras.put("taskTitle", taskDto.getTitle());
+                extras.put("taskVirtualCurrency", taskDto.getVirtualCurrency());
+                extras.put("taskCreatorId", taskDto.getCreator().getId());
+                extras.put("taskCreatorAvatar", taskDto.getCreator().getAvatar());
+                extras.put("taskCreatorNickName", taskDto.getCreator().getNickName());
+                extras.put("taskReceiverId", receiverId);
+                logger.info("发送消息给任务领取人，extras=" + extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
 
+                //给领取人添加标签
                 addTag2Member(receiverId, taskId);
-
             });
         }
+
     }
 
     //给任务领取人添加技能标签

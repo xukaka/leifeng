@@ -81,6 +81,7 @@ public class TaskController {
         return R.ok().put("result", tasks);
     }
 
+    @Login
     @GetMapping("/receiver/choose")
     @ApiOperation("选择确定任务领取人")
     public R chooseTaskReceiver(@RequestParam Long taskId, @RequestParam Long receiverId) {
@@ -94,6 +95,31 @@ public class TaskController {
         taskService.receiveTask(ReqUtils.currentUserId(), taskId);
         return R.ok();
     }
+
+    @Login
+    @GetMapping("/execute")
+    @ApiOperation("执行任务")
+    public R executeTask(@RequestParam Long taskId) {
+        taskService.executeTask( taskId,ReqUtils.currentUserId());
+        return R.ok();
+    }
+
+/*    @Login
+    @GetMapping("/receiverCancel")
+    @ApiOperation("领取人取消任务")
+    public R cancelTaskByReceiver(@RequestParam Long taskId) {
+        taskService.cancelTaskByReceiver(ReqUtils.currentUserId(), taskId);
+        return R.ok();
+    }
+    @Login
+    @GetMapping("/publisherCancel")
+    @ApiOperation("发布人取消任务")
+    public R cancelTaskByPublisher(@RequestParam Long taskId) {
+        taskService.cancelTaskByPublisher(ReqUtils.currentUserId(), taskId);
+        return R.ok();
+    }*/
+
+
 
     @Login
     @GetMapping("/submit")
