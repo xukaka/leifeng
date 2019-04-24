@@ -102,10 +102,10 @@ public class MemberController {
 
 
     @Login
-    @GetMapping("/wxUpdate")
+    @PostMapping("/wxUpdate")
     @ApiOperation("微信更新用户信息(昵称，头像，性别)")
-    public R updateMember(@RequestParam String nickName ,@RequestParam String avatar,@RequestParam Integer sex) {
-        memberService.wxUpdateMember(ReqUtils.currentUserId(),nickName,avatar,sex);
+    public R wxUpdateMember(@RequestBody WxUserInfoForm userInfo) {
+        memberService.wxUpdateMember(ReqUtils.currentUserId(),userInfo);
         return R.ok();
     }
 
@@ -190,11 +190,11 @@ public class MemberController {
     }
 
 
-//    @Login
+    @Login
     @PostMapping("/score")
     @ApiOperation("用户评分")
     public R socre(@RequestBody MemberScoreForm form) {
-        memberService.score(11L, form);
+        memberService.score(ReqUtils.currentUserId(), form);
         return R.ok();
     }
 

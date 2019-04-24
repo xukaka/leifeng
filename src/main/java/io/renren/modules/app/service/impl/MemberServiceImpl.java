@@ -152,17 +152,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public void wxUpdateMember(Long memberId, String nickName, String avatar, Integer sex) {
+    public void wxUpdateMember(Long memberId,WxUserInfoForm userInfo) {
         Member member = selectById(memberId);
         if (member != null) {
             if (StringUtils.isEmpty(member.getNickName())) {
-                member.setNickName(nickName);
+                member.setNickName(userInfo.getNickName());
             }
             if (StringUtils.isEmpty(member.getAvatar())) {
-                member.setAvatar(avatar);
+                member.setAvatar(userInfo.getAvatarUrl());
             }
             if (member.getSex() == null) {
-                member.setSex(sex);
+                member.setSex(userInfo.getGender());
             }
             this.updateById(member);
         }

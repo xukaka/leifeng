@@ -45,7 +45,7 @@ public interface MemberService extends IService<Member> {
     /**
      * 更新用户信息-根据微信用户信息
      */
-    void wxUpdateMember(Long memberId,String nickName,String avatar,Integer sex);
+    void wxUpdateMember(Long memberId,WxUserInfoForm userInfo);
 
     /**
      * 同时写入member表和member_auths表
