@@ -12,8 +12,8 @@ public class ImHistoryMember {
     /**
      * 是否存在未读信息
      */
-    int type;
-    Member member;
+    private int type;
+    private Member member;
 
     public int getType() {
         return type;

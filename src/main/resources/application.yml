@@ -93,9 +93,9 @@ renren:
 
 wx:
   #app_id: wx337c1f56812473d2
-  #app_secret: fcbe3e0ae4025d2b1e0f3a2c7cc88620
-  app_id: wx337c1f56812473d2
-  app_secret: 512bdc097288f8f79d877898046ff7a4
+  #app_secret: f874d3460c7fdd56ba6880805259e16e
+  app_id: wxf303172e683e60d0
+  app_secret: f874d3460c7fdd56ba6880805259e16e
   code_session_url: https://api.weixin.qq.com/sns/jscode2session
 
 sms:

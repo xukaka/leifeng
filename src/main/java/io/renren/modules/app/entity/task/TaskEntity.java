@@ -11,6 +11,11 @@ import io.renren.modules.app.entity.TaskStatusEnum;
 public class TaskEntity extends BaseEntity {
 
     /**
+     * 圈id
+     */
+    private Long circleId;
+
+    /**
      * 主题
      */
     private String title;
@@ -77,6 +82,7 @@ public class TaskEntity extends BaseEntity {
         this.description = description;
     }
 
+
     public Long getStartTime() {
         return startTime;
     }
@@ -117,6 +123,7 @@ public class TaskEntity extends BaseEntity {
         this.creatorId = creatorId;
     }
 
+
     public Integer getLikeCount() {
         return likeCount;
     }
@@ -141,6 +148,14 @@ public class TaskEntity extends BaseEntity {
         this.status = status;
     }
 
+    public Long getCircleId() {
+        return circleId;
+    }
+
+    public void setCircleId(Long circleId) {
+        this.circleId = circleId;
+    }
+
     public Long getCompleteTime() {
         return completeTime;
     }
@@ -156,5 +171,6 @@ public class TaskEntity extends BaseEntity {
     public void setViewCount(Integer viewCount) {
         this.viewCount = viewCount;
     }
+
 
 }

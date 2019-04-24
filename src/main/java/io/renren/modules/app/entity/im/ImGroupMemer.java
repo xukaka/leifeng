@@ -6,8 +6,8 @@ package io.renren.modules.app.entity.im;
  * @description:
  */
 public class ImGroupMemer {
-    String group_id;
-    String name;
+    private String group_id;
+    private String name;
 
     public String getGroup_id() {
         return group_id;

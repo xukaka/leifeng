@@ -30,7 +30,8 @@ public class TaskForm {
     @ApiModelProperty(value = "主题", example = "帮忙抢火车票")
     @NotBlank
     private String title;
-
+    @ApiModelProperty(value = "圈id", example = "")
+    private Long circleId;
     @ApiModelProperty(value = "描述", example = "")
     @NotBlank(message = "描述")
     private String description;
@@ -138,5 +139,13 @@ public class TaskForm {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCircleId() {
+        return circleId;
+    }
+
+    public void setCircleId(Long circleId) {
+        this.circleId = circleId;
     }
 }
