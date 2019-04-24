@@ -101,11 +101,10 @@ public class MemberController {
     }
 
 
-    @Login
     @PostMapping("/wxUpdate")
     @ApiOperation("微信更新用户信息(昵称，头像，性别)")
     public R wxUpdateMember(@RequestBody WxUserInfoForm userInfo) {
-        memberService.wxUpdateMember(ReqUtils.currentUserId(),userInfo);
+        memberService.wxUpdateMember(userInfo);
         return R.ok();
     }
 

@@ -15,6 +15,8 @@ public class WxUserInfoForm implements Serializable {
     private String country;
     private String language;
 
+    private String phone;
+
     public String getNickName() {
         return nickName;
     }
@@ -33,6 +35,14 @@ public class WxUserInfoForm implements Serializable {
 
     public String getAvatarUrl() {
         return avatarUrl;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public void setAvatarUrl(String avatarUrl) {
