@@ -109,9 +109,9 @@ public class MemberController {
     }
 
     @Login
-    @PutMapping("/location")
+    @PostMapping("/location")
     @ApiOperation("更新用户位置")
-    public R updateLocation(LocationForm locationForm) {
+    public R updateLocation(@RequestBody LocationForm locationForm) {
         memberService.updateLocationNumber(ReqUtils.currentUserId(),locationForm);
         return R.ok();
     }
