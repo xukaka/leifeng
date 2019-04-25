@@ -53,7 +53,7 @@ public class RegisterForm {
     @ApiModelProperty(value = "地址",example = "北京市")
     private String address;
 
-    @ApiModelProperty(value = "性别0男，1女",example = "0")
+    @ApiModelProperty(value = "性别0未知,1男，2女",example = "0")
     private String sex;
 
     @ApiModelProperty(value = "邮箱",example = "383635738@qq.com")

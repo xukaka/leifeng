@@ -36,7 +36,7 @@ public class Member implements Serializable {
 
     //地址
     private String address;
-    //性别0男，1女
+    //性别0未知,1男，2女
     private Integer sex;
     //邮箱
     private String email;
@@ -48,7 +48,7 @@ public class Member implements Serializable {
     private Integer flowerCount = 0;
     //奖状数
     private Integer certificateCount = 0;
-
+    //经验值
     private Integer experience = 0;
     //创建时间
     private Long createTime;

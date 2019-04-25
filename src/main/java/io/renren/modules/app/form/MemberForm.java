@@ -29,8 +29,8 @@ public class MemberForm implements Serializable {
     private String selfIntro;
     //地址
     private String address;
-    //性别0男，1女
-    @ApiModelProperty("性别0男，1女")
+    //性别0未知,1男，2女
+    @ApiModelProperty("性别0未知,1男，2女")
     private Integer sex;
     //邮箱
     private String email;
