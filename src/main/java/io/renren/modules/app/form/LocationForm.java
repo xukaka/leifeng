@@ -8,9 +8,9 @@ import javax.validation.constraints.NotBlank;
 @ApiModel
 public class LocationForm {
 
-    @ApiModelProperty(value = "用户的id")
+/*    @ApiModelProperty(value = "用户的id")
     @NotBlank
-    private Long id;
+    private Long memid;*/
 
     @ApiModelProperty(value = "维度")
     private Double lat;
@@ -18,13 +18,13 @@ public class LocationForm {
     @ApiModelProperty(value = "经度")
     private Double lng;
 
-    public Long getId() {
+   /* public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
+    }*/
 
 
     public Double getLat() {
@@ -39,5 +39,7 @@ public class LocationForm {
         this.lng = lng;
     }
 
-
+    public Double getLng() {
+        return lng;
+    }
 }

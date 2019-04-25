@@ -179,10 +179,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         insert(task);
         addTaskImageRelation(task.getId(), form.getImageUrls());
         addTaskTagRelation(task.getId(), form.getTagIds());
-        addTaskNotifiedUserRelation(task.getId(), form.getNotifiedUserIds());
+      /*  addTaskNotifiedUserRelation(task.getId(), form.getNotifiedUserIds());
         if (!CollectionUtils.isEmpty(form.getNotifiedUserIds())) {
             //推送消息给被提醒用户
-        }
+        }*/
 
         ThreadPoolUtils.execute(() -> {
             //推送消息给关注我的所有人
@@ -463,11 +463,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
     //任务-提示用户关系
-    private void addTaskNotifiedUserRelation(Long taskId, List<Long> userIds) {
+/*    private void addTaskNotifiedUserRelation(Long taskId, List<Long> userIds) {
         if (!CollectionUtils.isEmpty(userIds)) {
             baseMapper.insertTaskNotifiedUserRelation(taskId, userIds);
         }
-    }
+    }*/
 
     private boolean isReceiveableTask(Long taskId) {
         int count = baseMapper.isReceiveableTask(taskId);

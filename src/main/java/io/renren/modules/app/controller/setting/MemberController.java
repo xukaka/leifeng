@@ -112,7 +112,7 @@ public class MemberController {
     @PutMapping("/location")
     @ApiOperation("更新用户位置")
     public R updateLocation(LocationForm locationForm) {
-        memberService.updateLocationNumber(locationForm);
+        memberService.updateLocationNumber(ReqUtils.currentUserId(),locationForm);
         return R.ok();
     }
 

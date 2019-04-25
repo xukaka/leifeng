@@ -21,24 +21,32 @@ public class ImMsgListener {
         logger.info("rabbitMQ handle message ===>>> " + message);
         JSONObject jsonObject = JSONObject.parseObject(message);
         String businessCode = jsonObject.getString("businessCode");
-        if (StringUtils.equals(businessCode, "0")) {
-            String groupId = jsonObject.getString("groupId");
-            ImMessageUtils.sendGroupMessage("发布任务", groupId, jsonObject);
-        } else if (StringUtils.equals(businessCode, "1")) {
-            String to = jsonObject.getString("taskCreatorId");
-            ImMessageUtils.sendSingleMessage("领取任务", to, jsonObject);
-        } else if (StringUtils.equals(businessCode, "2")) {
-            String to = jsonObject.getString("taskReceiverId");
-            ImMessageUtils.sendSingleMessage("确认领取任务", to, jsonObject);
-        } else if (StringUtils.equals(businessCode, "3")) {
-            String to = jsonObject.getString("taskCreatorId");
-            ImMessageUtils.sendSingleMessage("开始执行任务", to, jsonObject);
-        } else if (StringUtils.equals(businessCode, "4")) {
-            String to = jsonObject.getString("taskCreatorId");
-            ImMessageUtils.sendSingleMessage("提交任务", to, jsonObject);
-        } else if (StringUtils.equals(businessCode, "5")) {
-            String to = jsonObject.getString("taskReceiverId");
-            ImMessageUtils.sendSingleMessage("确认任务完成", to, jsonObject);
+        String to = null;
+        switch (businessCode) {
+            case "0":
+                String groupId = jsonObject.getString("groupId");
+                ImMessageUtils.sendGroupMessage("发布任务", groupId, jsonObject);
+                break;
+            case "1":
+                to = jsonObject.getString("taskCreatorId");
+                ImMessageUtils.sendSingleMessage("领取任务", to, jsonObject);
+                break;
+            case "2":
+                to = jsonObject.getString("taskReceiverId");
+                ImMessageUtils.sendSingleMessage("确认领取任务", to, jsonObject);
+                break;
+            case "3":
+                to = jsonObject.getString("taskCreatorId");
+                ImMessageUtils.sendSingleMessage("开始执行任务", to, jsonObject);
+                break;
+            case "4":
+                to = jsonObject.getString("taskCreatorId");
+                ImMessageUtils.sendSingleMessage("提交任务", to, jsonObject);
+                break;
+            case "5":
+                to = jsonObject.getString("taskReceiverId");
+                ImMessageUtils.sendSingleMessage("确认任务完成", to, jsonObject);
+                break;
         }
 
     }

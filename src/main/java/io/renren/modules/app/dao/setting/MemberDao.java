@@ -21,7 +21,7 @@ import java.util.Map;
 @Mapper
 public interface MemberDao extends BaseMapper<Member> {
 
-    void updateLocationNumber(@Param("location") LocationForm locationForm);
+    void updateLocationNumber(@Param("memberId")Long memberId,@Param("location") LocationForm locationForm);
 
 
     List<MemberDto> searchMembers(@Param("queryMap") Map<String, Object> queryMap, @Param("page")PageWrapper page);

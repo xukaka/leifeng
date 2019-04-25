@@ -180,8 +180,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public void updateLocationNumber(LocationForm locationForm) {
-        baseMapper.updateLocationNumber(locationForm);
+    public void updateLocationNumber(Long memberId,LocationForm locationForm) {
+        baseMapper.updateLocationNumber(memberId,locationForm);
     }
 
     @Override

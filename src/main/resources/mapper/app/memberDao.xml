@@ -16,7 +16,7 @@
     </sql>
 
     <update id="updateLocationNumber">
-        update member set lat = #{location.lat},lng=#{location.lng} where id=#{location.id}
+        update member set lat = #{location.lat},lng=#{location.lng} where id=#{memberId}
     </update>
 
 

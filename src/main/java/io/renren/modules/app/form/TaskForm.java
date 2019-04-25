@@ -58,8 +58,8 @@ public class TaskForm {
     @NotNull
     private Long addressId;
 
-    @ApiModelProperty(value = "被通知的用户id列表", example = "")
-    private List<Long> notifiedUserIds;
+/*    @ApiModelProperty(value = "被通知的用户id列表", example = "")
+    private List<Long> notifiedUserIds;*/
 
     public String getTitle() {
         return title;
@@ -124,14 +124,14 @@ public class TaskForm {
     public void setAddressId(Long addressId) {
         this.addressId = addressId;
     }
-
+/*
     public List<Long> getNotifiedUserIds() {
         return notifiedUserIds;
     }
 
     public void setNotifiedUserIds(List<Long> notifiedUserIds) {
         this.notifiedUserIds = notifiedUserIds;
-    }
+    }*/
 
     public Long getId() {
         return id;

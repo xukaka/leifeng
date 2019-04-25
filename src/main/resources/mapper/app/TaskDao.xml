@@ -401,12 +401,12 @@
         </foreach>
     </insert>
 
-    <insert id="insertTaskNotifiedUserRelation">
+<!--    <insert id="insertTaskNotifiedUserRelation">
         INSERT INTO r_task_notified_user(task_id,user_id) VALUES
         <foreach collection="userIds" item="item" index="index" separator=",">
             (#{taskId}, #{item})
         </foreach>
-    </insert>
+    </insert>-->
 
     <select id="getTaskBanners" resultMap="taskBannerMap">
         select

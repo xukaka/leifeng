@@ -104,7 +104,7 @@ public class TaskController {
         return R.ok();
     }
 
-/*    @Login
+    /*@Login
     @GetMapping("/receiverCancel")
     @ApiOperation("领取人取消任务")
     public R cancelTaskByReceiver(@RequestParam Long taskId) {

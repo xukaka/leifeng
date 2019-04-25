@@ -1,6 +1,5 @@
 package io.renren.modules.app.dto;
 
-import com.baomidou.mybatisplus.annotations.TableField;
 import io.renren.modules.app.entity.setting.Member;
 
 import java.util.List;

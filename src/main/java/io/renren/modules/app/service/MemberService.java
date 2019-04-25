@@ -52,7 +52,7 @@ public interface MemberService extends IService<Member> {
      */
     void registerMemberWithAuth(Member member, MemberAuths auths);
 
-    void updateLocationNumber(LocationForm locationForm);
+    void updateLocationNumber(Long memberId,LocationForm locationForm);
 
 
     /**
