@@ -104,7 +104,7 @@ public class TaskController {
         return R.ok();
     }
 
-    /*@Login
+    @Login
     @GetMapping("/receiverCancel")
     @ApiOperation("领取人取消任务")
     public R cancelTaskByReceiver(@RequestParam Long taskId) {
@@ -117,7 +117,7 @@ public class TaskController {
     public R cancelTaskByPublisher(@RequestParam Long taskId) {
         taskService.cancelTaskByPublisher(ReqUtils.currentUserId(), taskId);
         return R.ok();
-    }*/
+    }
 
 
 
@@ -160,7 +160,7 @@ public class TaskController {
         return R.ok().put("result", tasks);
     }
 
-    @Login
+//    @Login
     @PostMapping("/search/list")
     @ApiOperation("搜索任务列表-分页")
     public R searchTasks(@RequestBody TaskQueryForm form) {

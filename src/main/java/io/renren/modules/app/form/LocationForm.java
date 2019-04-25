@@ -3,8 +3,6 @@ package io.renren.modules.app.form;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotBlank;
-
 @ApiModel
 public class LocationForm {
 

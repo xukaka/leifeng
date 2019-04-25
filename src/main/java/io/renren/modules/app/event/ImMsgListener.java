@@ -47,6 +47,14 @@ public class ImMsgListener {
                 to = jsonObject.getString("taskReceiverId");
                 ImMessageUtils.sendSingleMessage("确认任务完成", to, jsonObject);
                 break;
+            case "6":
+                to = jsonObject.getString("taskCreatorId");
+                ImMessageUtils.sendSingleMessage("领取人取消任务", to, jsonObject);
+                break;
+            case "7":
+                to = jsonObject.getString("taskReceiverId");
+                ImMessageUtils.sendSingleMessage("发布人取消任务", to, jsonObject);
+                break;
         }
 
     }

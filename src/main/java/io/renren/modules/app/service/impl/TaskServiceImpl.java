@@ -15,6 +15,7 @@ import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
+import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberTagRelationEntity;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
@@ -80,13 +81,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
-        setTastDistance(form, tasks);
+        setTaskDistance(form, tasks);
         int total = baseMapper.count(queryMap);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
     //计算距离
-    private void setTastDistance(TaskQueryForm form, List<TaskDto> tasks) {
+    private void setTaskDistance(TaskQueryForm form, List<TaskDto> tasks) {
         for (TaskDto task : tasks) {
             TaskAddressEntity address = task.getAddress();
             long distance = 0L;
@@ -315,27 +316,103 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.executing);
-            //推送消息给任务发布人
-            MemberDto receiver = memberService.getMember(receiverId);
-            TaskDto taskDto = baseMapper.getTask(taskId);
-            JSONObject extras = new JSONObject();
-            extras.put("businessCode", "3");//执行任务
-            extras.put("taskId", taskDto.getId());
-            extras.put("taskTitle", taskDto.getTitle());
-            extras.put("taskCreatorId", taskDto.getCreator().getId());
-            extras.put("taskReceiverId", receiver.getId());
-            extras.put("taskReceiverAvatar", receiver.getAvatar());
-            extras.put("taskReceiverNickName", receiver.getNickName());
-            logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+
+            ThreadPoolUtils.execute(() -> {
+                //推送消息给任务发布人
+                MemberDto receiver = memberService.getMember(receiverId);
+                TaskDto taskDto = baseMapper.getTask(taskId);
+                JSONObject extras = new JSONObject();
+                extras.put("businessCode", "3");//执行任务
+                extras.put("taskId", taskDto.getId());
+                extras.put("taskTitle", taskDto.getTitle());
+                extras.put("taskCreatorId", taskDto.getCreator().getId());
+                extras.put("taskReceiverId", receiver.getId());
+                extras.put("taskReceiverAvatar", receiver.getAvatar());
+                extras.put("taskReceiverNickName", receiver.getNickName());
+                logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+            });
         }
     }
 
- /*   @Override
+    @Override
     @Transactional
     public void cancelTaskByReceiver(Long receiverId, Long taskId) {
+        TaskDto task = baseMapper.getTask(taskId);
+        if (receiverId == null || !receiverId.equals(task.getReceiver().getId())
+                || (task.getStatus() != TaskStatusEnum.published && task.getStatus() != TaskStatusEnum.received)) {
+            throw new RRException("任务不能取消", 0);
+        }
+        TaskReceiveEntity receive = new TaskReceiveEntity();
+        receive.setStatus(TaskStatusEnum.cancelled);
+        receive.setUpdateTime(DateUtils.now());
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("receiver_id", receiverId);
+        Integer result = taskReceiveDao.update(receive, wrapper);
+        if (result != null && result > 0) {
+            updateTaskStatus(taskId, TaskStatusEnum.cancelled);
+        }
 
-    }*/
+        ThreadPoolUtils.execute(() -> {
+            //推送消息给任务发布人
+            MemberDto receiver = memberService.getMember(receiverId);
+            JSONObject extras = new JSONObject();
+            extras.put("businessCode", "6");//领取人取消任务
+            extras.put("taskId", task.getId());
+            extras.put("taskTitle", task.getTitle());
+            extras.put("taskReceiverId", receiver.getId());
+            extras.put("taskReceiverAvatar", receiver.getAvatar());
+            extras.put("taskReceiverNickName", receiver.getNickName());
+            extras.put("taskCreatorId", task.getCreator().getId());
+            logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+
+        });
+
+
+    }
+
+
+    @Override
+    @Transactional
+    public void cancelTaskByPublisher(Long publisherId, Long taskId) {
+        TaskDto task = baseMapper.getTask(taskId);
+        if (publisherId == null || !publisherId.equals(task.getCreator().getId())
+                || (task.getStatus() != TaskStatusEnum.published && task.getStatus() != TaskStatusEnum.received)) {
+            /*TaskReceiveEntity receive = new TaskReceiveEntity();
+            receive.setStatus(TaskStatusEnum.cancelled);
+            receive.setUpdateTime(DateUtils.now());
+            Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+            wrapper.eq("task_id", taskId)
+                    .eq("receiver_id", task.getReceiver().getId());
+            Integer result = taskReceiveDao.update(receive, wrapper);
+            if (result != null && result > 0) {
+            }*/
+            throw new RRException("任务执行中，不能取消", 0);
+        }
+        updateTaskStatus(taskId, TaskStatusEnum.cancelled);
+
+        ThreadPoolUtils.execute(() -> {
+            Member receiver = task.getReceiver();
+            if (receiver != null) {
+                //推送消息给任务领取人
+                MemberDto creator = memberService.getMember(publisherId);
+                JSONObject extras = new JSONObject();
+                extras.put("businessCode", "7");//发布人取消任务
+                extras.put("taskId", task.getId());
+                extras.put("taskTitle", task.getTitle());
+                extras.put("taskReceiverId", receiver.getId());
+                extras.put("taskCreatorAvatar",creator.getAvatar());
+                extras.put("taskCreatorNickName", creator.getNickName());
+                extras.put("taskCreatorId", creator.getId());
+                logger.info("推送消息给任务领取人，extras=" + extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+            }
+
+        });
+
+    }
 
     //任务是否可执行
     private boolean isExecutableTask(Long taskId, Long receiverId) {
