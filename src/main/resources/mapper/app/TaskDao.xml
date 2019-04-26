@@ -310,7 +310,16 @@
         FROM t_task t
         JOIN t_task_address a ON t.address_id = a.id
         JOIN member m ON t.creator_id = m.id
-        WHERE t.deleted = 0 AND t.status = 'published'
+        WHERE
+        <if test="queryMap.tagIds != null and queryMap.tagIds.size() > 0">
+            EXISTS (select 1 from t_task_tag tag where tag.task_id=t.id and tag.id in
+                <foreach collection="queryMap.tagIds" item="tagId" index="index" open="(" close=")" separator=",">
+                    #{tagId}
+                </foreach>
+            )
+            and
+        </if>
+        t.deleted = 0 AND t.status = 'published'
         <include refid="searchTaskCondition"/>
         ORDER BY t.create_time desc
         LIMIT #{page.offset},#{page.limit}
@@ -324,17 +333,19 @@
     <!--获取任务总数-根据查询条件-->
     <select id="count" resultType="int">
         SELECT
-        <!--       count(DISTINCT(t.id))-->
         count(1)
         FROM t_task t
         JOIN t_task_address a ON t.address_id = a.id
-        <!--<if test="tagIds != null and tagIds.size() > 0">
-            JOIN t_task_tag tag ON t.id = tag.task_id AND tag.id IN
-            <foreach collection="tagIds" item="id" index="index" open="(" close=")" separator=",">
-                #{id}
+        WHERE
+        <if test="queryMap.tagIds != null and queryMap.tagIds.size() > 0">
+            EXISTS (select 1 from t_task_tag tag where tag.task_id=t.id and tag.id in
+            <foreach collection="queryMap.tagIds" item="tagId" index="index" open="(" close=")" separator=",">
+                #{tagId}
             </foreach>
-        </if>-->
-        WHERE t.deleted = 0
+            )
+            and
+        </if>
+        t.deleted = 0 AND t.status = 'published'
         <include refid="searchTaskCondition"/>
 
     </select>

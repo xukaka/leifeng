@@ -5,14 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import io.renren.common.utils.ImMessageUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.service.ImService;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 
