@@ -36,15 +36,11 @@ public interface TaskTagService extends IService<TaskTagEntity> {
 
     /**
      * 分页获取任务标签
-     * @param pageMap
-     * @return
      */
     PageUtils<TaskTagEntity> getTags( Map<String,Object> pageMap);
 
     /**
      * 获取任务标签列表-根据任务id
-     * @param taskId
-     * @return
      */
     List<TaskTagEntity> getTagsByTaskId(Long taskId);
 

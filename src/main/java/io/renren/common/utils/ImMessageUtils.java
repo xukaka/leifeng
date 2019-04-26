@@ -18,13 +18,11 @@ package io.renren.common.utils;
 
 
 import com.alibaba.fastjson.JSONObject;
-import io.renren.modules.app.controller.im.ImController;
-import org.apache.commons.lang.StringUtils;
+import io.renren.config.RabbitMQConfig;
+import io.renren.modules.app.dto.MemberDto;
 import org.jim.common.packets.ChatBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
 
 
 /**

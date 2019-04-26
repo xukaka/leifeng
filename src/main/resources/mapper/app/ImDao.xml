@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.im.ImDao">
+
+    <select id="getGroupNotices" resultType="io.renren.modules.app.entity.im.ImGroupNotice">
+        select n.*
+        from t_im_group_notice n
+        join t_member_follow f on n.group_id=f.to_member_id
+        where n.delete=0 and f.from_member_id = #{memberId}
+        ORDER BY n.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+    </select>
+
+    <select id="groupNoticeCount" resultType="int">
+
+        select count(1)
+        from t_im_group_notice n
+        join t_member_follow f on n.group_id=f.to_member_id
+        where n.delete=0 and f.from_member_id = #{memberId}
+    </select>
+
+
+</mapper>

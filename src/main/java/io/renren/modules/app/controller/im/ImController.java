@@ -1,13 +1,19 @@
 package io.renren.modules.app.controller.im;
 
+import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.controller.story.MsgCommentController;
+import io.renren.modules.app.dto.TaskDto;
+import io.renren.modules.app.entity.im.ImGroupNotice;
 import io.renren.modules.app.entity.im.ImHistoryMember;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.form.MessageTypeForm;
+import io.renren.modules.app.form.PageWrapper;
+import io.renren.modules.app.service.ImService;
 import io.renren.modules.app.service.MemberService;
+import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -16,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +41,10 @@ public class ImController {
     private RedisUtils redisUtils;
     @Autowired
     private MemberService memberService;
+     @Autowired
+    private ImService imService;
+
+
     @GetMapping("/historyMember")
     @ApiOperation("获取联系人历史列表")
     public R  getHistoryMember(Long memberId){
@@ -67,5 +78,17 @@ public class ImController {
             redisUtils.zAdd("unread:"+messageTypeForm.getFromId(),messageTypeForm.getToId(),messageTypeForm.getType());
         }
         return R.ok();
+    }
+
+    @Login
+    @GetMapping(value="/notice/list")
+    @ApiOperation("分页获取群组通知列表")
+    public R  getGroupNotices(@RequestParam Integer curPage, @RequestParam Integer pageSize){
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<ImGroupNotice> notices = imService.getGroupNotices(ReqUtils.currentUserId(), page);
+        return R.ok().put("result", notices);
     }
 }

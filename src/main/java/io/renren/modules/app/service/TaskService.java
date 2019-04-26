@@ -25,20 +25,15 @@ public interface TaskService extends IService<TaskEntity> {
     List<TaskBannerDto> getTaskBanners();
     /**
      * 分页搜索任务-根据搜索条件
-     * @param form
-     * @param page
-     * @return
      */
     PageUtils<TaskDto> searchTasks(TaskQueryForm form, PageWrapper page);
     /**
      * 分页获取发布的任务
-     * @return
      */
     PageUtils<TaskDto> getPublishedTasks(Long publisherId, PageWrapper page);
 
     /**
      * 分页获取领取的任务
-     * @return
      */
     PageUtils<TaskDto> getReceivedTasks(Long receiverId, PageWrapper page);
 
@@ -85,28 +80,20 @@ public interface TaskService extends IService<TaskEntity> {
 
     /**
      * 选择任务领取人
-     * @param taskId
-     * @param receiverId
      */
     void chooseTaskReceiver(Long taskId, Long receiverId);
 
     /**
      * 开始执行任务
-     * @param taskId
-     * @param receiverId
      */
     void executeTask(Long taskId, Long receiverId);
 
     /**
      * 任务领取人取消任务
-     * @param currentUserId
-     * @param taskId
      */
     void cancelTaskByReceiver(Long currentUserId, Long taskId);
     /**
      * 任务发布人取消任务
-     * @param currentUserId
-     * @param taskId
      */
     void cancelTaskByPublisher(Long currentUserId, Long taskId);
 }
