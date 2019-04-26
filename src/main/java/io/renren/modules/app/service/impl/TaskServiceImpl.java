@@ -245,6 +245,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         long curTime = DateUtils.now();
         TaskReceiveEntity receive = new TaskReceiveEntity(curTime, receiverId, taskId);
         receive.setUpdateTime(curTime);
+        receive.setStatus(TaskStatusEnum.published);
+
+        logger.info("receive task:"+receive);
         taskReceiveDao.insert(receive);
 
         ThreadPoolUtils.execute(() -> {

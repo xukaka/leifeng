@@ -352,12 +352,6 @@
 
 
     <select id="isReceiveableTask" resultType="int">
-/*        SELECT
-            COUNT(*)
-            FROM t_task t
-            WHERE NOT EXISTS
-                (SELECT 1 FROM t_task_receive re WHERE re.task_id =  #{taskId})
-                AND t.deleted = 0 AND t.status = 'published' AND t.id= #{taskId} */
           SELECT
             COUNT(1)
             FROM t_task t
