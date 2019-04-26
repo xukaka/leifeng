@@ -190,11 +190,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             MemberDto creator = memberService.getMember(creatorId);
             JSONObject extras = new JSONObject();
             extras.put("businessCode", "0");//0，发布任务
-            extras.put("taskId", task.getId());
-            extras.put("taskTitle", task.getTitle());
-            extras.put("taskCreatorId", creator.getId());
-            extras.put("taskCreatorAvatar", creator.getAvatar());
-            extras.put("taskCreatorNickName", creator.getNickName());
+            extras.put("type", "task");//类型为任务
+            extras.put("id", task.getId());
+            extras.put("title", task.getTitle());
+            extras.put("creatorId", creator.getId());
+            extras.put("creatorAvatar", creator.getAvatar());
+            extras.put("creatorNickName", creator.getNickName());
             extras.put("groupId", creator.getId());
             logger.info("推消息到关注我的组，extras=" + extras.toJSONString());
             rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
