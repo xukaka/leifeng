@@ -4,11 +4,8 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.annotation.Login;
-import io.renren.modules.app.controller.story.MsgCommentController;
-import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.im.ImGroupNotice;
 import io.renren.modules.app.entity.im.ImHistoryMember;
-import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.form.MessageTypeForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.ImService;
@@ -71,12 +68,7 @@ public class ImController {
      */
     public R  setMessageType(@RequestBody MessageTypeForm messageTypeForm){
         logger.info("[ImController.info] 请求参数id={}",messageTypeForm.getFromId(),messageTypeForm.getToId());
-        if(messageTypeForm.getType()==1){
-            redisUtils.zAdd("unread:"+messageTypeForm.getToId(),messageTypeForm.getFromId(),messageTypeForm.getType());
-        }else{
-            redisUtils.zAdd("unread:"+messageTypeForm.getToId(),messageTypeForm.getFromId(),messageTypeForm.getType());
-            redisUtils.zAdd("unread:"+messageTypeForm.getFromId(),messageTypeForm.getToId(),messageTypeForm.getType());
-        }
+        imService.setMessageType(messageTypeForm);
         return R.ok();
     }
 
