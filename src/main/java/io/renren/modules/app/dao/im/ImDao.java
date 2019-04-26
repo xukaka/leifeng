@@ -20,7 +20,7 @@ public interface ImDao extends BaseMapper<ImGroupNotice> {
     /**
      * 分页获取群组通知列表
      */
-    List<ImGroupNotice> getGroupNotices(@Param("groupId") Long groupId, @Param("page") PageWrapper page);
+    List<ImGroupNotice> getGroupNotices(@Param("memberId") Long memberId, @Param("page") PageWrapper page);
 
     /**
      * 群组通知总数
