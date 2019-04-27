@@ -11,7 +11,7 @@ public class ReqUtils {
        return (Long)getRequest().getAttribute("userId");
     }
 
-    private static HttpServletRequest getRequest(){
+    public static HttpServletRequest getRequest(){
 
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = servletRequestAttributes.getRequest();

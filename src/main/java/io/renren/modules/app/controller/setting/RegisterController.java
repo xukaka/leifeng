@@ -98,6 +98,7 @@ public class RegisterController {
         WXSession wxSession = wxRequest.loginWXWithCode(code);
 
         if (!ObjectUtils.isEmpty(wxSession)) {
+            logger.info("wxsession=",JsonUtil.Java2Json(wxSession));
             MemberAuths auths = memberAuthsService.queryByTypeAndCredential(Constant.WX_TYPE, DigestUtils.sha256Hex(wxSession.getOpenid()));
             //通过openid查询不到则注册新用户
             if (ObjectUtils.isEmpty(auths)) {
@@ -115,6 +116,7 @@ public class RegisterController {
             Map<String, Object> map = new HashMap<>();
             map.put("token", token);
             map.put("memberId", auths.getMemberId());
+            map.put("openId",wxSession.getOpenid());
             return R.ok(map);
 
         } else {
