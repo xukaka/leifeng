@@ -2,6 +2,7 @@ package io.renren.modules.app.controller.pay;
 
 import io.renren.common.utils.JsonUtil;
 import io.renren.common.utils.OrderNoUtil;
+import io.renren.common.utils.R;
 import io.renren.modules.app.service.impl.WXPayService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.renren.modules.app.utils.WXPayUtil;
@@ -30,7 +31,7 @@ public class WXPayController {
 
     @PostMapping("/prePay")
     @ApiOperation("微信预下订单接口")
-    public Map<String, String> prePay(String prodDesc, float totalFee, String openid) throws Exception {
+    public R prePay(String prodDesc, float totalFee, String openid) throws Exception {
         logger.info("[WXPayController.prePay] request:prodDesc={},totleFee={},openid={}",prodDesc,totalFee,openid);
         Map<String,String> reqData = new HashMap<>();
         reqData.put("body",prodDesc); //商品描述
@@ -44,7 +45,7 @@ public class WXPayController {
         logger.info("微信预下订单请求结果：{}",wxResponse);
 
         Map<String, String> wxPayMap = wxPayService.reGenerateParamForApp(wxResponse);
-        return wxPayMap;
+        return R.ok().put("result", wxPayMap);
     }
 
     @PostMapping("/notify")
