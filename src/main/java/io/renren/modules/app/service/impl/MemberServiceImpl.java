@@ -295,7 +295,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             memberCheckInDao.insert(checkIn);
             incMemberExperience(memberId, experience);
         }
-
     }
 
     //增加用户经验值

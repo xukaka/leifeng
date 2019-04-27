@@ -28,7 +28,7 @@
         extras_json,
         create_time,
         deleted)
-        values(#{notice.fromMemberId,#{notice.toMemberId},#{notice.extrasJson},#{notice.createTime},#{notice.deleted}})
+        values(#{notice.fromMemberId},#{notice.toMemberId},#{notice.extrasJson},#{notice.createTime},#{notice.deleted})
     </insert>
 
 
