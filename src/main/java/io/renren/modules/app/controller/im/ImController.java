@@ -6,6 +6,7 @@ import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.entity.im.ImGroupNotice;
 import io.renren.modules.app.entity.im.ImHistoryMember;
+import io.renren.modules.app.entity.im.ImTaskStatusNotice;
 import io.renren.modules.app.form.MessageTypeForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.ImService;
@@ -38,20 +39,20 @@ public class ImController {
     private RedisUtils redisUtils;
     @Autowired
     private MemberService memberService;
-     @Autowired
+    @Autowired
     private ImService imService;
 
 
     @GetMapping("/historyMember")
     @ApiOperation("获取联系人历史列表")
-    public R  getHistoryMember(Long memberId){
-        logger.info("[ImController.info] 请求参数id={}",memberId);
+    public R getHistoryMember(Long memberId) {
+        logger.info("[ImController.info] 请求参数id={}", memberId);
 //        redisUtils.zAdd("unread:"+memberId,11,0);
         List<ImHistoryMember> members = new ArrayList<>();
-        List<Map> list =new ArrayList<>();
-        list = redisUtils.rangeByScore("unread:"+memberId,ImHistoryMember.class);
-        for(Map map :list){
-            ImHistoryMember imHistoryMember =new ImHistoryMember();
+        List<Map> list = new ArrayList<>();
+        list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
+        for (Map map : list) {
+            ImHistoryMember imHistoryMember = new ImHistoryMember();
             Double score = (Double) map.get("score");
             imHistoryMember.setType(score.intValue());
             imHistoryMember.setMember(memberService.getMember((Long) map.get("value")));
@@ -59,28 +60,41 @@ public class ImController {
         }
         return R.ok().put("result", members);
     }
-    @PostMapping(value="/setMessageType",consumes = "application/json")
+
+    @PostMapping(value = "/setMessageType", consumes = "application/json")
     @ApiOperation("设置未读消息状态")
     /**
      * memberId:代表发送人，当前用户ID即可
      * toId：代表接受人，也就是不在线的用户Id
      * type:0代表没有未读消息，1代表存在未读消息
      */
-    public R  setMessageType(@RequestBody MessageTypeForm messageTypeForm){
-        logger.info("[ImController.info] 请求参数id={}",messageTypeForm.getFromId(),messageTypeForm.getToId());
+    public R setMessageType(@RequestBody MessageTypeForm messageTypeForm) {
+        logger.info("[ImController.info] 请求参数id={}", messageTypeForm.getFromId(), messageTypeForm.getToId());
         imService.setMessageType(messageTypeForm);
         return R.ok();
     }
 
     @Login
-    @GetMapping(value="/notice/list")
+    @GetMapping(value = "/groupNotice/list")
     @ApiOperation("分页获取群组通知列表")
-    public R  getGroupNotices(@RequestParam Integer curPage, @RequestParam Integer pageSize){
+    public R getGroupNotices(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<ImGroupNotice> notices = imService.getGroupNotices(ReqUtils.currentUserId(), page);
+        return R.ok().put("result", notices);
+    }
+
+    @Login
+    @GetMapping(value = "/taskStatusNotice/list")
+    @ApiOperation("分页获取任务状态通知列表")
+    public R getTaskStatusNotices(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<ImTaskStatusNotice> notices = imService.getTaskStatusNotices(ReqUtils.currentUserId(), page);
         return R.ok().put("result", notices);
     }
 }
