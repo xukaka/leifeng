@@ -237,9 +237,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void receiveTask(Long receiverId, Long taskId) {
-        boolean isReceiveable = isReceiveableTask(taskId);
+        boolean isReceiveable = isReceiveableTask(receiverId,taskId);
         if (!isReceiveable) {
-            throw new RRException("任务已开始，不能领取了", 0);
+            throw new RRException("任务已领取", 0);
         }
         TaskEntity task = baseMapper.selectById(taskId);
         long curTime = DateUtils.now();
@@ -550,8 +550,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         }
     }*/
 
-    private boolean isReceiveableTask(Long taskId) {
-        int count = baseMapper.isReceiveableTask(taskId);
+    private boolean isReceiveableTask(Long receiverId,Long taskId) {
+        int count = baseMapper.isReceiveableTask(receiverId,taskId);
         return count > 0;
     }
 

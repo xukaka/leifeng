@@ -83,7 +83,7 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
      * @param taskId
      * @return
      */
-    int isReceiveableTask(@Param("taskId")Long taskId );
+    int isReceiveableTask(@Param("receiverId")Long receiverId ,@Param("taskId")Long taskId );
     /**
      * 是否可提交任务
      * @param receiverId
