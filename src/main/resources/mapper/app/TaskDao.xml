@@ -356,7 +356,7 @@
             COUNT(1)
             FROM t_task t
             WHERE NOT EXISTS
-                (SELECT 1 FROM t_task_receive re WHERE t.id = re.task_id AND re.receiver_id = #{receiver_id})
+                (SELECT 1 FROM t_task_receive re WHERE t.id = re.task_id AND re.receiver_id = #{receiverId})
                 AND t.deleted = 0 AND t.status = 'published' AND t.id= #{taskId}
     </select>
 
