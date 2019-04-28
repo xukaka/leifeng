@@ -5,9 +5,9 @@ import java.util.Random;
 
 public class OrderNoUtil {
 
-    public static String generateOrderNo(){
+    public static String generateOrderNo(Long taskId){
         String orderNo = DateUtils.format(new Date(), "yyyyMMddHHmmss");
-        orderNo+=new Random().nextInt(1000);
+        orderNo+=taskId;
         return  orderNo;
     }
 }

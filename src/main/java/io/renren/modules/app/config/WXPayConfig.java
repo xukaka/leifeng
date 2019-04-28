@@ -22,6 +22,8 @@ public class WXPayConfig {
     private String WXPayDomain;
 
     private String notifyUrl;
+
+    private String orderQuery;
     /**
      * 获取商户证书内容
      *
@@ -138,5 +140,13 @@ public class WXPayConfig {
 
     public void setNotifyUrl(String notifyUrl) {
         this.notifyUrl = notifyUrl;
+    }
+
+    public String getOrderQuery() {
+        return orderQuery;
+    }
+
+    public void setOrderQuery(String orderQuery) {
+        this.orderQuery = orderQuery;
     }
 }

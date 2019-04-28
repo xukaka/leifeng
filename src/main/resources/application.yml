@@ -101,6 +101,7 @@ wx:
   key: huzhongchengwxd930ea5d5a258f4f03
   WXPayDomain: https://api.mch.weixin.qq.com/pay/unifiedorder
   notifyUrl: https://pet.fangzheng.fun/leifeng/app/wx/pay/notify
+  orderQuery: https://api.mch.weixin.qq.com/pay/orderquery
 
 sms:
   appid: 1400198286

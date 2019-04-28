@@ -18,6 +18,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -27,7 +29,7 @@ import java.util.Map;
 
 @Component
 public class WXPayService {
-
+    private final static Logger logger = LoggerFactory.getLogger(WXPayService.class);
     @Autowired
     private WXPayConfig config;
 
@@ -169,10 +171,67 @@ public class WXPayService {
                 backData.put("timeStamp",String.valueOf(System.currentTimeMillis()/1000));
                 backData.put("paySign",WXPayUtil.generateSignature(backData, config.getKey(), WXPayConstants.SignType.MD5));
             }
+        }else{
+            throw new Exception(map.get("return_msg"));
         }
         System.out.println("微信再签名后的包装参数为="+ JsonUtil.Java2Json(backData));
         return backData;
     }
 
+    public boolean validateSign(Map<String,String> map){
+        try {
+            String vsign = WXPayUtil.generateSignature(map, config.getKey());
+            String sign = map.get("sign");
+            if(!vsign.equals(sign)){
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info("签名校验出错异常");
+            return false;
+        }
+        return true;
+    }
 
+    public String orderQueryRequest(String outTradeNo) throws Exception{
+        //检验参数必填
+        checkWXPayConfig();
+
+        Map<String,String> reqdata = new HashMap<>();
+        reqdata.put("appid",config.getAppId());
+        reqdata.put("mch_id",config.getMchId());
+        reqdata.put("out_trade_no",outTradeNo);
+        reqdata.put("nonce_str",WXPayUtil.generateNonceStr());
+        String sign = WXPayUtil.generateSignature(reqdata, config.getKey());
+        reqdata.put("sign",sign);
+        String data = WXPayUtil.mapToXml(reqdata);
+
+        BasicHttpClientConnectionManager connManager;
+        connManager = new BasicHttpClientConnectionManager(
+                RegistryBuilder.<ConnectionSocketFactory>create()
+                        .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                        .register("https", SSLConnectionSocketFactory.getSocketFactory())
+                        .build(),
+                null,
+                null,
+                null
+        );
+        HttpClient httpClient = HttpClientBuilder.create()
+                .setConnectionManager(connManager)
+                .build();
+
+        HttpPost httpPost = new HttpPost(this.config.getOrderQuery());
+
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(8*1000).setConnectTimeout(6*1000).build();
+        httpPost.setConfig(requestConfig);
+
+        StringEntity postEntity = new StringEntity(data, "UTF-8");
+        httpPost.addHeader("Content-Type", "text/xml");
+        httpPost.addHeader("User-Agent", WXPayConstants.USER_AGENT);
+        httpPost.setEntity(postEntity);
+
+        HttpResponse httpResponse = httpClient.execute(httpPost);
+        HttpEntity httpEntity = httpResponse.getEntity();
+        return EntityUtils.toString(httpEntity, "UTF-8");
+    }
 }
