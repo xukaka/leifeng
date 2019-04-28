@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.renren.modules.app.dao.story.DeedsDao">
+
+<!--<resultMap id="resultTypeBase" type="io.renren.modules.app.entity.story.DeedsEntity">
+    <id property="t_deedsId" column="t_deedsId" jdbcType="varchar"></id>
+    <result property="t_userId" column="t_userId" jdbcType="string" ></result>
+    <result property="t_deeds_type" column="t_deeds_type" jdbcType="varchar"></result>
+    <result property="t_title" column="t_title" jdbcType="varchar"></result>
+    <result property="t_context" column="t_context" jdbcType="Blob"></result>
+    <result property="t_image_url" column="t_image_url" jdbcType="varchar"></result>
+    <result property="t_read_count" column="t_read_count" jdbcType="int"></result>
+    <result property="t_createdby" column="t_createdby" jdbcType="varchar"></result>
+    <result property="t_created_time" column="t_created_time" jdbcType="timestamp"></result>
+    <result property="t_updatedby" column="t_updatedby" jdbcType="varchar"></result>
+    <result property="t_updateby_time" column="t_updateby_time" jdbcType="timestamp"></result>
+</resultMap>-->
+
+    <select id="queryDeedsEntityById" parameterType="java.lang.String" resultType="io.renren.modules.app.entity.story.DeedsEntity">
+        select * from t_deeds_info t where t.deeds_id = #{deedsId}
+    </select>
+
+    <select id="queryDeedsEntityByUserId" parameterType="java.lang.String" resultType="io.renren.modules.app.dto.DeedsDto">
+        select t.title as title,t.context as context ,t.deeds_Id as deedsId,t.image_url as imageUrl,t.read_count as readCount,t.is_open as isOpen from t_deeds_info t  where t.user_id = #{userId}
+    </select>
+
+</mapper>

@@ -364,7 +364,7 @@
             COUNT(1)
             FROM t_task t
             JOIN t_task_receive re ON re.task_id = t.id AND t.status = 'published' AND re.status='published'
-            WHERE  re.id= #{taskId} AND re.receiver_id = #{receiverId}
+            WHERE  t.id= #{taskId} AND re.receiver_id = #{receiverId}
     </select>
 
     <select id="isExecutableTask" resultType="int">

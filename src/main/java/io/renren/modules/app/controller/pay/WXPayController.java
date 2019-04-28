@@ -68,7 +68,7 @@ public class WXPayController {
             taskOrderService.insert(torder);
         }
         Map<String, String> wxPayMap = wxPayService.reGenerateParamForApp(wxResponse);
-        return wxPayMap;
+        return R.ok().put("result", wxPayMap);
     }
 
     /**

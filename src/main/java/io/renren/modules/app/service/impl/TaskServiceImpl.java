@@ -187,7 +187,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         ThreadPoolUtils.execute(() -> {
             //推送消息给关注我的所有人
-            MemberDto creator = memberService.getMember(creatorId);
+            /*MemberDto creator = memberService.getMember(creatorId);
             JSONObject extras = new JSONObject();
             extras.put("businessCode", "0");//0，发布任务
             extras.put("type", "task");//类型为任务
@@ -198,7 +198,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             extras.put("creatorNickName", creator.getNickName());
             extras.put("groupId", creator.getId());
             logger.info("推消息到关注我的组，extras=" + extras.toJSONString());
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
         });
     }
 
@@ -252,7 +252,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         ThreadPoolUtils.execute(() -> {
             //推送消息给任务发布人
-            MemberDto receiver = memberService.getMember(receiverId);
+            /*MemberDto receiver = memberService.getMember(receiverId);
             JSONObject extras = new JSONObject();
             extras.put("businessCode", "1");//1，领取任务
             extras.put("taskId", task.getId());
@@ -262,7 +262,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             extras.put("taskReceiverAvatar", receiver.getAvatar());
             extras.put("taskReceiverNickName", receiver.getNickName());
             logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
         });
     }
 
@@ -286,7 +286,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
             ThreadPoolUtils.execute(() -> {
                 //推送消息给任务接收人
-                TaskDto task = baseMapper.getTask(taskId);
+                /*TaskDto task = baseMapper.getTask(taskId);
                 JSONObject extras = new JSONObject();
                 extras.put("businessCode", "2");//2，确认领取任务
                 extras.put("taskId", task.getId());
@@ -296,7 +296,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 extras.put("taskCreatorNickName", task.getCreator().getNickName());
                 extras.put("taskReceiverId", receiverId);
                 logger.info("推送消息给任务接收人，extras=" + extras.toJSONString());
-                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
             });
         }
 
@@ -323,7 +323,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
             ThreadPoolUtils.execute(() -> {
                 //推送消息给任务发布人
-                MemberDto receiver = memberService.getMember(receiverId);
+                /*MemberDto receiver = memberService.getMember(receiverId);
                 TaskDto taskDto = baseMapper.getTask(taskId);
                 JSONObject extras = new JSONObject();
                 extras.put("businessCode", "3");//执行任务
@@ -334,7 +334,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 extras.put("taskReceiverAvatar", receiver.getAvatar());
                 extras.put("taskReceiverNickName", receiver.getNickName());
                 logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
-                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
             });
         }
     }
@@ -360,7 +360,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         ThreadPoolUtils.execute(() -> {
             //推送消息给任务发布人
-            MemberDto receiver = memberService.getMember(receiverId);
+           /* MemberDto receiver = memberService.getMember(receiverId);
             JSONObject extras = new JSONObject();
             extras.put("businessCode", "6");//领取人取消任务
             extras.put("taskId", task.getId());
@@ -370,7 +370,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             extras.put("taskReceiverNickName", receiver.getNickName());
             extras.put("taskCreatorId", task.getCreator().getId());
             logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
 
         });
 
@@ -398,7 +398,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         updateTaskStatus(taskId, TaskStatusEnum.cancelled);
 
         ThreadPoolUtils.execute(() -> {
-            Member receiver = task.getReceiver();
+            /*Member receiver = task.getReceiver();
             if (receiver != null) {
                 //推送消息给任务领取人
                 MemberDto creator = memberService.getMember(publisherId);
@@ -413,7 +413,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 logger.info("推送消息给任务领取人，extras=" + extras.toJSONString());
                 rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
             }
-
+*/
         });
 
     }
@@ -444,7 +444,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
             ThreadPoolUtils.execute(() -> {
                 //推送消息给任务创建人
-                MemberDto receiver = memberService.getMember(receiverId);
+                /*MemberDto receiver = memberService.getMember(receiverId);
                 TaskDto task = baseMapper.getTask(taskId);
                 JSONObject extras = new JSONObject();
                 extras.put("businessCode", "4");//提交任务
@@ -455,7 +455,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 extras.put("taskReceiverNickName", receiver.getNickName());
                 extras.put("taskCreatorId", task.getCreator().getId());
                 logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
-                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
             });
         }
 
@@ -478,7 +478,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (result != null && result > 0) {
             ThreadPoolUtils.execute(() -> {
                 //发送消息给任务领取人
-                TaskDto taskDto = baseMapper.getTask(taskId);
+                /*TaskDto taskDto = baseMapper.getTask(taskId);
                 JSONObject extras = new JSONObject();
                 extras.put("businessCode", "5");//确认任务完成
                 extras.put("taskId", taskDto.getId());
@@ -489,7 +489,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 extras.put("taskCreatorNickName", taskDto.getCreator().getNickName());
                 extras.put("taskReceiverId", receiverId);
                 logger.info("发送消息给任务领取人，extras=" + extras.toJSONString());
-                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
 
                 //给领取人添加标签
                 addTag2Member(receiverId, taskId);
