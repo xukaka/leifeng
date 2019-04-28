@@ -224,7 +224,7 @@
         ri.image_url,
         tg.name AS tag_name,
         r.id AS receiver_id,
-        r.nick_name AS receiver_nick_name,0
+        r.nick_name AS receiver_nick_name,
         r.real_name AS receiver_real_name,
         r.avatar AS receiver_avatar,
         r.sex AS receiver_sex,
