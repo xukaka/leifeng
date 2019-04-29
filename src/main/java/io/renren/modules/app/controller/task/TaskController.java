@@ -48,7 +48,7 @@ public class TaskController {
     @GetMapping("/detail/{id}")
     @ApiOperation("获取任务详细信息")
     public R getTask(@PathVariable("id") Long id) {
-        TaskDto task = taskService.getTask(ReqUtils.currentUserId(),id);
+        TaskDto task = taskService.getTask(ReqUtils.currentUserId(), id);
         return R.ok().put("result", task);
     }
 
@@ -88,6 +88,7 @@ public class TaskController {
         taskService.chooseTaskReceiver(taskId, receiverId);
         return R.ok();
     }
+
     @Login
     @GetMapping("/receive")
     @ApiOperation("领取任务")
@@ -100,7 +101,7 @@ public class TaskController {
     @GetMapping("/execute")
     @ApiOperation("执行任务")
     public R executeTask(@RequestParam Long taskId) {
-        taskService.executeTask( taskId,ReqUtils.currentUserId());
+        taskService.executeTask(taskId, ReqUtils.currentUserId());
         return R.ok();
     }
 
@@ -111,6 +112,7 @@ public class TaskController {
         taskService.cancelTaskByReceiver(ReqUtils.currentUserId(), taskId);
         return R.ok();
     }
+
     @Login
     @GetMapping("/publisherCancel")
     @ApiOperation("发布人取消任务")
@@ -119,6 +121,13 @@ public class TaskController {
         return R.ok();
     }
 
+    @Login
+    @GetMapping("/republish")
+    @ApiOperation("重新发布任务")
+    public R republishTask(@RequestParam Long taskId) {
+        taskService.republishTask(ReqUtils.currentUserId(), taskId);
+        return R.ok();
+    }
 
 
     @Login
@@ -132,7 +141,7 @@ public class TaskController {
     @Login
     @GetMapping("/complete")
     @ApiOperation("确认完成任务")
-    public R completeTask(@RequestParam Long receiverId,@RequestParam Long taskId) {
+    public R completeTask(@RequestParam Long receiverId, @RequestParam Long taskId) {
         taskService.completeTask(receiverId, taskId);
         return R.ok();
     }
@@ -160,7 +169,7 @@ public class TaskController {
         return R.ok().put("result", tasks);
     }
 
-//    @Login
+    //    @Login
     @PostMapping("/search/list")
     @ApiOperation("搜索任务列表-分页")
     public R searchTasks(@RequestBody TaskQueryForm form) {

@@ -237,17 +237,21 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void receiveTask(Long receiverId, Long taskId) {
-        boolean isReceiveable = isReceiveableTask(receiverId,taskId);
+        TaskEntity task = baseMapper.selectById(taskId);
+        if (task.getStatus() == TaskStatusEnum.cancelled) {
+            throw new RRException("任务已取消", 0);
+        }
+        boolean isReceiveable = isReceiveableTask(receiverId, taskId);
         if (!isReceiveable) {
             throw new RRException("任务已领取", 0);
         }
-        TaskEntity task = baseMapper.selectById(taskId);
+
         long curTime = DateUtils.now();
         TaskReceiveEntity receive = new TaskReceiveEntity(curTime, receiverId, taskId);
         receive.setUpdateTime(curTime);
         receive.setStatus(TaskStatusEnum.published);
 
-        logger.info("receive task:"+receive);
+        logger.info("receive task:" + receive);
         taskReceiveDao.insert(receive);
 
         ThreadPoolUtils.execute(() -> {
@@ -339,27 +343,25 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         }
     }
 
+
     @Override
     @Transactional
     public void cancelTaskByReceiver(Long receiverId, Long taskId) {
         TaskDto task = baseMapper.getTask(taskId);
+
         if (receiverId == null || !receiverId.equals(task.getReceiver().getId())
                 || (task.getStatus() != TaskStatusEnum.published && task.getStatus() != TaskStatusEnum.received)) {
-            throw new RRException("任务不能取消", 0);
+            throw new RRException("任务执行中，不能取消", 0);
         }
-        TaskReceiveEntity receive = new TaskReceiveEntity();
-        receive.setStatus(TaskStatusEnum.cancelled);
-        receive.setUpdateTime(DateUtils.now());
         Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("task_id", taskId)
                 .eq("receiver_id", receiverId);
-        Integer result = taskReceiveDao.update(receive, wrapper);
-        if (result != null && result > 0) {
-            updateTaskStatus(taskId, TaskStatusEnum.cancelled);
-        }
+        taskReceiveDao.delete( wrapper);
+        if (receiverId.equals(task.getReceiver().getId())) {
+            updateTaskStatus(taskId, TaskStatusEnum.published);
 
-        ThreadPoolUtils.execute(() -> {
-            //推送消息给任务发布人
+            ThreadPoolUtils.execute(() -> {
+                //推送消息给任务发布人
            /* MemberDto receiver = memberService.getMember(receiverId);
             JSONObject extras = new JSONObject();
             extras.put("businessCode", "6");//领取人取消任务
@@ -372,7 +374,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
             rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
 
-        });
+            });
+        }
+
+
 
 
     }
@@ -396,6 +401,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             throw new RRException("任务执行中，不能取消", 0);
         }
         updateTaskStatus(taskId, TaskStatusEnum.cancelled);
+        updateReceiverTaskStatus(taskId);
+
 
         ThreadPoolUtils.execute(() -> {
             /*Member receiver = task.getReceiver();
@@ -416,6 +423,24 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 */
         });
 
+    }
+
+    @Override
+    public void republishTask(Long publisher, Long taskId) {
+        TaskEntity task = baseMapper.selectById(taskId);
+        if (task != null && publisher != null && publisher.equals(task.getCreatorId())){
+            updateTaskStatus(taskId, TaskStatusEnum.published);
+        }
+    }
+
+    //任务取消，设置领取人状态为发布
+    private void updateReceiverTaskStatus(Long taskId) {
+        TaskReceiveEntity receive = new TaskReceiveEntity();
+        receive.setStatus(TaskStatusEnum.published);
+        receive.setUpdateTime(DateUtils.now());
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId);
+        taskReceiveDao.update(receive, wrapper);
     }
 
     //任务是否可执行
@@ -550,8 +575,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         }
     }*/
 
-    private boolean isReceiveableTask(Long receiverId,Long taskId) {
-        int count = baseMapper.isReceiveableTask(receiverId,taskId);
+    private boolean isReceiveableTask(Long receiverId, Long taskId) {
+        int count = baseMapper.isReceiveableTask(receiverId, taskId);
         return count > 0;
     }
 
