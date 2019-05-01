@@ -215,7 +215,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public void deleteTask(Long id) {
         TaskEntity task = selectById(id);
         if (task == null || task.getStatus() == TaskStatusEnum.executing || task.getStatus() == TaskStatusEnum.submitted) {
-            throw new RRException("当前任务状态,不可删除", 0);
+            throw new RRException("当前任务状态,不可删除", 100);
         }
         task.setDeleted(true);
         updateById(task);
@@ -239,11 +239,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public void receiveTask(Long receiverId, Long taskId) {
         TaskEntity task = baseMapper.selectById(taskId);
         if (task.getStatus() == TaskStatusEnum.cancelled) {
-            throw new RRException("任务已取消", 0);
+            throw new RRException("任务已取消", 100);
         }
         boolean isReceiveable = isReceiveableTask(receiverId, taskId);
         if (!isReceiveable) {
-            throw new RRException("任务已领取", 0);
+            throw new RRException("任务已领取", 100);
         }
 
         long curTime = DateUtils.now();
@@ -276,7 +276,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public void chooseTaskReceiver(Long taskId, Long receiverId) {
         boolean isChooseable = isChooseableReceiver(taskId, receiverId);
         if (!isChooseable) {
-            throw new RRException("任务已开始，不能选择人了", 0);
+            throw new RRException("任务已开始，不能选择人了", 100);
         }
 
         TaskReceiveEntity receive = new TaskReceiveEntity();
@@ -313,7 +313,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public void executeTask(Long taskId, Long receiverId) {
         boolean isExecutable = isExecutableTask(taskId, receiverId);
         if (!isExecutable) {
-            throw new RRException("任务不可执行", 0);
+            throw new RRException("任务不可执行", 100);
         }
         TaskReceiveEntity receive = new TaskReceiveEntity();
         receive.setStatus(TaskStatusEnum.executing);
@@ -351,7 +351,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         if (receiverId == null || !receiverId.equals(task.getReceiver().getId())
                 || (task.getStatus() != TaskStatusEnum.published && task.getStatus() != TaskStatusEnum.received)) {
-            throw new RRException("任务执行中，不能取消", 0);
+            throw new RRException("任务执行中，不能取消", 100);
         }
         Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("task_id", taskId)
@@ -398,7 +398,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             Integer result = taskReceiveDao.update(receive, wrapper);
             if (result != null && result > 0) {
             }*/
-            throw new RRException("任务执行中，不能取消", 0);
+            throw new RRException("任务执行中，不能取消", 100);
         }
         updateTaskStatus(taskId, TaskStatusEnum.cancelled);
         updateReceiverTaskStatus(taskId);
@@ -454,7 +454,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public void submitTask(Long receiverId, Long taskId) {
         boolean isSubmitable = isSubmitableTask(receiverId, taskId);
         if (!isSubmitable) {
-            throw new RRException("任务未执行，不可提交", 0);
+            throw new RRException("任务未执行，不可提交", 100);
         }
 
         TaskReceiveEntity receive = new TaskReceiveEntity();

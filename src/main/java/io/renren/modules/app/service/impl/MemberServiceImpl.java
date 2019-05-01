@@ -251,7 +251,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         Member judger = selectById(judgerId);
         Integer judgerFlowerCount = judger.getFlowerCount();
         if (judgerFlowerCount < giveFlowerCount) {
-            throw new RRException("insufficient flower count.", 0);
+            throw new RRException("鲜花数不足", 100);
         }
         baseMapper.incFlowerCount(judgerId, -giveFlowerCount);
         baseMapper.incFlowerCount(form.getMemberId(), giveFlowerCount);
