@@ -454,7 +454,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public void submitTask(Long receiverId, Long taskId) {
         boolean isSubmitable = isSubmitableTask(receiverId, taskId);
         if (!isSubmitable) {
-            throw new RRException("不是执行中任务，不可提交", 0);
+            throw new RRException("任务未执行，不可提交", 0);
         }
 
         TaskReceiveEntity receive = new TaskReceiveEntity();

@@ -312,7 +312,8 @@
         JOIN member m ON t.creator_id = m.id
         WHERE
         <if test="queryMap.tagIds != null and queryMap.tagIds.size() > 0">
-            EXISTS (select 1 from t_task_tag tag where tag.task_id=t.id and tag.id in
+            EXISTS (select 1 from t_task_tag tag,r_task_tag r
+                    where tag.id=r.tag_id and r.task_id=t.id and tag.id  in
                 <foreach collection="queryMap.tagIds" item="tagId" index="index" open="(" close=")" separator=",">
                     #{tagId}
                 </foreach>
@@ -338,7 +339,8 @@
         JOIN t_task_address a ON t.address_id = a.id
         WHERE
         <if test="queryMap.tagIds != null and queryMap.tagIds.size() > 0">
-            EXISTS (select 1 from t_task_tag tag where tag.task_id=t.id and tag.id in
+            EXISTS (select 1 from t_task_tag tag,r_task_tag r
+                where tag.id=r.tag_id and r.task_id=t.id and tag.id  in
             <foreach collection="queryMap.tagIds" item="tagId" index="index" open="(" close=")" separator=",">
                 #{tagId}
             </foreach>

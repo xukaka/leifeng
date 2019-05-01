@@ -58,6 +58,7 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
     public List<SearchHistoryEntity> getHistories(Long userId) {
         Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("user_id", userId)
+                .eq("deleted",false)
                 .orderBy("create_time", false);
         List<SearchHistoryEntity> histories = selectList(wrapper);
         if (CollectionUtils.isEmpty(histories)) {
@@ -67,11 +68,11 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
     }
 
     @Override
-    public void clearHistories(Long[] historyIds) {
-        if (ArrayUtils.isEmpty(historyIds)) {
-            return;
-        }
-        List<SearchHistoryEntity> histories = this.selectBatchIds(Arrays.asList(historyIds));
+    public void clearHistories(Long userId) {
+        Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("user_id", userId)
+                .eq("deleted",false);
+        List<SearchHistoryEntity> histories = selectList(wrapper);
         if (!CollectionUtils.isEmpty(histories)) {
             for (SearchHistoryEntity history : histories) {
                 history.setDeleted(true);
@@ -110,7 +111,8 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
         SearchHistoryEntity history = new SearchHistoryEntity(userId, keyword, DateUtils.now());
         Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("user_id", userId)
-                .eq("keyword", keyword);
+                .eq("keyword", keyword)
+                .eq("deleted",false);
         this.update(history, wrapper);
     }
 
@@ -120,7 +122,8 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
     private boolean existsHistory(Long userId, String keyword) {
         Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("user_id", userId)
-                .eq("keyword", keyword);
+                .eq("keyword", keyword)
+                .eq("deleted",false);
         return selectCount(wrapper) > 0;
     }
 

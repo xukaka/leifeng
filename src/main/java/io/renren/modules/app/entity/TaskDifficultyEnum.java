@@ -4,11 +4,11 @@ public enum TaskDifficultyEnum {
 
     FREE(Integer.MIN_VALUE, 0),
 
-    SIMPLE(1, 100),
+    SIMPLE(1, 20),
 
-    NORMAL(101, 500),
+    NORMAL(21, 50),
 
-    DIFFICULT(500, Integer.MAX_VALUE);
+    DIFFICULT(51, Integer.MAX_VALUE);
 
     private int minVirtualCurrency;
 

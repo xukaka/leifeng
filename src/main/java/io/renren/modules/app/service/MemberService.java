@@ -9,6 +9,8 @@ import io.renren.modules.app.entity.setting.MemberAuths;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.utils.ReqUtils;
 
+import java.util.Map;
+
 /**
  * 用户
  *
@@ -110,5 +112,5 @@ public interface MemberService extends IService<Member> {
      * 签到
      * @param memberId
      */
-    void checkIn(Long memberId,Integer experience);
+    Map<String,Object> checkIn(Long memberId, Integer experience);
 }

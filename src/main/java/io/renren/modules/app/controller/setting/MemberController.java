@@ -76,13 +76,7 @@ public class MemberController {
         return R.ok().put("result", members);
     }
 
-    @Login
-    @GetMapping("/checkIn")
-    @ApiOperation("用户签到")
-    public R checkIn() {
-        memberService.checkIn(ReqUtils.currentUserId(),5);
-        return R.ok();
-    }
+
 
     @Login
     @GetMapping("/detail")

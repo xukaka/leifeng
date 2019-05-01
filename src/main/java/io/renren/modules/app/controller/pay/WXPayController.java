@@ -38,9 +38,9 @@ import java.util.Map;
 public class WXPayController {
     private final static Logger logger = LoggerFactory.getLogger(WXPayController.class);
     @Autowired
-    WXPayService wxPayService;
+    private WXPayService wxPayService;
     @Autowired
-    TaskOrderService taskOrderService;
+    private TaskOrderService taskOrderService;
 
     @PostMapping("/prePay")
     @ApiOperation("微信预下订单接口")

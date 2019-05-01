@@ -71,7 +71,7 @@ public class TaskCircleController {
 
 
     @Login
-    @PostMapping("/join")
+    @GetMapping("/join")
     @ApiOperation("加入任务圈")
     public R joinCircle(@RequestParam("circleId") Long circleId) {
         taskCircleService.joinCircle(ReqUtils.currentUserId(), circleId);
@@ -79,7 +79,7 @@ public class TaskCircleController {
     }
 
     @Login
-    @PostMapping("/exit")
+    @GetMapping("/exit")
     @ApiOperation("退出任务圈")
     public R exitCircle(@RequestParam("circleId") Long circleId) {
         taskCircleService.exitCircle(ReqUtils.currentUserId(), circleId);

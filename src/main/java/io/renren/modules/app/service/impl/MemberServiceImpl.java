@@ -285,7 +285,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
      */
     @Override
     @Transactional
-    public void checkIn(Long memberId, Integer experience) {
+    public Map<String,Object> checkIn(Long memberId, Integer experience) {
+        Map<String,Object> result = new HashMap<>();
         String checkedIn = redisUtils.get(RedisKeys.CHECK_IN + memberId);
         if (StringUtils.isEmpty(checkedIn) || !Boolean.valueOf(checkedIn)) {
             redisUtils.set(RedisKeys.CHECK_IN + memberId, true, DateUtils.secondsLeftToday());
@@ -294,7 +295,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             checkIn.setExperience(experience);
             memberCheckInDao.insert(checkIn);
             incMemberExperience(memberId, experience);
+
+            result.put("checkInStatus",0);
+            result.put("msg","checkIn success");
+        }else {
+            result.put("checkInStatus",1);
+            result.put("msg","checkedIn");
         }
+        return result;
     }
 
     //增加用户经验值

@@ -23,9 +23,9 @@ public interface SearchService extends IService<SearchHistoryEntity> {
     List<SearchHistoryEntity> getHistories(Long userId);
 
     /**
-     * 根据ids清空用户的搜索历史-逻辑删除
+     * 清空用户的搜索历史-逻辑删除
      */
-    void clearHistories(Long[] historyIds);
+    void clearHistories(Long userId);
 
 
     /**

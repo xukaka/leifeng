@@ -25,26 +25,26 @@ public class SearchController {
 
 
     @Login
-    @PostMapping("/history")
+    @GetMapping("/history/save")
     @ApiOperation("保存搜索历史")
-    public R saveHistory( @RequestBody String keyword) {
+    public R saveHistory( @RequestParam String keyword) {
         searchService.saveHistory(ReqUtils.currentUserId(), keyword);
         return R.ok();
     }
 
     @Login
-    @GetMapping("/history")
+    @GetMapping("/history/list")
     @ApiOperation("获取搜索历史列表")
     public R getHistories() {
         List<SearchHistoryEntity> histories = searchService.getHistories(ReqUtils.currentUserId());
         return R.ok().put("result", histories);
     }
 
-
-    @PutMapping("/history")
+    @Login
+    @DeleteMapping("/history/clear")
     @ApiOperation("清空搜索历史")
-    public R clearHistories(@RequestBody Long[] ids) {
-        searchService.clearHistories(ids);
+    public R clearHistories() {
+        searchService.clearHistories(ReqUtils.currentUserId());
         return R.ok();
     }
 
