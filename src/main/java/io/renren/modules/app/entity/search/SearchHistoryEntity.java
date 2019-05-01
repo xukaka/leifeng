@@ -18,7 +18,11 @@ public class SearchHistoryEntity extends BaseEntity {
      */
     private String keyword;
 
-    public SearchHistoryEntity(Long userId, String keyword,Long createTime) {
+
+    public SearchHistoryEntity() {
+    }
+
+    public SearchHistoryEntity(Long userId, String keyword, Long createTime) {
         super(createTime);
         this.userId = userId;
         this.keyword = keyword;

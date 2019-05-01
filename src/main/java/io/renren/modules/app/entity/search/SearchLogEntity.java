@@ -14,6 +14,9 @@ public class SearchLogEntity extends BaseEntity {
      */
     private String keyword;
 
+    public SearchLogEntity() {
+    }
+
     public SearchLogEntity(String keyword) {
         this.keyword = keyword;
     }
