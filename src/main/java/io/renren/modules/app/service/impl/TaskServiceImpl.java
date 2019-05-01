@@ -371,7 +371,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         TaskDto task = baseMapper.getTask(taskId);
         Member receiver = task.getReceiver();
 
-        if (receiverId == null ||receiver!=null || receiverId.equals(receiver.getId())
+        if ((receiver!=null && receiverId.equals(receiver.getId()))
                 || (task.getStatus() != TaskStatusEnum.published && task.getStatus() != TaskStatusEnum.received)) {
             throw new RRException("任务执行中，不能取消", 100);
         }
@@ -379,7 +379,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         wrapper.eq("task_id", taskId)
                 .eq("receiver_id", receiverId);
         taskReceiveDao.delete( wrapper);
-        if (receiverId.equals(receiver.getId())) {
+        if (receiver!=null && receiverId.equals(receiver.getId())) {
             updateTaskStatus(taskId, TaskStatusEnum.published);
 
             ThreadPoolUtils.execute(() -> {
