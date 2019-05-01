@@ -69,6 +69,10 @@ public class TaskDto implements Serializable {
      */
     private Boolean isFollowed = false;
     /**
+     * 是否领取（是否在领取列表中）
+     */
+    private Boolean isReceived = false;
+    /**
      * 任务领取人
      */
     private Member receiver;
@@ -255,5 +259,13 @@ public class TaskDto implements Serializable {
 
     public void setViewCount(Integer viewCount) {
         this.viewCount = viewCount;
+    }
+
+    public Boolean getReceived() {
+        return isReceived;
+    }
+
+    public void setReceived(Boolean received) {
+        isReceived = received;
     }
 }

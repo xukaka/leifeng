@@ -163,9 +163,26 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             //是否关注
             boolean isFollowed = memberService.isFollowed(curMemberId, task.getCreator().getId());
             task.setFollowed(isFollowed);
+            //是否领取
+            boolean isReceived = existsRecevier(id,curMemberId);
+            task.setReceived(isReceived);
             task.setCurSystemTime(DateUtils.now());
         }
         return task;
+    }
+
+    /**
+     * 是否领取（是否存在领取列表中）
+     * @param taskId
+     * @param receiverId
+     * @return
+     */
+    private boolean existsRecevier(Long taskId,Long receiverId){
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("receiver_id", receiverId);
+        int count =  taskReceiveDao.selectCount(wrapper);
+        return count > 0;
     }
 
     @Override
@@ -311,6 +328,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void executeTask(Long taskId, Long receiverId) {
+        TaskEntity task = selectById(taskId);
+        if (task.getStatus()==TaskStatusEnum.cancelled){
+            throw new RRException("任务已取消",100);
+        }
         boolean isExecutable = isExecutableTask(taskId, receiverId);
         if (!isExecutable) {
             throw new RRException("任务不可执行", 100);
