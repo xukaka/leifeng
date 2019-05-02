@@ -5,6 +5,7 @@ import io.netty.util.internal.StringUtil;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.ThreadPoolUtils;
 import io.renren.modules.app.dao.task.TaskCommentDao;
 import io.renren.modules.app.dao.task.TaskCommentReplyDao;
 import io.renren.modules.app.dto.TaskCommentDto;
@@ -13,6 +14,7 @@ import io.renren.modules.app.entity.task.TaskCommentEntity;
 import io.renren.modules.app.entity.task.TaskCommentReplyEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.TaskCommentService;
+import io.renren.modules.app.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +31,8 @@ public class TaskCommentServiceImpl extends ServiceImpl<TaskCommentDao, TaskComm
 
     @Resource
     private TaskCommentReplyDao taskCommentReplyDao;
+    @Resource
+    private TaskService taskService;
 
     @Override
     public PageUtils<TaskCommentDto> getComments(Long taskId, PageWrapper page) {
@@ -54,6 +58,11 @@ public class TaskCommentServiceImpl extends ServiceImpl<TaskCommentDao, TaskComm
         checkCommentParam(taskId, commentatorId, content);
         TaskCommentEntity comment = new TaskCommentEntity(DateUtils.now(), commentatorId, taskId, content);
         this.insert(comment);
+
+        ThreadPoolUtils.execute(()->{
+            //评论数 +1
+            taskService.incCommentCount(taskId,1);
+        });
     }
 
     private void checkCommentParam(Long taskId, Long commentatorId, String content) {
@@ -84,6 +93,13 @@ public class TaskCommentServiceImpl extends ServiceImpl<TaskCommentDao, TaskComm
         reply.setContent(content);
         reply.setCreateTime(DateUtils.now());
         taskCommentReplyDao.insert(reply);
+        ThreadPoolUtils.execute(()->{
+            //评论数 +1
+            TaskCommentEntity comment= selectById(commentId);
+            if (comment!=null){
+                taskService.incCommentCount(comment.getTaskId(),1);
+            }
+        });
     }
 
     private void checkCommentReplyParam(Long commentId, Long fromUserId, Long toUserId, String content) {

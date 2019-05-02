@@ -87,7 +87,7 @@ public class MemberController {
     }
 
     @Login
-    @PutMapping("/update")
+    @PostMapping("/update")
     @ApiOperation("更新用户信息")
     public R updateMember(@RequestBody MemberForm form) {
         memberService.updateMember(form);

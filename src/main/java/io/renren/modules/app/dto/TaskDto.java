@@ -73,6 +73,10 @@ public class TaskDto implements Serializable {
      */
     private Boolean isReceived = false;
     /**
+     * 是否点赞
+     */
+    private Boolean isLiked= false;
+    /**
      * 任务领取人
      */
     private Member receiver;
@@ -267,5 +271,13 @@ public class TaskDto implements Serializable {
 
     public void setReceived(Boolean received) {
         isReceived = received;
+    }
+
+    public Boolean getLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(Boolean liked) {
+        isLiked = liked;
     }
 }

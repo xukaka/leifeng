@@ -181,4 +181,20 @@ public class TaskController {
         return R.ok().put("result", tasks);
     }
 
+    @Login
+    @GetMapping("/like")
+    @ApiOperation("任务点赞")
+    public R like(@RequestParam Long taskId) {
+        taskService.like(ReqUtils.currentUserId(),taskId);
+        return R.ok();
+    }
+
+    @Login
+    @GetMapping("/unlike")
+    @ApiOperation("取消任务点赞")
+    public R unlike(@RequestParam Long taskId) {
+        taskService.unlike(ReqUtils.currentUserId(),taskId);
+        return R.ok();
+    }
+
 }

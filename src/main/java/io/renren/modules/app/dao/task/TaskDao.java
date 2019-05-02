@@ -124,4 +124,25 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
      * @return
      */
     int isExecutableTask(@Param("taskId")Long taskId ,@Param("receiverId")Long receiverId);
+
+
+    /**
+     * 任务评论数 +inc
+     * @param taskId
+     * @param inc
+     */
+    void incCommentCount(@Param("taskId")Long taskId,@Param("inc")Integer inc);
+    /**
+     * 任务点赞数 +inc
+     * @param taskId
+     * @param inc
+     */
+    void incLikeCount(@Param("taskId")Long taskId,@Param("inc")Integer inc);
+    /**
+     * 任务浏览数 +inc
+     * @param taskId
+     * @param inc
+     */
+    void incViewCount(@Param("taskId")Long taskId,@Param("inc")Integer inc);
+
 }

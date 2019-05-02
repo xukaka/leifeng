@@ -9,6 +9,7 @@ import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.dao.task.TaskDao;
+import io.renren.modules.app.dao.task.TaskLikeDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
 import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
@@ -17,10 +18,7 @@ import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberTagRelationEntity;
-import io.renren.modules.app.entity.task.TaskAddressEntity;
-import io.renren.modules.app.entity.task.TaskEntity;
-import io.renren.modules.app.entity.task.TaskReceiveEntity;
-import io.renren.modules.app.entity.task.TaskTagEntity;
+import io.renren.modules.app.entity.task.*;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
@@ -49,6 +47,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Resource
     private TaskReceiveDao taskReceiveDao;
+
+    @Resource
+    private TaskLikeDao taskLikeDao;
     @Resource
     private TaskTagService taskTagService;
     @Resource
@@ -166,6 +167,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             //是否领取
             boolean isReceived = existsRecevier(id,curMemberId);
             task.setReceived(isReceived);
+            //是否点赞
+            boolean isLiked = existsLiked(id,curMemberId);
+            task.setLiked(isLiked);
             task.setCurSystemTime(DateUtils.now());
         }
         return task;
@@ -182,6 +186,17 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         wrapper.eq("task_id", taskId)
                 .eq("receiver_id", receiverId);
         int count =  taskReceiveDao.selectCount(wrapper);
+        return count > 0;
+    }
+
+    /**
+     * 是否点赞
+     */
+    private boolean existsLiked(Long taskId,Long memberId){
+        Wrapper<TaskLikeEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("member_id", memberId);
+        int count =  taskLikeDao.selectCount(wrapper);
         return count > 0;
     }
 
@@ -626,5 +641,45 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Wrapper<TaskEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("id", taskId);
         baseMapper.update(task, wrapper);
+    }
+
+
+   @Override
+    public void incCommentCount(Long taskId,Integer inc){
+        baseMapper.incCommentCount(taskId,inc);
+    }
+/*
+    @Override
+    public void incLikeCount(Long taskId,Integer inc){
+        baseMapper.incLikeCount(taskId,inc);
+    }*/
+
+    @Override
+    public void incViewCount(Long taskId,Integer inc){
+        baseMapper.incViewCount(taskId,inc);
+    }
+
+    @Override
+    public void like(Long memberId, Long taskId) {
+        TaskLikeEntity like = new TaskLikeEntity(DateUtils.now(),taskId,memberId);
+        taskLikeDao.insert(like);
+
+        ThreadPoolUtils.execute(()->{
+            //点赞数+1
+            baseMapper.incLikeCount(taskId,1);
+        });
+    }
+
+    @Override
+    public void unlike(Long memberId, Long taskId) {
+        Wrapper<TaskLikeEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("member_id", memberId);
+        taskLikeDao.delete(wrapper);
+
+        ThreadPoolUtils.execute(()->{
+            //点赞数-1
+            baseMapper.incLikeCount(taskId,-1);
+        });
     }
 }
