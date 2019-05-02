@@ -1,4 +1,3 @@
-/*
 package io.renren.modules.app.controller.home;
 
 import io.renren.common.utils.PageUtils;
@@ -28,8 +27,8 @@ public class HomeController {
     private MemberService memberService;
     @Autowired
     private TaskCircleService taskCircleService;
-    @Autowired
-    private HomeService homeService;
+//    @Autowired
+//    private HomeService homeService;
 
 
     @Login
@@ -40,13 +39,12 @@ public class HomeController {
         return R.ok().put("result",result);
     }
 
-    @Login
+/*    @Login
     @GetMapping("/banner")
     @ApiOperation("首页横幅列表")
     public R getBanners() {
         homeService.getBanners();
         return R.ok();
-    }
+    }*/
 
 }
-*/

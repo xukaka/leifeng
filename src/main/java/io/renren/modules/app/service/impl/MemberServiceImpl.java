@@ -294,13 +294,18 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             checkIn.setMemberId(memberId);
             checkIn.setExperience(experience);
             memberCheckInDao.insert(checkIn);
-            incMemberExperience(memberId, experience);
+            ThreadPoolUtils.execute(()->{
+                //增加用户的经验值
+                incMemberExperience(memberId, experience);
+            });
 
             result.put("checkInStatus",0);
-            result.put("msg","checkIn success");
+            result.put("experience",experience);
+            result.put("msg","签到成功");
         }else {
             result.put("checkInStatus",1);
-            result.put("msg","checkedIn");
+            result.put("experience",0);
+            result.put("msg","已签到");
         }
         return result;
     }
