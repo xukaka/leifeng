@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -15,7 +16,7 @@ import java.io.Serializable;
 @ApiModel("用户表单")
 public class MemberForm implements Serializable {
 
-    @NotBlank
+    @NotNull
     private Long id;
     //昵称
     private String nickName;
