@@ -18,8 +18,10 @@ package io.renren.common.utils;
 
 
 import com.alibaba.fastjson.JSONObject;
+import io.renren.common.io.SocketServiceUtil;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.dto.MemberDto;
+import io.renren.modules.app.service.MemberService;
 import org.jim.common.packets.ChatBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,7 @@ public final class ImMessageUtils{
     @Resource
     private static RabbitMqHelper rabbitMqHelper;
     public  static void sendTaskStatusMessage(String taskId,String conTent,String businessCode,String toId,String formId){
+        RabbitMqHelper rabbitMqHelper = SocketServiceUtil.getBean(RabbitMqHelper.class);
         JSONObject object = new JSONObject();
         JSONObject extras = new JSONObject();
         extras.put("businessCode", businessCode);//2，确认领取任务
