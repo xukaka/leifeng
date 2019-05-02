@@ -50,6 +50,8 @@ public class Member implements Serializable {
     private Integer certificateCount = 0;
     //经验值
     private Integer experience = 0;
+    //虚拟币
+    private Integer virtualCurrency=0;
     //创建时间
     private Long createTime;
 
@@ -188,5 +190,13 @@ public class Member implements Serializable {
 
     public void setExperience(Integer experience) {
         this.experience = experience;
+    }
+
+    public Integer getVirtualCurrency() {
+        return virtualCurrency;
+    }
+
+    public void setVirtualCurrency(Integer virtualCurrency) {
+        this.virtualCurrency = virtualCurrency;
     }
 }
