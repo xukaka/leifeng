@@ -458,15 +458,15 @@
 
 
     <update id="incCommentCount">
-        update task t set t.comment_count = t.comment_count + #{inc} where t.id = #{taskId}
+        update t_task t set t.comment_count = t.comment_count + #{inc} where t.id = #{taskId}
     </update>
 
     <update id="incLikeCount">
-        update task t set t.like_count = t.like_count + #{inc} where t.id = #{taskId}
+        update t_task t set t.like_count = t.like_count + #{inc} where t.id = #{taskId}
     </update>
 
     <update id="incViewCount">
-        update task t set t.view_count = t.view_count + #{inc} where t.id = #{taskId}
+        update t_task t set t.view_count = t.view_count + #{inc} where t.id = #{taskId}
     </update>
 
 
