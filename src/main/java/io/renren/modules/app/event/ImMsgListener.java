@@ -27,6 +27,7 @@ public class ImMsgListener {
         String businessCode = jsonObject.getString("businessCode");
         Long to = null;
         Long from = null;
+        String content = null;
         switch (businessCode) {
             case "0"://发布任务
                 String groupId = jsonObject.getString("groupId");
@@ -36,44 +37,51 @@ public class ImMsgListener {
             case "1"://领取任务
                 from = jsonObject.getLong("taskReceiverId");
                 to = jsonObject.getLong("taskCreatorId");
+                content = jsonObject.getString("content");
                 imService.addTaskStatusNotice(from, to, jsonObject.toJSONString());
-                ImMessageUtils.sendSingleMessage(String.valueOf(from), String.valueOf(to), jsonObject);
+                ImMessageUtils.sendSingleMessage(String.valueOf(from),content,String.valueOf(to), jsonObject);
                 break;
             case "2"://确认领取任务
                 from = jsonObject.getLong("taskCreatorId");
                 to = jsonObject.getLong("taskReceiverId");
+                content = jsonObject.getString("content");
                 imService.addTaskStatusNotice(from, to, jsonObject.toJSONString());
-                ImMessageUtils.sendSingleMessage(String.valueOf(from), String.valueOf(to), jsonObject);
+                ImMessageUtils.sendSingleMessage(String.valueOf(from),content,String.valueOf(to), jsonObject);
                 break;
             case "3"://开始执行任务
                 from = jsonObject.getLong("taskReceiverId");
                 to = jsonObject.getLong("taskCreatorId");
+                content = jsonObject.getString("content");
                 imService.addTaskStatusNotice(from, to, jsonObject.toJSONString());
-                ImMessageUtils.sendSingleMessage(String.valueOf(from), String.valueOf(to), jsonObject);
+                ImMessageUtils.sendSingleMessage(String.valueOf(from),content,String.valueOf(to), jsonObject);
                 break;
             case "4"://提交任务
                 from = jsonObject.getLong("taskReceiverId");
                 to = jsonObject.getLong("taskCreatorId");
+                content = jsonObject.getString("content");
                 imService.addTaskStatusNotice(from, to, jsonObject.toJSONString());
-                ImMessageUtils.sendSingleMessage(String.valueOf(from), String.valueOf(to), jsonObject);
+                ImMessageUtils.sendSingleMessage(String.valueOf(from),content,String.valueOf(to), jsonObject);
                 break;
             case "5"://确认任务完成
                 from = jsonObject.getLong("taskCreatorId");
                 to = jsonObject.getLong("taskReceiverId");
+                content = jsonObject.getString("content");
                 imService.addTaskStatusNotice(from, to, jsonObject.toJSONString());
-                ImMessageUtils.sendSingleMessage(String.valueOf(from), String.valueOf(to), jsonObject);
+                ImMessageUtils.sendSingleMessage(String.valueOf(from),content,String.valueOf(to), jsonObject);
                 break;
             case "6"://领取人取消任务
                 from = jsonObject.getLong("taskReceiverId");
                 to = jsonObject.getLong("taskCreatorId");
+                content = jsonObject.getString("content");
                 imService.addTaskStatusNotice(from, to, jsonObject.toJSONString());
-                ImMessageUtils.sendSingleMessage(String.valueOf(from), String.valueOf(to), jsonObject);
+                ImMessageUtils.sendSingleMessage(String.valueOf(from),content,String.valueOf(to), jsonObject);
                 break;
             case "7"://发布人取消任务
                 from = jsonObject.getLong("taskCreatorId");
                 to = jsonObject.getLong("taskReceiverId");
+                content = jsonObject.getString("content");
                 imService.addTaskStatusNotice(from, to, jsonObject.toJSONString());
-                ImMessageUtils.sendSingleMessage(String.valueOf(from), String.valueOf(to), jsonObject);
+                ImMessageUtils.sendSingleMessage(String.valueOf(from),content,String.valueOf(to), jsonObject);
                 break;
         }
 
@@ -106,16 +114,15 @@ public class ImMsgListener {
     public static void main(String[] args) {
         Long groupId = 27L;
         JSONObject extras = new JSONObject();
-        extras.put("businessCode", "0");//0，发布任务
+        extras.put("businessCode", "18");//0，发布任务
         extras.put("taskId", 47);
         extras.put("taskTitle", "测试任务");
         extras.put("taskCreatorId", 27);
         extras.put("taskCreatorAvatar", "www.baidu.com");
         extras.put("taskCreatorNickName", "江舟");
-        extras.put("groupId", groupId);
         logger.info("推消息到关注我的组，extras=" + extras.toJSONString());
 //        imService.addGroupNotice(groupId,extras.toJSONString());
-        ImMessageUtils.sendGroupMessage("发布任务", String.valueOf(groupId), extras);
+        ImMessageUtils.sendSingleMessage("AdminTaskMsg","尊敬的雷锋您好，您发送的任务状态有更新，请点击查看详情", String.valueOf(20), extras);
 
 
     }

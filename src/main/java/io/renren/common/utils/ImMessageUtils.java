@@ -24,6 +24,8 @@ import org.jim.common.packets.ChatBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
+
 
 /**
  * IM 消息工具类
@@ -31,8 +33,22 @@ import org.slf4j.LoggerFactory;
 public final class ImMessageUtils{
     private final static Logger logger = LoggerFactory.getLogger(ImMessageUtils.class);
     private final static String IM_MESSAGE_URL = "https://pet.fangzheng.fun:11805/api/message/send";
+    @Resource
+    private static RabbitMqHelper rabbitMqHelper;
+    public  static void sendTaskStatusMessage(String taskId,String conTent,String businessCode,String toId,String formId){
+        JSONObject object = new JSONObject();
+        JSONObject extras = new JSONObject();
+        extras.put("businessCode", businessCode);//2，确认领取任务
+        extras.put("taskId", taskId);
+        extras.put("conTent", conTent);
+        object.put("toId", toId);
+        object.put("formId", formId);
+        object.put("extras",extras);
+        logger.info("推送消息给任务接收人，extras=" + extras.toJSONString());
+        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+    }
     //推送单个消息
-    public static void sendSingleMessage(String from , String to, JSONObject extras){
+    public static void sendSingleMessage(String from ,String content, String to, JSONObject object){
 
         ChatBody chatBody= new ChatBody.Builder()
                 .setFrom(from)
@@ -40,8 +56,9 @@ public final class ImMessageUtils{
                 .setChatType(2)
                 .setMsgType(0)
                 .setCmd(11)
+                .setContent(content)
                 .setCreateTime(DateUtils.now())
-                .addExtra("imMsg",extras)
+                .addExtra("imMsg",object.get("extras"))
                 .build();
         String params = JSONObject.toJSONString(chatBody);
         try {

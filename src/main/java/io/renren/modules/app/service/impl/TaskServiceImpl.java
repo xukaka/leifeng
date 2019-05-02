@@ -288,17 +288,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         ThreadPoolUtils.execute(() -> {
             //推送消息给任务发布人
-            /*MemberDto receiver = memberService.getMember(receiverId);
-            JSONObject extras = new JSONObject();
-            extras.put("businessCode", "1");//1，领取任务
-            extras.put("taskId", task.getId());
-            extras.put("taskTitle", task.getTitle());
-            extras.put("taskCreatorId", task.getCreatorId());
-            extras.put("taskReceiverId", receiver.getId());
-            extras.put("taskReceiverAvatar", receiver.getAvatar());
-            extras.put("taskReceiverNickName", receiver.getNickName());
-            logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
+         ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您的任务被人领取请查收，请点击查看详情","20",task.getCreatorId().toString(),"AdminTaskMsg");
         });
     }
 
@@ -401,17 +391,17 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             ThreadPoolUtils.execute(() -> {
                 //推送消息给任务发布人
            /* MemberDto receiver = memberService.getMember(receiverId);
-            JSONObject extras = new JSONObject();
-            extras.put("businessCode", "6");//领取人取消任务
-            extras.put("taskId", task.getId());
-            extras.put("taskTitle", task.getTitle());
-            extras.put("taskReceiverId", receiver.getId());
-            extras.put("taskReceiverAvatar", receiver.getAvatar());
-            extras.put("taskReceiverNickName", receiver.getNickName());
-            extras.put("taskCreatorId", task.getCreator().getId());
-            logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
-
+        */
+                JSONObject extras = new JSONObject();
+                extras.put("businessCode", "6");//领取人取消任务
+                extras.put("taskId", task.getId());
+                extras.put("taskTitle", task.getTitle());
+                extras.put("taskReceiverId", receiver.getId());
+                extras.put("taskReceiverAvatar", receiver.getAvatar());
+                extras.put("taskReceiverNickName", receiver.getNickName());
+                extras.put("taskCreatorId", task.getCreator().getId());
+                logger.info("推送消息给任务发布人，extras=" + extras.toJSONString());
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
             });
         }
 

@@ -94,6 +94,14 @@ public class TaskController {
     @ApiOperation("领取任务")
     public R receiveTask(@RequestParam Long taskId) {
         taskService.receiveTask(ReqUtils.currentUserId(), taskId);
+
+        return R.ok();
+    }
+    @GetMapping("/testReceive")
+    @ApiOperation("领取任务")
+    public R testReceive(@RequestParam Long taskId) {
+        taskService.receiveTask(ReqUtils.currentUserId(), taskId);
+
         return R.ok();
     }
 
