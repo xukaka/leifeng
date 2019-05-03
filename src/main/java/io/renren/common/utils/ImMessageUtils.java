@@ -17,6 +17,7 @@
 package io.renren.common.utils;
 
 
+import cn.hutool.Hutool;
 import com.alibaba.fastjson.JSONObject;
 import io.renren.common.io.SocketServiceUtil;
 import io.renren.config.RabbitMQConfig;
@@ -35,10 +36,8 @@ import javax.annotation.Resource;
 public final class ImMessageUtils{
     private final static Logger logger = LoggerFactory.getLogger(ImMessageUtils.class);
     private final static String IM_MESSAGE_URL = "https://pet.fangzheng.fun:11805/api/message/send";
-    @Resource
-    private static RabbitMqHelper rabbitMqHelper;
+
     public  static void sendTaskStatusMessage(String taskId,String conTent,String businessCode,String toId,String formId){
-        RabbitMqHelper rabbitMqHelper = SocketServiceUtil.getBean(RabbitMqHelper.class);
         JSONObject object = new JSONObject();
         JSONObject extras = new JSONObject();
         extras.put("businessCode", businessCode);//2，确认领取任务
@@ -48,7 +47,28 @@ public final class ImMessageUtils{
         object.put("formId", formId);
         object.put("extras",extras);
         logger.info("推送消息给任务接收人，extras=" + extras.toJSONString());
-        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+        sendSingleMessage(object);
+    }
+    //推送单个消息
+    public static void sendSingleMessage(JSONObject object){
+
+        ChatBody chatBody= new ChatBody.Builder()
+                .setFrom(object.getString("formId"))
+                .setTo(object.getString("toId"))
+                .setChatType(2)
+                .setMsgType(0)
+                .setCmd(11)
+                .setContent("任务变更通知")
+                .setCreateTime(DateUtils.now())
+                .addExtra("imMsg",object.get("extras"))
+                .build();
+        String params = JSONObject.toJSONString(chatBody);
+        try {
+            String result =   HttpHelper.post(null,params,IM_MESSAGE_URL,3000);
+            logger.info(result);
+        }catch (Exception e){
+            logger.error(e.toString(),e);
+        }
     }
     //推送单个消息
     public static void sendSingleMessage(String from ,String content, String to, JSONObject object){
