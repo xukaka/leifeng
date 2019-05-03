@@ -285,7 +285,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         logger.info("receive task:" + receive);
         taskReceiveDao.insert(receive);
-        ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您的任务被人领取请查收，请点击查看详情","20",task.getCreatorId().toString(),"AdminTaskMsg");
+        ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您的任务被人领取请查看，请点击查看详情","20",task.getCreatorId().toString(),"AdminTaskMsg");
 
 //
 //        ThreadPoolUtils.execute(() -> {
@@ -360,6 +360,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         wrapper.eq("task_id", taskId)
                 .eq("receiver_id", receiverId);
         taskReceiveDao.delete( wrapper);
+        ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您发布的任务领取人取消领取，请点击查看详情","25",task.getCreator().getId().toString(),"AdminTaskMsg");
+
         if (receiver!=null && receiverId.equals(receiver.getId())) {
             updateTaskStatus(taskId, TaskStatusEnum.published);
 
@@ -367,7 +369,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 //推送消息给任务发布人
            /* MemberDto receiver = memberService.getMember(receiverId);
         */
-                ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您发布的任务领取人取消领取，请点击查看详情","25",task.getCreator().getId().toString(),"AdminTaskMsg");
 
 //                JSONObject extras = new JSONObject();
 //                extras.put("businessCode", "6");//领取人取消任务
