@@ -515,18 +515,18 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void completeTask(Long receiverId, Long taskId) {
-
+        TaskEntity task = selectById(taskId);
         boolean isCompletable = isCompletableTask(receiverId, taskId);
         if (!isCompletable) {
             throw new RRException("任务不可完成");
         }
 
-        Wrapper<TaskEntity> wrapper = new EntityWrapper<>();
+       /* Wrapper<TaskEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("id", taskId);
-        TaskEntity task = new TaskEntity();
+        TaskEntity task = new TaskEntity();*/
         task.setStatus(TaskStatusEnum.completed);
         task.setCompleteTime(DateUtils.now());
-        Integer result = baseMapper.update(task, wrapper);
+        Integer result = baseMapper.updateById(task);
         if (result != null && result > 0) {
             ThreadPoolUtils.execute(() -> {
                 //发送消息给任务领取人
