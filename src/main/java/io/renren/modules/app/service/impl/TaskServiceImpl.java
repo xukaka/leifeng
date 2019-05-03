@@ -165,10 +165,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             boolean isFollowed = memberService.isFollowed(curMemberId, task.getCreator().getId());
             task.setFollowed(isFollowed);
             //是否领取
-            boolean isReceived = existsRecevier(id,curMemberId);
+            boolean isReceived = existsRecevier(id, curMemberId);
             task.setReceived(isReceived);
             //是否点赞
-            boolean isLiked = existsLiked(id,curMemberId);
+            boolean isLiked = existsLiked(id, curMemberId);
             task.setLiked(isLiked);
             task.setCurSystemTime(DateUtils.now());
         }
@@ -177,26 +177,27 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     /**
      * 是否领取（是否存在领取列表中）
+     *
      * @param taskId
      * @param receiverId
      * @return
      */
-    private boolean existsRecevier(Long taskId,Long receiverId){
+    private boolean existsRecevier(Long taskId, Long receiverId) {
         Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("task_id", taskId)
                 .eq("receiver_id", receiverId);
-        int count =  taskReceiveDao.selectCount(wrapper);
+        int count = taskReceiveDao.selectCount(wrapper);
         return count > 0;
     }
 
     /**
      * 是否点赞
      */
-    private boolean existsLiked(Long taskId,Long memberId){
+    private boolean existsLiked(Long taskId, Long memberId) {
         Wrapper<TaskLikeEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("task_id", taskId)
                 .eq("member_id", memberId);
-        int count =  taskLikeDao.selectCount(wrapper);
+        int count = taskLikeDao.selectCount(wrapper);
         return count > 0;
     }
 
@@ -285,8 +286,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         logger.info("receive task:" + receive);
         taskReceiveDao.insert(receive);
-        ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您的任务被人领取请查看，请点击查看详情","20",task.getCreatorId().toString(),"AdminTaskMsg");
-
+//        ImMessageUtils.sendTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已被领取", "20", task.getCreatorId().toString(), "SystemTaskStatus");
+        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK_STATUS, ImMessageUtils.getTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已被领取", "20",task.getCreatorId().toString(), "SystemTaskStatus"));
+//
 //
 //        ThreadPoolUtils.execute(() -> {
 //            //推送消息给任务发布人
@@ -297,6 +299,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void chooseTaskReceiver(Long taskId, Long receiverId) {
+        TaskEntity task = baseMapper.selectById(taskId);
         boolean isChooseable = isChooseableReceiver(taskId, receiverId);
         if (!isChooseable) {
             throw new RRException("任务已开始，不能选择人了", 100);
@@ -310,8 +313,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.received);
-            ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您领取的任务已经被发布方选择为服务方，请点击查看详情","21",receiverId.toString(),"AdminTaskMsg");
-
+//            ImMessageUtils.sendTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已指派给你", "21", receiverId.toString(), "SystemTaskStatus");
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK_STATUS, ImMessageUtils.getTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已指派给你", "21",receiverId.toString(), "SystemTaskStatus"));
+//
 
         }
 
@@ -323,8 +327,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Transactional
     public void executeTask(Long taskId, Long receiverId) {
         TaskEntity task = selectById(taskId);
-        if (task.getStatus()==TaskStatusEnum.cancelled){
-            throw new RRException("任务已取消",100);
+        if (task.getStatus() == TaskStatusEnum.cancelled) {
+            throw new RRException("任务已取消", 100);
         }
         boolean isExecutable = isExecutableTask(taskId, receiverId);
         if (!isExecutable) {
@@ -339,7 +343,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.executing);
-            ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您发布的任务服务方已经开始服务，请点击查看详情","22",task.getCreatorId().toString(),"AdminTaskMsg");
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK_STATUS, ImMessageUtils.getTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]正在被执行", "22", task.getCreatorId().toString(), "SystemTaskStatus"));
+//            ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"任务["+task.getTitle()+"]正在被执行","22",task.getCreatorId().toString(),"SystemTaskStatus");
 
         }
     }
@@ -351,7 +356,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         TaskDto task = baseMapper.getTask(taskId);
         Member receiver = task.getReceiver();
 
-        if (receiver!=null
+        if (receiver != null
                 && receiverId.equals(receiver.getId())
                 && (task.getStatus() != TaskStatusEnum.published && task.getStatus() != TaskStatusEnum.received)) {
             throw new RRException("任务执行中，不能取消", 100);
@@ -359,16 +364,19 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("task_id", taskId)
                 .eq("receiver_id", receiverId);
-        taskReceiveDao.delete( wrapper);
-        ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您发布的任务领取人取消领取，请点击查看详情","25",task.getCreator().getId().toString(),"AdminTaskMsg");
+        taskReceiveDao.delete(wrapper);
+        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK_STATUS, ImMessageUtils.getTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]领取人取消", "25",task.getCreator().getId().toString(), "SystemTaskStatus"));
 
-        if (receiver!=null && receiverId.equals(receiver.getId())) {
+//        ImMessageUtils.sendTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]领取人取消", "25", task.getCreator().getId().toString(), "AdminTaskMsg");
+
+        if (receiver != null && receiverId.equals(receiver.getId())) {
             updateTaskStatus(taskId, TaskStatusEnum.published);
 
             ThreadPoolUtils.execute(() -> {
                 //推送消息给任务发布人
-           /* MemberDto receiver = memberService.getMember(receiverId);
-        */
+                /* MemberDto receiver = memberService.getMember(receiverId);
+                 */
+//                ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您发布的任务领取人取消领取，请点击查看详情","25",task.getCreator().getId().toString(),"AdminTaskMsg");
 
 //                JSONObject extras = new JSONObject();
 //                extras.put("businessCode", "6");//领取人取消任务
@@ -382,8 +390,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 //                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
             });
         }
-
-
 
 
     }
@@ -413,10 +419,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         ThreadPoolUtils.execute(() -> {
             Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
             wrapper.eq("task_id", taskId);
-            List<TaskReceiveEntity> taskReceiveEntities = taskReceiveDao.selectList(wrapper);
-            if(taskReceiveEntities.isEmpty()){
-                for(TaskReceiveEntity taskReceiveEntity:taskReceiveEntities){
-                    ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您领取的任务已被发布方取消，请点击查看详情","26",taskReceiveEntity.getReceiverId().toString(),"AdminTaskMsg");
+            List<TaskReceiveEntity> taskReceives = taskReceiveDao.selectList(wrapper);
+            if (!CollectionUtils.isEmpty(taskReceives)) {
+                for (TaskReceiveEntity taskReceive : taskReceives) {
+                    rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK_STATUS, ImMessageUtils.getTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已取消", "26",taskReceive.getReceiverId().toString(), "SystemTaskStatus"));
+
+//                    ImMessageUtils.sendTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已取消", "26", taskReceive.getReceiverId().toString(), "SystemTaskStatus");
                 }
             }
             /*Member receiver = task.getReceiver();
@@ -442,7 +450,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     public void republishTask(Long publisher, Long taskId) {
         TaskEntity task = baseMapper.selectById(taskId);
-        if (task != null && publisher != null && publisher.equals(task.getCreatorId())){
+        if (task != null && publisher != null && publisher.equals(task.getCreatorId())) {
             updateTaskStatus(taskId, TaskStatusEnum.published);
         }
     }
@@ -482,7 +490,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.submitted);
-            ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您发布的任务服务方已经提交完成，请点击查看详情","23",task.getCreatorId().toString(),"AdminTaskMsg");
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK_STATUS, ImMessageUtils.getTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已经提交", "23",task.getCreatorId().toString(), "SystemTaskStatus"));
+//            ImMessageUtils.sendTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已经提交", "23", task.getCreatorId().toString(), "SystemTaskStatus");
 
 //            ThreadPoolUtils.execute(() -> {
 //                //推送消息给任务创建人
@@ -533,8 +542,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 extras.put("taskReceiverId", receiverId);
                 logger.info("发送消息给任务领取人，extras=" + extras.toJSONString());
                 rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());*/
-                ImMessageUtils.sendTaskStatusMessage(taskId.toString(),"尊敬的雷锋您好，您领取的任务已经被发布方确认完成，请点击查看详情","24",receiverId.toString(),"AdminTaskMsg");
-
+//                ImMessageUtils.sendTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已被确认完成", "24", receiverId.toString(), "SystemTaskStatus");
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK_STATUS, ImMessageUtils.getTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已被确认完成", "24",receiverId.toString(), "SystemTaskStatus"));
+//
                 //给领取人添加标签
                 addTag2Member(receiverId, taskId);
             });
@@ -625,9 +635,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
 
-   @Override
-    public void incCommentCount(Long taskId,Integer inc){
-        baseMapper.incCommentCount(taskId,inc);
+    @Override
+    public void incCommentCount(Long taskId, Integer inc) {
+        baseMapper.incCommentCount(taskId, inc);
     }
 /*
     @Override
@@ -636,18 +646,18 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }*/
 
     @Override
-    public void incViewCount(Long taskId,Integer inc){
-        baseMapper.incViewCount(taskId,inc);
+    public void incViewCount(Long taskId, Integer inc) {
+        baseMapper.incViewCount(taskId, inc);
     }
 
     @Override
     public void like(Long memberId, Long taskId) {
-        TaskLikeEntity like = new TaskLikeEntity(DateUtils.now(),taskId,memberId);
+        TaskLikeEntity like = new TaskLikeEntity(DateUtils.now(), taskId, memberId);
         taskLikeDao.insert(like);
 
-        ThreadPoolUtils.execute(()->{
+        ThreadPoolUtils.execute(() -> {
             //点赞数+1
-            baseMapper.incLikeCount(taskId,1);
+            baseMapper.incLikeCount(taskId, 1);
         });
     }
 
@@ -658,9 +668,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 .eq("member_id", memberId);
         taskLikeDao.delete(wrapper);
 
-        ThreadPoolUtils.execute(()->{
+        ThreadPoolUtils.execute(() -> {
             //点赞数-1
-            baseMapper.incLikeCount(taskId,-1);
+            baseMapper.incLikeCount(taskId, -1);
         });
     }
 }

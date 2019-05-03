@@ -25,6 +25,14 @@ public class ImMsgListener {
         logger.info("rabbitMQ handle message ===>>> " + message);
         JSONObject jsonObject = JSONObject.parseObject(message);
         String businessCode = jsonObject.getString("businessCode");
+        String toId = jsonObject.getString("toId");
+        String fromId = jsonObject.getString("fromId");
+        switch (businessCode){
+
+        }
+
+        /* JSONObject jsonObject = JSONObject.parseObject(message);
+        String businessCode = jsonObject.getString("businessCode");
         Long to = null;
         Long from = null;
         String content = null;
@@ -83,7 +91,7 @@ public class ImMsgListener {
                 imService.addTaskStatusNotice(from, to, jsonObject.toJSONString());
                 ImMessageUtils.sendSingleMessage(String.valueOf(from),content,String.valueOf(to), jsonObject);
                 break;
-        }
+        }*/
 
     }
 

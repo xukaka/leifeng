@@ -19,6 +19,15 @@ public class MemberCheckInEntity extends BaseEntity {
      */
     private Integer experience;
 
+    public MemberCheckInEntity() {
+    }
+
+    public MemberCheckInEntity(Long createTime, Long memberId, Integer experience) {
+        super(createTime);
+        this.memberId = memberId;
+        this.experience = experience;
+    }
+
     public Long getMemberId() {
         return memberId;
     }

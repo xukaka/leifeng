@@ -30,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 //import com.github.qcloudsms.SmsSingleSender;
 //import com.github.qcloudsms.SmsSingleSenderResult;
@@ -290,9 +287,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         String checkedIn = redisUtils.get(RedisKeys.CHECK_IN + memberId);
         if (StringUtils.isEmpty(checkedIn) || !Boolean.valueOf(checkedIn)) {
             redisUtils.set(RedisKeys.CHECK_IN + memberId, true, DateUtils.secondsLeftToday());
-            MemberCheckInEntity checkIn = new MemberCheckInEntity();
-            checkIn.setMemberId(memberId);
-            checkIn.setExperience(experience);
+            MemberCheckInEntity checkIn = new MemberCheckInEntity(DateUtils.now(),memberId,experience);
             memberCheckInDao.insert(checkIn);
             ThreadPoolUtils.execute(()->{
                 //增加用户的经验值

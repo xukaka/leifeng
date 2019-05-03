@@ -17,17 +17,10 @@
 package io.renren.common.utils;
 
 
-import cn.hutool.Hutool;
 import com.alibaba.fastjson.JSONObject;
-import io.renren.common.io.SocketServiceUtil;
-import io.renren.config.RabbitMQConfig;
-import io.renren.modules.app.dto.MemberDto;
-import io.renren.modules.app.service.MemberService;
 import org.jim.common.packets.ChatBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
 
 
 /**
@@ -37,30 +30,42 @@ public final class ImMessageUtils{
     private final static Logger logger = LoggerFactory.getLogger(ImMessageUtils.class);
     private final static String IM_MESSAGE_URL = "https://pet.fangzheng.fun:11805/api/message/send";
 
-    public  static void sendTaskStatusMessage(String taskId,String conTent,String businessCode,String toId,String formId){
-        JSONObject object = new JSONObject();
+    public static String getTaskStatusMessage(String taskId,String content,String businessCode,String toId,String fromId){
+        JSONObject msg = new JSONObject();
+        JSONObject extras = new JSONObject();
+        extras.put("businessCode", businessCode);
+        extras.put("taskId", taskId);
+        extras.put("content", content);
+        msg.put("toId", toId);
+        msg.put("fromId", fromId);
+        msg.put("extras",extras);
+        return msg.toJSONString();
+    }
+
+    public  static void sendTaskStatusMessage(String taskId,String content,String businessCode,String toId,String fromId){
+        JSONObject msg = new JSONObject();
         JSONObject extras = new JSONObject();
         extras.put("businessCode", businessCode);//2，确认领取任务
         extras.put("taskId", taskId);
-        extras.put("conTent", conTent);
-        object.put("toId", toId);
-        object.put("formId", formId);
-        object.put("extras",extras);
-        logger.info("推送消息给任务接收人，extras=" + extras.toJSONString());
-        sendSingleMessage(object);
+        extras.put("content", content);
+        msg.put("toId", toId);
+        msg.put("fromId", fromId);
+        msg.put("extras",extras);
+        logger.info("任务状态变更消息，msg=" + msg.toJSONString());
+        sendSingleMessage(msg);
     }
     //推送单个消息
     public static void sendSingleMessage(JSONObject object){
 
         ChatBody chatBody= new ChatBody.Builder()
-                .setFrom(object.getString("formId"))
+                .setFrom(object.getString("fromId"))
                 .setTo(object.getString("toId"))
                 .setChatType(2)
                 .setMsgType(0)
                 .setCmd(11)
-                .setContent("任务变更通知")
+                .setContent("任务状态变更通知")
                 .setCreateTime(DateUtils.now())
-                .addExtra("imMsg",object.get("extras"))
+                .addExtra("data",object.get("extras"))
                 .build();
         String params = JSONObject.toJSONString(chatBody);
         try {
@@ -81,7 +86,7 @@ public final class ImMessageUtils{
                 .setCmd(11)
                 .setContent(content)
                 .setCreateTime(DateUtils.now())
-                .addExtra("imMsg",object.get("extras"))
+                .addExtra("data",object.get("extras"))
                 .build();
         String params = JSONObject.toJSONString(chatBody);
         try {
@@ -102,7 +107,7 @@ public final class ImMessageUtils{
                 .setGroup_id(groupId)
                 .setCmd(11)
                 .setCreateTime(DateUtils.now())
-                .addExtra("imMsg",extras)
+                .addExtra("data",extras)
                 .build();
         String params = JSONObject.toJSONString(chatBody);
         try {
