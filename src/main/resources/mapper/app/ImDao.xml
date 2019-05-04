@@ -21,16 +21,6 @@
     </select>
 
 
-    <insert id="insertTaskStatusNotice">
-        insert into t_im_task_status_notice
-        (from_member_id,
-        to_member_id,
-        extras_json,
-        create_time,
-        deleted)
-        values(#{notice.fromMemberId},#{notice.toMemberId},#{notice.extrasJson},#{notice.createTime},#{notice.deleted})
-    </insert>
-
 
 
 </mapper>

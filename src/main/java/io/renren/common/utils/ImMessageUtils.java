@@ -18,6 +18,7 @@ package io.renren.common.utils;
 
 
 import com.alibaba.fastjson.JSONObject;
+import io.renren.modules.app.dto.MemberDto;
 import org.jim.common.packets.ChatBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public final class ImMessageUtils{
     private final static Logger logger = LoggerFactory.getLogger(ImMessageUtils.class);
     private final static String IM_MESSAGE_URL = "https://pet.fangzheng.fun:11805/api/message/send";
 
+    //任务状态消息
     public static String getTaskStatusMessage(String taskId,String content,String businessCode,String toId,String fromId){
         JSONObject msg = new JSONObject();
         JSONObject extras = new JSONObject();
@@ -38,6 +40,20 @@ public final class ImMessageUtils{
         extras.put("content", content);
         msg.put("toId", toId);
         msg.put("fromId", fromId);
+        msg.put("extras",extras);
+        return msg.toJSONString();
+    }
+
+//    组消息
+    public static String getGroupMessage(String id,String type,String content,String businessCode,String groupId,String from){
+        JSONObject msg = new JSONObject();
+        JSONObject extras = new JSONObject();
+        extras.put("businessCode", businessCode);//10，发布任务/笔记
+        extras.put("type", type);//类型为任务|笔记
+        extras.put("id", id);
+        extras.put("content", content);
+        msg.put("from", from);
+        msg.put("groupId", groupId);
         msg.put("extras",extras);
         return msg.toJSONString();
     }
@@ -96,9 +112,28 @@ public final class ImMessageUtils{
             logger.error(e.toString(),e);
         }
     }
-
     //推送群组消息
-    public static void sendGroupMessage(String from , String groupId, JSONObject extras){
+    public static void sendGroupMessage(JSONObject groupMsg){
+
+        ChatBody chatBody= new ChatBody.Builder()
+                .setFrom(groupMsg.getString("from"))
+                .setChatType(1)
+                .setMsgType(0)
+                .setGroup_id(groupMsg.getString("groupId"))
+                .setCmd(11)
+                .setCreateTime(DateUtils.now())
+                .addExtra("data",groupMsg.get("extras"))
+                .build();
+        String params = JSONObject.toJSONString(chatBody);
+        try {
+            String result =   HttpHelper.post(null,params,IM_MESSAGE_URL,3000);
+            logger.info(result);
+        }catch (Exception e){
+            logger.error(e.toString(),e);
+        }
+    }
+    //推送群组消息
+    public static void sendGroupMessage(String from , String groupId){
 
         ChatBody chatBody= new ChatBody.Builder()
                 .setFrom(from)
@@ -107,7 +142,6 @@ public final class ImMessageUtils{
                 .setGroup_id(groupId)
                 .setCmd(11)
                 .setCreateTime(DateUtils.now())
-                .addExtra("data",extras)
                 .build();
         String params = JSONObject.toJSONString(chatBody);
         try {

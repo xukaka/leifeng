@@ -221,17 +221,15 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         ThreadPoolUtils.execute(() -> {
             //推送消息给关注我的所有人
             MemberDto creator = memberService.getMember(creatorId);
-            JSONObject extras = new JSONObject();
-            extras.put("businessCode", "0");//0，发布任务
-            extras.put("type", "task");//类型为任务
-            extras.put("id", task.getId());
-            extras.put("title", task.getTitle());
-            extras.put("creatorId", creator.getId());
-            extras.put("creatorAvatar", creator.getAvatar());
-            extras.put("creatorNickName", creator.getNickName());
-            extras.put("groupId", creator.getId());
-            logger.info("推消息到关注我的组，extras=" + extras.toJSONString());
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
+
+            JSONObject groupMsg = new JSONObject();
+            groupMsg.put("businessType", "task");//类型为任务|笔记
+            groupMsg.put("businessId", task.getId());//任务/笔记id
+            groupMsg.put("content", creator.getNickName()+" 发布了新任务[" + task.getTitle() + "]");
+            groupMsg.put("from", "SystemGroup");
+            groupMsg.put("groupId", task.getCreatorId().toString());
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_GROUP,groupMsg.toJSONString() );
+//
         });
     }
 

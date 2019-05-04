@@ -22,9 +22,6 @@ import java.util.List;
 public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements ImService {
     private final static Logger logger = LoggerFactory.getLogger(ImServiceImpl.class);
 
-
-    @Autowired
-    private ImDao imDao;
     @Autowired
     private RedisUtils redisUtils;
 
@@ -39,33 +36,17 @@ public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements 
     }
 
     @Override
-    public void addGroupNotice(Long groupId, String extrasJson) {
+    public void addGroupNotice(String groupId, String from,String  businessType,Long businessId,String content) {
         ImGroupNotice notice = new ImGroupNotice();
         notice.setGroupId(groupId);
-        notice.setExtrasJson(extrasJson);
+        notice.setFrom(from);
+        notice.setBusinessId(businessId);
+        notice.setBusinessType(businessType);
+        notice.setContent(content);
         notice.setCreateTime(DateUtils.now());
         insert(notice);
     }
 
-    @Override
-    public void addTaskStatusNotice(Long fromMemberId, Long toMemberId, String extrasJson) {
-        ImTaskStatusNotice notice = new ImTaskStatusNotice();
-        notice.setFromMemberId(fromMemberId);
-        notice.setToMemberId(toMemberId);
-        notice.setExtrasJson(extrasJson);
-        notice.setCreateTime(DateUtils.now());
-        imDao.insertTaskStatusNotice(notice);
-    }
-
-    @Override
-    public PageUtils<ImTaskStatusNotice> getTaskStatusNotices(Long memberId, PageWrapper page) {
-        List<ImTaskStatusNotice> notices = imDao.getTaskStatusNotices(memberId, page);
-        if (CollectionUtils.isEmpty(notices)) {
-            return new PageUtils<>();
-        }
-        int total = baseMapper.taskStatusNoticeCount(memberId);
-        return new PageUtils<>(notices, total, page.getPageSize(), page.getCurrPage());
-    }
 
     @Override
     public void setMessageType(MessageTypeForm messageTypeForm) {

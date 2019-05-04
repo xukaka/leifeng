@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
     public final static String QUEUE_NAME = "queue-name-online";
-    public final static String IM_QUEUE_NAME = "queue-name-im";
+    public final static String IM_QUEUE_GROUP = "queue-name-im-group";
     public final static String IM_QUEUE_TASK_STATUS = "queue-name-task-status";
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
@@ -23,8 +23,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue queueIM() {
-        return new Queue(IM_QUEUE_NAME);
+    public Queue queueGroup() {
+        return new Queue(IM_QUEUE_GROUP);
     }
 
     @Bean

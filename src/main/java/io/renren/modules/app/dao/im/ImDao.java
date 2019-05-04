@@ -31,10 +31,6 @@ public interface ImDao extends BaseMapper<ImGroupNotice> {
     int groupNoticeCount(Long memberId);
 
     /**
-     * 插入任务状态通知
-     */
-    void insertTaskStatusNotice(@Param("notice") ImTaskStatusNotice notice );
-    /**
      * 分页获取任务状态通知列表
      */
     List<ImTaskStatusNotice> getTaskStatusNotices(@Param("memberId") Long memberId, @Param("page") PageWrapper page);

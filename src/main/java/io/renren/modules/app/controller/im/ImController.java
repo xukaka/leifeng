@@ -49,8 +49,8 @@ public class ImController {
         logger.info("[ImController.info] 请求参数id={}", memberId);
 //        redisUtils.zAdd("unread:"+memberId,11,0);
         List<ImHistoryMember> members = new ArrayList<>();
-        List<Map> list = new ArrayList<>();
-        list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
+
+        List<Map> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
         for (Map map : list) {
             ImHistoryMember imHistoryMember = new ImHistoryMember();
             Double score = (Double) map.get("score");
@@ -86,15 +86,4 @@ public class ImController {
         return R.ok().put("result", notices);
     }
 
-    @Login
-    @GetMapping(value = "/taskStatusNotice/list")
-    @ApiOperation("分页获取任务状态通知列表")
-    public R getTaskStatusNotices(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<ImTaskStatusNotice> notices = imService.getTaskStatusNotices(ReqUtils.currentUserId(), page);
-        return R.ok().put("result", notices);
-    }
 }

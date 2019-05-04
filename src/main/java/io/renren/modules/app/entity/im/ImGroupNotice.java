@@ -12,26 +12,50 @@ public class ImGroupNotice extends BaseEntity {
     /**
      * 组id
      */
-    private Long groupId;
+    private String groupId;
+    //业务类型：task|diary
+    private String businessType;
+    private Long businessId;//业务id：任务、日记
+    private String from;//发布方
+    private String content;//发布内容
 
-    /**
-     * 扩展json
-     */
-    private String extrasJson;
-
-    public Long getGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(Long groupId) {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
-    public String getExtrasJson() {
-        return extrasJson;
+    public String getBusinessType() {
+        return businessType;
     }
 
-    public void setExtrasJson(String extrasJson) {
-        this.extrasJson = extrasJson;
+    public void setBusinessType(String businessType) {
+        this.businessType = businessType;
+    }
+
+    public Long getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Long businessId) {
+        this.businessId = businessId;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }
