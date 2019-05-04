@@ -50,7 +50,6 @@ public class ImController {
         logger.info("[ImController.info] 请求参数id={}", memberId);
         if(type==0){
             List<ImHistoryMember> members = new ArrayList<>();
-
             List<Map> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
             for (Map map : list) {
                 ImHistoryMember imHistoryMember = new ImHistoryMember();
@@ -63,7 +62,7 @@ public class ImController {
         }else if(type==1){
             List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
             List<Map> list = new ArrayList<>();
-            list = redisUtils.rangeByScore("follow:" + memberId, ImFollowNoticeStatus.class);
+            list = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
             for (Map map : list) {
                 ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
                 Double score = (Double) map.get("score");
