@@ -22,20 +22,7 @@ public interface ImService extends IService<ImGroupNotice> {
     /**
      * 添加群组通知
      */
-    void addGroupNotice(Long groupId, String extrasJson);
-
-
-    /**
-     * 添加任务状态通知
-     * @param toMumberId
-     * @param extrasJson
-     */
-    void addTaskStatusNotice(Long fromMemberId,Long toMumberId,String extrasJson);
-    /**
-     * 分页获取任务状态通知列表
-     *
-     */
-    PageUtils<ImTaskStatusNotice> getTaskStatusNotices(Long memberId, PageWrapper page);
+    void addGroupNotice(String groupId, String from,String  businessType,Long businessId,String content);
 
   /**
      * 设置消息类型
