@@ -46,58 +46,55 @@ public class ImController {
 
     @GetMapping("/historyMember")
     @ApiOperation("获取联系人历史列表")
-    public R getHistoryMember(Long memberId) {
+    public R getHistoryMember(Long memberId,int type) {
         logger.info("[ImController.info] 请求参数id={}", memberId);
-//        redisUtils.zAdd("unread:"+memberId,11,0);
-        List<ImHistoryMember> members = new ArrayList<>();
+        if(type==0){
+            List<ImHistoryMember> members = new ArrayList<>();
 
-        List<Map> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
-        for (Map map : list) {
-            ImHistoryMember imHistoryMember = new ImHistoryMember();
-            Double score = (Double) map.get("score");
-            imHistoryMember.setType(score.intValue());
-            imHistoryMember.setMember(memberService.getMember((Long) map.get("value")));
-            members.add(imHistoryMember);
+            List<Map> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
+            for (Map map : list) {
+                ImHistoryMember imHistoryMember = new ImHistoryMember();
+                Double score = (Double) map.get("score");
+                imHistoryMember.setStatus(score.intValue());
+                imHistoryMember.setMember(memberService.getMember((Long) map.get("value")));
+                members.add(imHistoryMember);
+            }
+            return R.ok().put("result", members);
+        }else if(type==1){
+            List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
+            List<Map> list = new ArrayList<>();
+            list = redisUtils.rangeByScore("follow:" + memberId, ImFollowNoticeStatus.class);
+            for (Map map : list) {
+                ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
+                Double score = (Double) map.get("score");
+                imFollowNoticeStatus.setStatus(score.intValue());
+                followStatus.add(imFollowNoticeStatus);
+            }
+            return R.ok().put("result", followStatus);
+        }else if(type==2){
+            List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
+            List<Map> list = new ArrayList<>();
+            list = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
+            for (Map map : list) {
+                ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
+                Double score = (Double) map.get("score");
+                imFollowNoticeStatus.setStatus(score.intValue());
+                followStatus.add(imFollowNoticeStatus);
+            }
+            return R.ok().put("result", followStatus);
         }
-        return R.ok().put("result", members);
-    }
-    @GetMapping("/followNotice")
-    @ApiOperation("获取关注的人动态通知列表")
-    public R followNotice(Long memberId) {
-        logger.info("[ImController.info] 请求参数id={}", memberId);
-//        redisUtils.zAdd("unread:"+memberId,11,0);
-        List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
-        List<Map> list = new ArrayList<>();
-        list = redisUtils.rangeByScore("follow:" + memberId, ImFollowNoticeStatus.class);
-        for (Map map : list) {
-            ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
-            Double score = (Double) map.get("score");
-            imFollowNoticeStatus.setStatus(score.intValue());
-            followStatus.add(imFollowNoticeStatus);
+        else{
+            return R.ok().put("result", "空的，出现了异常");
+
         }
-        return R.ok().put("result", followStatus);
-    }
-    @GetMapping("/taskNotice")
-    @ApiOperation("获取关注的人动态通知列表")
-    public R taskNotice(Long memberId) {
-        logger.info("[ImController.info] 请求参数id={}", memberId);
-        List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
-        List<Map> list = new ArrayList<>();
-        list = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
-        for (Map map : list) {
-            ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
-            Double score = (Double) map.get("score");
-            imFollowNoticeStatus.setStatus(score.intValue());
-            followStatus.add(imFollowNoticeStatus);
-        }
-        return R.ok().put("result", followStatus);
     }
     @PostMapping(value = "/setMessageType", consumes = "application/json")
     @ApiOperation("设置未读消息状态")
     /**
      * memberId:代表发送人，当前用户ID即可
      * toId：代表接受人，也就是不在线的用户Id
-     * type:0代表没有未读消息，1代表存在未读消息
+     * type:0代表私聊，1代表关注，2代表任务通知
+     * status:0代表没有未读，1代表有未读
      */
     public R setMessageType(@RequestBody MessageTypeForm messageTypeForm) {
         logger.info("[ImController.info] 请求参数id={}", messageTypeForm.getFromId(), messageTypeForm.getToId());
