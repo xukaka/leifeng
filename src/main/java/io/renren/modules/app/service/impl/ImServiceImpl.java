@@ -50,12 +50,18 @@ public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements 
 
     @Override
     public void setMessageType(MessageTypeForm messageTypeForm) {
-        logger.info("[ImController.info] 请求参数id={}", messageTypeForm.getFromId(), messageTypeForm.getToId());
-        if (messageTypeForm.getType() == 1) {
-            redisUtils.zAdd("unread:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getType());
+        logger.info("[ImController.info] 请求参数id={}", messageTypeForm.getFromId(), messageTypeForm.getToId(), messageTypeForm.getType(), messageTypeForm.getStatus());
+        if (messageTypeForm.getStatus() == 1&& messageTypeForm.getType()==0) {
+            redisUtils.zAdd("unread:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
         } else {
-            redisUtils.zAdd("unread:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getType());
-            redisUtils.zAdd("unread:" + messageTypeForm.getFromId(), messageTypeForm.getToId(), messageTypeForm.getType());
+            redisUtils.zAdd("unread:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
+            redisUtils.zAdd("unread:" + messageTypeForm.getFromId(), messageTypeForm.getToId(), messageTypeForm.getStatus());
+        }
+        if (messageTypeForm.getType()==1) {
+            redisUtils.zAdd("follow:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
+        }
+        if (messageTypeForm.getType()==2) {
+            redisUtils.zAdd("task:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
         }
     }
 }

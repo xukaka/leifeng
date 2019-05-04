@@ -4,6 +4,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.entity.im.ImFollowNoticeStatus;
 import io.renren.modules.app.entity.im.ImGroupNotice;
 import io.renren.modules.app.entity.im.ImHistoryMember;
 import io.renren.modules.app.entity.im.ImTaskStatusNotice;
@@ -60,7 +61,37 @@ public class ImController {
         }
         return R.ok().put("result", members);
     }
-
+    @GetMapping("/followNotice")
+    @ApiOperation("获取关注的人动态通知列表")
+    public R followNotice(Long memberId) {
+        logger.info("[ImController.info] 请求参数id={}", memberId);
+//        redisUtils.zAdd("unread:"+memberId,11,0);
+        List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
+        List<Map> list = new ArrayList<>();
+        list = redisUtils.rangeByScore("follow:" + memberId, ImFollowNoticeStatus.class);
+        for (Map map : list) {
+            ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
+            Double score = (Double) map.get("score");
+            imFollowNoticeStatus.setStatus(score.intValue());
+            followStatus.add(imFollowNoticeStatus);
+        }
+        return R.ok().put("result", followStatus);
+    }
+    @GetMapping("/taskNotice")
+    @ApiOperation("获取关注的人动态通知列表")
+    public R taskNotice(Long memberId) {
+        logger.info("[ImController.info] 请求参数id={}", memberId);
+        List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
+        List<Map> list = new ArrayList<>();
+        list = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
+        for (Map map : list) {
+            ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
+            Double score = (Double) map.get("score");
+            imFollowNoticeStatus.setStatus(score.intValue());
+            followStatus.add(imFollowNoticeStatus);
+        }
+        return R.ok().put("result", followStatus);
+    }
     @PostMapping(value = "/setMessageType", consumes = "application/json")
     @ApiOperation("设置未读消息状态")
     /**

@@ -21,7 +21,9 @@ public class MessageTypeForm {
     @ApiModelProperty(value = "类型", example = "")
     @NotNull
     private int type;
-
+    @ApiModelProperty(value = "状态", example = "")
+    @NotNull
+    private int status;
 
 
     public Long getFromId() {
@@ -47,4 +49,8 @@ public class MessageTypeForm {
     public void setType(int type) {
         this.type = type;
     }
+
+    public int getStatus() { return status;}
+
+    public void setStatus(int status) {  this.status = status; }
 }
