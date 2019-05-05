@@ -46,12 +46,12 @@ public class ImController {
 
     @GetMapping("/historyMember")
     @ApiOperation("获取联系人历史列表")
-    public R getHistoryMember(Long memberId,int type) {
+    public R getHistoryMember(Long memberId, int type) {
         logger.info("[ImController.info] 请求参数id={}", memberId);
-        if(type==0){
+        if (type == 0) {
             List<ImHistoryMember> members = new ArrayList<>();
-            List<Map> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
-            for (Map map : list) {
+            List<Map<String,Object>> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
+            for (Map<String,Object> map : list) {
                 ImHistoryMember imHistoryMember = new ImHistoryMember();
                 Double score = (Double) map.get("score");
                 imHistoryMember.setStatus(score.intValue());
@@ -59,34 +59,32 @@ public class ImController {
                 members.add(imHistoryMember);
             }
             return R.ok().put("result", members);
-        }else if(type==1){
+        } else if (type == 1) {
             List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
-            List<Map> list = new ArrayList<>();
-            list = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
-            for (Map map : list) {
+            List<Map<String,Object>> list = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
+            for (Map<String,Object> map : list) {
                 ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
                 Double score = (Double) map.get("score");
                 imFollowNoticeStatus.setStatus(score.intValue());
                 followStatus.add(imFollowNoticeStatus);
             }
             return R.ok().put("result", followStatus);
-        }else if(type==2){
+        } else if (type == 2) {
             List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
-            List<Map> list = new ArrayList<>();
-            list = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
-            for (Map map : list) {
+            List<Map<String,Object>> list = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
+            for (Map<String,Object> map : list) {
                 ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
                 Double score = (Double) map.get("score");
                 imFollowNoticeStatus.setStatus(score.intValue());
                 followStatus.add(imFollowNoticeStatus);
             }
             return R.ok().put("result", followStatus);
-        }
-        else{
+        } else {
             return R.ok().put("result", "空的，出现了异常");
 
         }
     }
+
     @PostMapping(value = "/setMessageType", consumes = "application/json")
     @ApiOperation("设置未读消息状态")
     /**

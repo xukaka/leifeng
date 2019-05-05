@@ -82,26 +82,30 @@ public class RedisUtils {
 
 
     public <T> void addList(String key, List<T> value) {
-        addList(key,value,DEFAULT_EXPIRE);
+        addList(key, value, DEFAULT_EXPIRE);
     }
+
     /**
      * 列表单键添加
+     *
      * @param key
      * @param value
      */
-    public void addList(String key,Object value){
+    public void addList(String key, Object value) {
         ListOperations<String, Object> zset = redisTemplate.opsForList();
-        zset.leftPush(key,value);
+        zset.leftPush(key, value);
     }
-   public void delListKey(String key,Object value){
-       ListOperations<String, Object> zset = redisTemplate.opsForList();
 
-       zset.remove(key,0,value);
+    public void delListKey(String key, Object value) {
+        ListOperations<String, Object> zset = redisTemplate.opsForList();
+
+        zset.remove(key, 0, value);
     }
+
     public <T> void addList(String key, List<T> values, long expire) {
-        if (!CollectionUtils.isEmpty(values)){
-            for (T val : values){
-                redisTemplate.opsForList().leftPush(key,val);
+        if (!CollectionUtils.isEmpty(values)) {
+            for (T val : values) {
+                redisTemplate.opsForList().leftPush(key, val);
             }
         }
         if (expire != NOT_EXPIRE) {
@@ -110,50 +114,56 @@ public class RedisUtils {
     }
 
     public <T> List<T> getList(String key, Class<T> clazz) {
-        return getList(key,clazz,NOT_EXPIRE);
+        return getList(key, clazz, NOT_EXPIRE);
     }
 
     public <T> List<T> getList(String key, Class<T> clazz, long expire) {
-        List<Object> value =redisTemplate.opsForList().range(key, 0, -1);
+        List<Object> value = redisTemplate.opsForList().range(key, 0, -1);
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
-        System.out.println(value.size());
+//        System.out.println(value.size());
         return BeanUtil.copy(value, clazz);
     }
+
     //获取单一值List，如String，Long等
-    public  List getList(String key) {
-        List<Object> value =redisTemplate.opsForList().range(key, 0, -1);
+    public List getList(String key) {
+        List<Object> value = redisTemplate.opsForList().range(key, 0, -1);
         return value;
     }
+
     /**
      * 有序集合添加
+     *
      * @param key
      * @param value
      * @param scoure
      */
-    public void zAdd(String key,Object value,double scoure){
+    public void zAdd(String key, Object value, double scoure) {
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
-        zset.add(key,value,scoure);
+        zset.add(key, value, scoure);
     }
 
     /**
      * 有序集合获取
+     *
      * @param key
-
      * @return
      */
-    public List rangeByScore(String key,Class  clazz){
-        List<Map> list=new ArrayList<>();
+    public List<Map<String, Object>> rangeByScore(String key, Class clazz) {
+        List<Map<String, Object>> list = new ArrayList<>();
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<Object>> tuples = zset.rangeWithScores(key, 0, -1);
+        if (CollectionUtils.isEmpty(tuples)){
+            return list;
+        }
         Iterator<ZSetOperations.TypedTuple<Object>> iterator = tuples.iterator();
         while (iterator.hasNext()) {
             ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();
             Object value = typedTuple.getValue();
-            double score = typedTuple.getScore();
+            Double score = typedTuple.getScore();
 
-            LinkedHashMap map=new LinkedHashMap();
+            Map<String, Object> map = new LinkedHashMap<>();
             map.put("value", Long.parseLong(value.toString()));
             map.put("score", score);
             list.add(map);

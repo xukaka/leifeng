@@ -36,12 +36,24 @@ public class TaskCircleController {
 
     @GetMapping("/list")
     @ApiOperation("分页获取任务圈列表")
-    public R getTasks(@RequestParam String cricleName, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getCircles(@RequestParam String cricleName, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(cricleName,page);
+        return R.ok().put("result", circles);
+    }
+
+    @Login
+    @GetMapping("/list/myJoined")
+    @ApiOperation("分页获取我加入的任务圈列表")
+    public R getMyJoinedCircles(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<TaskCircleDto> circles = taskCircleService.getMyJoinedCircles(ReqUtils.currentUserId(),page);
         return R.ok().put("result", circles);
     }
 

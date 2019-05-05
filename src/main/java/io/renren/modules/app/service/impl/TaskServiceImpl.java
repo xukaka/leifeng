@@ -218,6 +218,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             //推送消息给被提醒用户
         }*/
 
+        //TODO 推送给圈内所有人
+
         ThreadPoolUtils.execute(() -> {
             //推送消息给关注我的所有人
             MemberDto creator = memberService.getMember(creatorId);

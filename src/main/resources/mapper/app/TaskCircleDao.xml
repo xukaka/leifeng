@@ -49,8 +49,35 @@
         m.sex AS member_sex
         FROM t_task_circle tc
         JOIN member m ON tc.creator_id = m.id
-        WHERE tc.id = #{circleId} AND tc.name LIKE concat('%', #{circleName} ,'%')
+        WHERE tc.id = #{circleId} AND tc.deleted = 0 AND tc.name LIKE concat('%', #{circleName} ,'%')
         ORDER BY tc.create_time DESC
         LIMIT #{page.offset},#{page.limit}
+    </select>
+
+    <!--分页查询我加入的任务圈列表-->
+    <select id="getMyJoinedCircles" resultType="io.renren.modules.app.dto.TaskCircleDto">
+        SELECT
+        tc.*
+        FROM t_task_circle tc
+        JOIN t_task_circle_member m ON tc.id = m.circle_id
+        WHERE m.member_id = #{memberId} AND tc.deleted = 0
+        ORDER BY m.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+    </select>
+
+
+
+    <select id="count" resultType="int">
+        select count(1)
+        FROM t_task_circle tc
+        WHERE tc.id = #{circleId} AND tc.deleted = 0 AND tc.name LIKE concat('%', #{circleName} ,'%')
+    </select>
+
+    <select id="myJoinedCount" resultType="int">
+        SELECT
+         count(1)
+        FROM t_task_circle tc
+        JOIN t_task_circle_member m ON tc.id = m.circle_id
+        WHERE m.member_id = #{memberId} AND tc.deleted = 0
     </select>
 </mapper>

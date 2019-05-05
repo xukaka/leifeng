@@ -80,13 +80,29 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
         return new PageUtils<>(circles, total, page.getPageSize(), page.getCurrPage());
     }
 
+    @Override
+    public PageUtils<TaskCircleDto> getMyJoinedCircles(Long memberId, PageWrapper page){
+        List<TaskCircleDto> circles = baseMapper.getMyJoinedCircles(memberId,page);
+        if (CollectionUtils.isEmpty(circles)) {
+            return new PageUtils<>();
+        }
+        int total = baseMapper.myJoinedCount(memberId,page);
+        return new PageUtils<>(circles, total, page.getPageSize(), page.getCurrPage());
+    }
+
 
     @Override
     public void joinCircle(Long currentUserId, Long circleId) {
         boolean exists = existsCircleMember(currentUserId, circleId);
         if (!exists) {
-            TaskCircleMemberEntity circleMember = new TaskCircleMemberEntity(DateUtils.now(), circleId, currentUserId);
-            taskCircleMemberDao.insert(circleMember);
+            TaskCircleEntity circle = baseMapper.selectById(circleId);
+            if (circle.getNeedReview()){
+                //TODO 推消息给圈主审核
+
+            }else{
+                TaskCircleMemberEntity circleMember = new TaskCircleMemberEntity(DateUtils.now(), circleId, currentUserId);
+                taskCircleMemberDao.insert(circleMember);
+            }
         }
     }
 

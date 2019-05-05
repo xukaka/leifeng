@@ -30,6 +30,7 @@ public interface TaskService extends IService<TaskEntity> {
      */
     PageUtils<TaskDto> searchTasks(TaskQueryForm form, PageWrapper page);
 
+
     /**
      * 分页获取发布的任务
      */

@@ -43,6 +43,10 @@ public interface TaskCircleService extends IService<TaskCircleEntity> {
      */
     PageUtils<TaskCircleDto> getCircles(String circleName, PageWrapper page);
 
+    /**
+     * 分页获取我加入的任务圈列表
+     */
+    PageUtils<TaskCircleDto> getMyJoinedCircles(Long memberId, PageWrapper page);
 
     /**
      * 加入任务圈
@@ -53,5 +57,7 @@ public interface TaskCircleService extends IService<TaskCircleEntity> {
      * 退出任务圈
      */
     void exitCircle(Long currentUserId, Long circleId);
+
+
 }
 

@@ -31,8 +31,21 @@ public interface TaskCircleDao extends BaseMapper<TaskCircleEntity> {
      */
     List<TaskCircleDto> getCircles(@Param("circleName") String circleName, @Param("page") PageWrapper page);
 
+
+    /**
+     * 分页获取我加入的任务圈列表
+     * @param memberId
+     * @param page
+     * @return
+     */
+    List<TaskCircleDto> getMyJoinedCircles(Long memberId, PageWrapper page);
+
     //任务圈总数
     int count(@Param("circleName") String circleName, @Param("page") PageWrapper page);
+
+    //任务圈总数-我加入的
+    int myJoinedCount(@Param("memberId") Long memberId, @Param("page") PageWrapper page);
+
 
 
 }

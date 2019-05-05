@@ -31,7 +31,7 @@ public class TaskCircleEntity extends BaseEntity {
     /**
      * 是否需要审核
      */
-    private Boolean needReview;
+    private Boolean needReview=false;
 
     /**
      * 成员数
