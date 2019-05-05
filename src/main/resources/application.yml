@@ -42,6 +42,7 @@ spring:
     add-mappings: false
   #rabbitMQ
   rabbitmq:
+    #host: 119.23.229.161
     host: 47.94.164.57
     port: 5672
     username: guest
