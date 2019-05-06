@@ -1,7 +1,9 @@
 package io.renren.modules.app.service.impl;
 
 import io.renren.common.utils.JsonUtil;
+import io.renren.common.utils.OrderNoUtil;
 import io.renren.modules.app.config.WXPayConfig;
+import io.renren.modules.app.utils.ReqUtils;
 import io.renren.modules.app.utils.WXPayConstants;
 import io.renren.modules.app.utils.WXPayConstants.SignType;
 import io.renren.modules.app.utils.WXPayUtil;
@@ -13,6 +15,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -24,8 +27,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Component
 public class WXPayService {
@@ -221,6 +231,140 @@ public class WXPayService {
                 .build();
 
         HttpPost httpPost = new HttpPost(this.config.getOrderQuery());
+
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(8*1000).setConnectTimeout(6*1000).build();
+        httpPost.setConfig(requestConfig);
+
+        StringEntity postEntity = new StringEntity(data, "UTF-8");
+        httpPost.addHeader("Content-Type", "text/xml");
+        httpPost.addHeader("User-Agent", WXPayConstants.USER_AGENT);
+        httpPost.setEntity(postEntity);
+
+        HttpResponse httpResponse = httpClient.execute(httpPost);
+        HttpEntity httpEntity = httpResponse.getEntity();
+        return EntityUtils.toString(httpEntity, "UTF-8");
+    }
+
+    public String transferMoneyRequest(String openId,String realName,String amount) throws Exception {
+        //检验参数必填
+        checkWXPayConfig();
+
+        Map<String,String> reqdata = new HashMap<>();
+        reqdata.put("mch_appid",config.getAppId());
+        reqdata.put("mchid",config.getMchId());
+        reqdata.put("nonce_str",WXPayUtil.generateNonceStr());
+        reqdata.put("partner_trade_no", OrderNoUtil.generateOrderNo(new Random().nextLong()));
+        reqdata.put("openid",openId);
+        reqdata.put("check_name","FORCE_CHECK");//NO_CHECK：不校验真实姓名,FORCE_CHECK：强校验真实姓名
+        reqdata.put("re_user_name",realName);
+        reqdata.put("amount",amount);
+        reqdata.put("desc","企业转账提现");
+        reqdata.put("spbill_create_ip", ReqUtils.getRequest().getRemoteAddr());
+
+        String sign = WXPayUtil.generateSignature(reqdata, config.getKey());
+        reqdata.put("sign",sign);
+        String data = WXPayUtil.mapToXml(reqdata);
+
+        char[] password = config.getMchId().toCharArray();
+        InputStream certStream = config.getCertStream();
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        ks.load(certStream, password);
+
+        // 实例化密钥库 & 初始化密钥工厂
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, password);
+
+        // 创建 SSLContext
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
+
+        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(
+                sslContext,
+                new String[]{"TLSv1"},
+                null,
+                new DefaultHostnameVerifier());
+
+        BasicHttpClientConnectionManager connManager = new BasicHttpClientConnectionManager(
+                RegistryBuilder.<ConnectionSocketFactory>create()
+                        .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                        .register("https", sslConnectionSocketFactory)
+                        .build(),
+                null,
+                null,
+                null
+        );
+
+        HttpClient httpClient = HttpClientBuilder.create()
+                .setConnectionManager(connManager)
+                .build();
+
+        HttpPost httpPost = new HttpPost(this.config.getTransferUrl());
+
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(8*1000).setConnectTimeout(6*1000).build();
+        httpPost.setConfig(requestConfig);
+
+        StringEntity postEntity = new StringEntity(data, "UTF-8");
+        httpPost.addHeader("Content-Type", "text/xml");
+        httpPost.addHeader("User-Agent", WXPayConstants.USER_AGENT);
+        httpPost.setEntity(postEntity);
+
+        HttpResponse httpResponse = httpClient.execute(httpPost);
+        HttpEntity httpEntity = httpResponse.getEntity();
+        return EntityUtils.toString(httpEntity, "UTF-8");
+    }
+
+    public String refundRequest(String transactionId, Long taksId, String amount) throws Exception {
+        //检验参数必填
+        checkWXPayConfig();
+
+        Map<String,String> reqdata = new HashMap<>();
+        reqdata.put("appid",config.getAppId());
+        reqdata.put("mch_id",config.getMchId());
+        reqdata.put("nonce_str",WXPayUtil.generateNonceStr());
+        reqdata.put("out_refund_no", "RF"+OrderNoUtil.generateOrderNo(taksId));
+        reqdata.put("transaction_id",transactionId);
+        reqdata.put("total_fee",amount);//NO_CHECK：不校验真实姓名,FORCE_CHECK：强校验真实姓名
+        reqdata.put("refund_fee",amount);
+        reqdata.put("refund_desc","退款");
+
+        String sign = WXPayUtil.generateSignature(reqdata, config.getKey());
+        reqdata.put("sign",sign);
+        String data = WXPayUtil.mapToXml(reqdata);
+
+        char[] password = config.getMchId().toCharArray();
+        InputStream certStream = config.getCertStream();
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        ks.load(certStream, password);
+
+        // 实例化密钥库 & 初始化密钥工厂
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, password);
+
+        // 创建 SSLContext
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
+
+        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(
+                sslContext,
+                new String[]{"TLSv1"},
+                null,
+                new DefaultHostnameVerifier());
+
+        BasicHttpClientConnectionManager connManager = new BasicHttpClientConnectionManager(
+                RegistryBuilder.<ConnectionSocketFactory>create()
+                        .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                        .register("https", sslConnectionSocketFactory)
+                        .build(),
+                null,
+                null,
+                null
+        );
+
+        HttpClient httpClient = HttpClientBuilder.create()
+                .setConnectionManager(connManager)
+                .build();
+
+        HttpPost httpPost = new HttpPost(this.config.getRefund());
 
         RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(8*1000).setConnectTimeout(6*1000).build();
         httpPost.setConfig(requestConfig);

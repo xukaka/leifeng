@@ -103,6 +103,9 @@ wx:
   WXPayDomain: https://api.mch.weixin.qq.com/pay/unifiedorder
   notifyUrl: https://pet.fangzheng.fun/leifeng/app/wx/pay/notify
   orderQuery: https://api.mch.weixin.qq.com/pay/orderquery
+  transferUrl: https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers
+  refund: https://api.mch.weixin.qq.com/secapi/pay/refund
+  cert: classpath:wx_apiclient_cert.p12
 
 sms:
   appid: 1400198286

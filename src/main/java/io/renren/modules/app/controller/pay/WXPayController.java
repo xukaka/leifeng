@@ -103,18 +103,20 @@ public class WXPayController {
                 Integer totalFee = Integer.valueOf(map.get("total_fee"));
                 TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("out_trade_no", outTradeNo));
                 Long orderTotalFee = torder.getTotalFee();
+                logger.info("根据单号获取到系统订单为：{}",JsonUtil.Java2Json(torder));
                 if(orderTotalFee!=null && orderTotalFee.intValue() == totalFee.intValue()){
                     torder.setTransactionId(map.get("transaction_id"));
                     torder.setTimeEnd(map.get("time_end"));
                     torder.setTradeState(WXPayConstants.SUCCESS);
                     taskOrderService.updateById(torder);
-                    //返回微信接收到结果
+                    //返回微信，已接收到结果
                     BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
                     Map returnCode = new HashMap();
                     returnCode.put("return_code",WXPayConstants.SUCCESS);
                     out.write(WXPayUtil.mapToXml(returnCode).getBytes());
                     out.flush();
                     out.close();
+                    logger.info("成功返回结果给微信");
                 }
             }
         }
@@ -125,7 +127,9 @@ public class WXPayController {
     @PostMapping("/orderQuery")
     @ApiOperation("程序调用接口回查任务订单支付结果")
     public R orderQuery(Long taskId) throws Exception {
+        logger.info("[WXPayController.orderQuery] 进入");
         TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
+        logger.info("根据taskid查询到订单：{}",JsonUtil.Java2Json(torder));
         if(WXPayConstants.SUCCESS.equals(torder.getTradeState())){
             return R.ok("支付成功");
         }else{
@@ -145,5 +149,61 @@ public class WXPayController {
         }
     }
 
+    //企业转账提现功能接口
+    @PostMapping("/transfer")
+    @ApiOperation("企业转账提现功能接口")
+    public R transferMoney(String openId,String realName, Integer amount, Long memberId) throws Exception{
+        logger.info("[WXPayController.transferMoney] 进入");
+        String transdata = wxPayService.transferMoneyRequest(openId, realName, String.valueOf(amount));
+        logger.info("转账提现接口微信返回结果：{}",transdata);
 
+        Map<String, String> map = WXPayUtil.xmlToMap(transdata);
+        String returnCode = map.get("return_code");
+        if(!StringUtils.isEmpty(returnCode) && "SUCCESS".equals(returnCode)){
+            String resultCode = map.get("result_code");
+            if(!StringUtils.isEmpty(resultCode) && "SUCCESS".equals(resultCode)){
+
+                return R.ok().put("tradeNo",map.get("partner_trade_no"))
+                        .put("paymentNo",map.get("payment_no"))
+                        .put("paymentTime",map.get("payment_time"));
+            } else {
+                logger.info(map.get("err_code")+":"+map.get("err_code_des"));
+                return R.error(map.get("err_code")+":"+map.get("err_code_des"));
+            }
+        } else {
+            logger.info(map.get("return_msg"));
+            return R.error(map.get("return_msg"));
+        }
+    }
+
+    //申请退款接口
+    @PostMapping("/refund")
+    @ApiOperation("申请退款接口")
+    public R refund(Long taskId) throws Exception{
+        logger.info("[WXPayController.refund] 进入");
+        TaskOrderEntity torder= taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
+        if(torder != null && torder.getTotalFee().intValue()>0){
+            String refunddata = wxPayService.refundRequest(torder.getTransactionId(), taskId, String.valueOf(torder.getTotalFee()));
+            logger.info("退款接口微信返回结果：{}",refunddata);
+
+            Map<String, String> map = WXPayUtil.xmlToMap(refunddata);
+            String returnCode = map.get("return_code");
+            if(!StringUtils.isEmpty(returnCode) && "SUCCESS".equals(returnCode)){
+                String resultCode = map.get("result_code");
+                if(!StringUtils.isEmpty(resultCode) && "SUCCESS".equals(resultCode)){
+                    return R.ok().put("refundId",map.get("refund_id"))
+                            .put("refundFee",map.get("refund_fee"));
+                } else {
+                    logger.info(map.get("err_code")+":"+map.get("err_code_des"));
+                    return R.error(map.get("err_code")+":"+map.get("err_code_des"));
+                }
+            } else {
+                logger.info(map.get("return_msg"));
+                return R.error(map.get("return_msg"));
+            }
+        }else{
+            return R.error("任务不存在或金额为0");
+        }
+
+    }
 }

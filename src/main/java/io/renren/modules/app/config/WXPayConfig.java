@@ -2,6 +2,10 @@ package io.renren.modules.app.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 @Component
@@ -24,6 +28,13 @@ public class WXPayConfig {
     private String notifyUrl;
 
     private String orderQuery;
+
+    private String transferUrl;
+
+    private String cert;
+
+    private String refund;
+
     /**
      * 获取商户证书内容
      *
@@ -148,5 +159,39 @@ public class WXPayConfig {
 
     public void setOrderQuery(String orderQuery) {
         this.orderQuery = orderQuery;
+    }
+
+    public String getTransferUrl() {
+        return transferUrl;
+    }
+
+    public void setTransferUrl(String transferUrl) {
+        this.transferUrl = transferUrl;
+    }
+
+    public String getCert() {
+        return cert;
+    }
+
+    public void setCert(String cert) {
+        this.cert = cert;
+    }
+
+    public String getRefund() {
+        return refund;
+    }
+
+    public void setRefund(String refund) {
+        this.refund = refund;
+    }
+
+    public InputStream getCertStream(){
+        try {
+            FileInputStream certInputStream = new FileInputStream(new File(getCert()));
+            return certInputStream;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
