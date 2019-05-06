@@ -164,7 +164,7 @@ public class RedisUtils {
             Double score = typedTuple.getScore();
 
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("value", Long.parseLong(value.toString()));
+            map.put("value", value);
             map.put("score", score);
             list.add(map);
         }
