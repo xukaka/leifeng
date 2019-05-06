@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.TaskCircleDto;
 import io.renren.modules.app.dto.TaskDto;
+import io.renren.modules.app.entity.CircleAuditStatusEnum;
 import io.renren.modules.app.entity.task.TaskCircleEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
@@ -51,12 +52,20 @@ public interface TaskCircleService extends IService<TaskCircleEntity> {
     /**
      * 加入任务圈
      */
-    void joinCircle(Long currentUserId, Long circleId);
+    Map<String,Object> joinCircle(Long currentUserId, Long circleId);
 
     /**
      * 退出任务圈
      */
     void exitCircle(Long currentUserId, Long circleId);
+
+
+    /**
+     * 审核
+     * @param auditId
+     * @param status
+     */
+    void audit(Long auditId, CircleAuditStatusEnum status);
 
 
 }

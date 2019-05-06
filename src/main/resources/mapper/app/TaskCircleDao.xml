@@ -80,4 +80,9 @@
         JOIN t_task_circle_member m ON tc.id = m.circle_id
         WHERE m.member_id = #{memberId} AND tc.deleted = 0
     </select>
+
+
+    <update id="incCircleMemberCount">
+        UPDATE t_task_circle c SET c.member_count = c.member_count + #{inc} where c.id = #{circleId}
+    </update>
 </mapper>

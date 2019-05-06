@@ -47,5 +47,10 @@ public interface TaskCircleDao extends BaseMapper<TaskCircleEntity> {
     int myJoinedCount(@Param("memberId") Long memberId, @Param("page") PageWrapper page);
 
 
+    //圈成员+inc
+    void incCircleMemberCount(@Param("circleId")Long circleId,@Param("inc")Integer inc);
+
+
+
 
 }

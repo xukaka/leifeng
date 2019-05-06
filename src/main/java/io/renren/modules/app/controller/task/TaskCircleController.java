@@ -4,6 +4,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskCircleDto;
+import io.renren.modules.app.entity.CircleAuditStatusEnum;
 import io.renren.modules.app.entity.task.TaskCircleEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskCircleForm;
@@ -95,6 +96,14 @@ public class TaskCircleController {
     @ApiOperation("退出任务圈")
     public R exitCircle(@RequestParam("circleId") Long circleId) {
         taskCircleService.exitCircle(ReqUtils.currentUserId(), circleId);
+        return R.ok();
+    }
+
+    @Login
+    @GetMapping("/audit")
+    @ApiOperation("入圈审核")
+    public R audit(@RequestParam("auditId") Long auditId,@RequestParam("status")CircleAuditStatusEnum status) {
+        taskCircleService.audit(auditId, status);
         return R.ok();
     }
 }
