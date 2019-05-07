@@ -55,7 +55,7 @@ public class ImController {
                 ImHistoryMember imHistoryMember = new ImHistoryMember();
                 Double score = (Double) map.get("score");
                 imHistoryMember.setStatus(score.intValue());
-                imHistoryMember.setMember(memberService.getMember((Long) map.get("value")));
+                imHistoryMember.setMember(memberService.getMember(Long.parseLong(map.get("value").toString())));
                 members.add(imHistoryMember);
             }
             return R.ok().put("result", members);
@@ -85,7 +85,7 @@ public class ImController {
         }
     }
 
-    @PostMapping(value = "/setMessageType", consumes = "application/json")
+    @PostMapping(value = "/setMessageType")
     @ApiOperation("设置未读消息状态")
     /**
      * memberId:代表发送人，当前用户ID即可
