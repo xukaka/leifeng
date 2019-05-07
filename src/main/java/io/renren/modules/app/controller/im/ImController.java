@@ -51,17 +51,27 @@ public class ImController {
         if (type == 0) {
             List<ImHistoryMember> members = new ArrayList<>();
             List<Map<String,Object>> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
+            System.out.println(list.isEmpty());
+            if(!list.isEmpty()){
             for (Map<String,Object> map : list) {
                 ImHistoryMember imHistoryMember = new ImHistoryMember();
                 Double score = (Double) map.get("score");
                 imHistoryMember.setStatus(score.intValue());
-                imHistoryMember.setMember(memberService.getMember(Long.parseLong(map.get("value").toString())));
+                if(map.get("value")!=null){
+                    imHistoryMember.setMember(memberService.getMember(Long.parseLong(map.get("value").toString())));
+                }
                 members.add(imHistoryMember);
             }
             return R.ok().put("result", members);
+            }else{
+                return R.ok().put("result", "没有未读联系人");
+
+            }
         } else if (type == 1) {
             List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
             List<Map<String,Object>> list = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
+
+
             for (Map<String,Object> map : list) {
                 ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
                 Double score = (Double) map.get("score");
@@ -72,6 +82,7 @@ public class ImController {
         } else if (type == 2) {
             List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
             List<Map<String,Object>> list = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
+
             for (Map<String,Object> map : list) {
                 ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
                 Double score = (Double) map.get("score");
