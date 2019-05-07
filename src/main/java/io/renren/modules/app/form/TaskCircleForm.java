@@ -40,6 +40,10 @@ public class TaskCircleForm {
     @NotBlank
     private String description;
 
+    @ApiModelProperty(value = "圈标签ID列表", example = "")
+    @NotNull
+    private List<Long> tagIds;
+
     @ApiModelProperty(value = "是否需要审核", example = "true")
     @NotNull
     private Boolean needReview;
@@ -82,5 +86,14 @@ public class TaskCircleForm {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+
+    public List<Long> getTagIds() {
+        return tagIds;
+    }
+
+    public void setTagIds(List<Long> tagIds) {
+        this.tagIds = tagIds;
     }
 }

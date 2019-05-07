@@ -21,6 +21,12 @@
             <result property="avatar" column="member_avatar"/>
             <result property="sex" column="member_sex"/>
         </association>
+        <!--标签名称列表-->
+        <collection property="tagNames" ofType="string">
+            <constructor>
+                <arg column="tag_name"/>
+            </constructor>
+        </collection>
     </resultMap>
 
 
@@ -28,6 +34,7 @@
     <select id="getCircle" resultMap="taskCircleMap">
         SELECT
         tc.*,
+        tg.name AS tag_name
         m.id AS member_id,
         m.nick_name,
         m.real_name,
@@ -35,6 +42,8 @@
         m.sex AS member_sex
         FROM t_task_circle tc
         JOIN member m ON tc.creator_id = m.id
+        JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id
         WHERE tc.id = #{circleId}
     </select>
 
@@ -42,6 +51,7 @@
     <select id="getCircles" resultMap="taskCircleMap">
         SELECT
         tc.*,
+        tg.name AS tag_name
         m.id AS member_id,
         m.nick_name,
         m.real_name,
@@ -49,17 +59,22 @@
         m.sex AS member_sex
         FROM t_task_circle tc
         JOIN member m ON tc.creator_id = m.id
+        JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id
         WHERE tc.id = #{circleId} AND tc.deleted = 0 AND tc.name LIKE concat('%', #{circleName} ,'%')
         ORDER BY tc.create_time DESC
         LIMIT #{page.offset},#{page.limit}
     </select>
 
     <!--分页查询我加入的任务圈列表-->
-    <select id="getMyJoinedCircles" resultType="io.renren.modules.app.dto.TaskCircleDto">
+    <select id="getMyJoinedCircles" resultMap="taskCircleMap">
         SELECT
-        tc.*
+        tc.*,
+        tg.name AS tag_name
         FROM t_task_circle tc
         JOIN t_task_circle_member m ON tc.id = m.circle_id
+        JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id
         WHERE m.member_id = #{memberId} AND tc.deleted = 0
         ORDER BY m.create_time DESC
         LIMIT #{page.offset},#{page.limit}
@@ -85,4 +100,12 @@
     <update id="incCircleMemberCount">
         UPDATE t_task_circle c SET c.member_count = c.member_count + #{inc} where c.id = #{circleId}
     </update>
+
+
+    <insert id="insertCircleTagRelation">
+        INSERT INTO r_task_circle_tag(circle_id,tag_id) VALUES
+        <foreach collection="tagIds" item="item" index="index" separator=",">
+            (#{circleId}, #{item})
+        </foreach>
+    </insert>
 </mapper>

@@ -44,6 +44,7 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
     private TaskCircleAuditDao taskCircleAuditDao;
 
     @Override
+    @Transactional
     public void createCircle(Long creatorId, TaskCircleForm form) {
         ValidatorUtils.validateEntity(form);
         TaskCircleEntity circle = new TaskCircleEntity();
@@ -51,6 +52,15 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
         circle.setCreatorId(creatorId);
         circle.setCreateTime(DateUtils.now());
         this.insert(circle);
+        //插入圈标签
+        addCircleTagRelation(circle.getId(),form.getTagIds());
+    }
+
+    //圈-标签关系
+    private void addCircleTagRelation(Long circleId, List<Long> tagIds) {
+        if (!CollectionUtils.isEmpty(tagIds)) {
+            baseMapper.insertCircleTagRelation(circleId, tagIds);
+        }
     }
 
     @Override

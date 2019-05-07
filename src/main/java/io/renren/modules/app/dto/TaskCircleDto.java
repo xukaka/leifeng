@@ -3,6 +3,7 @@ package io.renren.modules.app.dto;
 import io.renren.modules.app.entity.setting.Member;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 任务圈返回信息
@@ -27,6 +28,11 @@ public class TaskCircleDto implements Serializable {
      * 圈描述
      */
     private String description;
+
+    /**
+     * 标签名称列表
+     */
+    private List<String> tagNames;
 
     /**
      * 是否需要审核
@@ -111,5 +117,13 @@ public class TaskCircleDto implements Serializable {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public List<String> getTagNames() {
+        return tagNames;
+    }
+
+    public void setTagNames(List<String> tagNames) {
+        this.tagNames = tagNames;
     }
 }

@@ -50,7 +50,6 @@ public interface TaskCircleDao extends BaseMapper<TaskCircleEntity> {
     //圈成员+inc
     void incCircleMemberCount(@Param("circleId")Long circleId,@Param("inc")Integer inc);
 
-
-
-
+    //插入圈-标签关系
+    void insertCircleTagRelation(@Param("circleId") Long circleId, @Param("tagIds") List<Long> tagIds);
 }
