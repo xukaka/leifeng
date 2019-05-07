@@ -17,6 +17,7 @@ import io.renren.modules.app.entity.task.TaskCircleEntity;
 import io.renren.modules.app.entity.task.TaskCircleMemberEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskCircleForm;
+import io.renren.modules.app.form.TaskCircleUpdateForm;
 import io.renren.modules.app.service.TaskCircleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,12 +57,14 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
         addCircleTagRelation(circle.getId(),form.getTagIds());
     }
 
-    //圈-标签关系
+    //添加圈-标签关系
     private void addCircleTagRelation(Long circleId, List<Long> tagIds) {
         if (!CollectionUtils.isEmpty(tagIds)) {
             baseMapper.insertCircleTagRelation(circleId, tagIds);
         }
     }
+
+
 
     @Override
     public TaskCircleDto getCircle(Long id) {
@@ -70,7 +73,8 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
     }
 
     @Override
-    public void updateCircle(TaskCircleForm form) {
+    @Transactional
+    public void updateCircle(TaskCircleUpdateForm form) {
         ValidatorUtils.validateEntity(form);
         TaskCircleEntity circle = this.selectById(form.getId());
         if (circle != null) {
@@ -79,25 +83,28 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
             circle.setName(form.getName());
             circle.setNeedReview(form.getNeedReview());
             this.updateById(circle);
+            //更新圈的标签
+            baseMapper.deleteCircleTagRelation(form.getId());
+            baseMapper.insertCircleTagRelation(form.getId(),form.getTagIds());
         }
     }
 
     @Override
-    public void dismissCircle(Long id) {
+    public void dismissCircle(Long memberId,Long id) {
         TaskCircleEntity circle = this.selectById(id);
-        if (circle != null) {
+        if (circle != null && circle.getCreatorId().equals(memberId)) {
             circle.setDeleted(true);
             this.updateById(circle);
         }
     }
 
     @Override
-    public PageUtils<TaskCircleDto> getCircles(String circleName, PageWrapper page) {
-        List<TaskCircleDto> circles = baseMapper.getCircles(circleName, page);
+    public PageUtils<TaskCircleDto> getCircles(String keyword, PageWrapper page) {
+        List<TaskCircleDto> circles = baseMapper.getCircles(keyword, page);
         if (CollectionUtils.isEmpty(circles)) {
             return new PageUtils<>();
         }
-        int total = baseMapper.count(circleName, page);
+        int total = baseMapper.count(keyword, page);
         return new PageUtils<>(circles, total, page.getPageSize(), page.getCurrPage());
     }
 
@@ -139,7 +146,7 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
         } else {
             addCircleMember(circleId,memberId);
             //圈人数+1
-            baseMapper.incCircleMemberCount(circleId,+1);
+            baseMapper.incCircleMemberCount(circleId,1);
             result.put("status", 0);
             result.put("msg", "加入圈成功");
             return result;

@@ -26,9 +26,6 @@ import java.util.List;
 @ApiModel(value = "任务圈表单")
 public class TaskCircleForm {
 
-    @ApiModelProperty(value = "圈id", example = "")
-    private Long id;
-
     @ApiModelProperty(value = "圈名称", example = "深圳大学跑腿队")
     @NotBlank
     private String name;
@@ -80,13 +77,6 @@ public class TaskCircleForm {
         this.needReview = needReview;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
 
     public List<Long> getTagIds() {

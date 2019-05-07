@@ -80,7 +80,7 @@ public class WXPayController {
         logger.info("[WXPayController.wxNotify] 进入");
         // 读取参数
         InputStream inputStream = request.getInputStream();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String s;
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
         while ((s = in.readLine()) != null) {
@@ -100,18 +100,18 @@ public class WXPayController {
 
             if("SUCCESS".equals(map.get("result_code")) && signFlag){
                 String outTradeNo = map.get("out_trade_no");
-                Integer totalFee = Integer.valueOf(map.get("total_fee"));
+                int totalFee = Integer.valueOf(map.get("total_fee"));
                 TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("out_trade_no", outTradeNo));
                 Long orderTotalFee = torder.getTotalFee();
                 logger.info("根据单号获取到系统订单为：{}",JsonUtil.Java2Json(torder));
-                if(orderTotalFee!=null && orderTotalFee.intValue() == totalFee.intValue()){
+                if(orderTotalFee!=null && orderTotalFee.intValue() == totalFee){
                     torder.setTransactionId(map.get("transaction_id"));
                     torder.setTimeEnd(map.get("time_end"));
                     torder.setTradeState(WXPayConstants.SUCCESS);
                     taskOrderService.updateById(torder);
                     //返回微信，已接收到结果
                     BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
-                    Map returnCode = new HashMap();
+                    Map<String,String> returnCode = new HashMap<>();
                     returnCode.put("return_code",WXPayConstants.SUCCESS);
                     out.write(WXPayUtil.mapToXml(returnCode).getBytes());
                     out.flush();

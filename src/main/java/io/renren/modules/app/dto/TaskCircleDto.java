@@ -9,6 +9,8 @@ import java.util.List;
  * 任务圈返回信息
  */
 public class TaskCircleDto implements Serializable {
+    //圈id
+    private Long id;
 
     /**
      * 创建人
@@ -125,5 +127,13 @@ public class TaskCircleDto implements Serializable {
 
     public void setTagNames(List<String> tagNames) {
         this.tagNames = tagNames;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
