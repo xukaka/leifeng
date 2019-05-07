@@ -14,9 +14,11 @@ import io.renren.modules.app.dao.setting.MemberDao;
 import io.renren.modules.app.dao.setting.MemberFollowDao;
 import io.renren.modules.app.dao.setting.MemberScoreDao;
 import io.renren.modules.app.dto.MemberDto;
+import io.renren.modules.app.entity.im.ImFollowNoticeStatus;
 import io.renren.modules.app.entity.im.ImGroupMemer;
 import io.renren.modules.app.entity.setting.*;
 import io.renren.modules.app.form.*;
+import io.renren.modules.app.service.ImService;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.utils.ReqUtils;
@@ -24,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +44,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     private static Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
     @Resource
     private MemberAuthsService memberAuthsService;
+    @Resource
+    private ImService imService;
     @Resource
     private MemberFollowDao memberFollowDao;
     @Resource
@@ -118,6 +123,22 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             //是否关注
             boolean isFollowed = this.isFollowed(curMemberId, memberId);
             dto.setFollowed(isFollowed);
+            List<Map<String,Object>> followNotice = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
+            if(!followNotice.isEmpty()){
+                MessageTypeForm messageTypeForm = new MessageTypeForm();
+                messageTypeForm.setStatus(0);
+                messageTypeForm.setType(1);
+                messageTypeForm.setToId(member.getId());
+                imService.setMessageType(messageTypeForm);
+            }
+            List<Map<String,Object>> taskNotice = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
+            if(!taskNotice.isEmpty()){
+                MessageTypeForm messageTypeForm = new MessageTypeForm();
+                messageTypeForm.setStatus(0);
+                messageTypeForm.setType(2);
+                messageTypeForm.setToId(member.getId());
+                imService.setMessageType(messageTypeForm);
+            }
             return dto;
         }
         return null;
