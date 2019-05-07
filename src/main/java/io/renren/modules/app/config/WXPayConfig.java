@@ -2,6 +2,7 @@ package io.renren.modules.app.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -187,7 +188,7 @@ public class WXPayConfig {
 
     public InputStream getCertStream(){
         try {
-            FileInputStream certInputStream = new FileInputStream(new File(getCert()));
+            FileInputStream certInputStream = new FileInputStream(ResourceUtils.getFile(getCert()));
             return certInputStream;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

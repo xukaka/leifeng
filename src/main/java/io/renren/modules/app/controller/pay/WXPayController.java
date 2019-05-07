@@ -131,7 +131,7 @@ public class WXPayController {
         TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
         logger.info("根据taskid查询到订单：{}",JsonUtil.Java2Json(torder));
         if(WXPayConstants.SUCCESS.equals(torder.getTradeState())){
-            return R.ok("支付成功");
+            return R.ok(WXPayConstants.SUCCESS);
         }else{
           //从微信平台查询订单支付状态
             String xresdata = wxPayService.orderQueryRequest(torder.getOutTradeNo());
@@ -180,7 +180,7 @@ public class WXPayController {
     @PostMapping("/refund")
     @ApiOperation("申请退款接口")
     public R refund(Long taskId) throws Exception{
-        logger.info("[WXPayController.refund] 进入");
+        logger.info("[WXPayController.refund] 进入 request param taskId="+taskId);
         TaskOrderEntity torder= taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
         if(torder != null && torder.getTotalFee().intValue()>0){
             String refunddata = wxPayService.refundRequest(torder.getTransactionId(), taskId, String.valueOf(torder.getTotalFee()));

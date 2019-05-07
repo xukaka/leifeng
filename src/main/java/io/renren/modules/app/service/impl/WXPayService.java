@@ -323,7 +323,7 @@ public class WXPayService {
         reqdata.put("nonce_str",WXPayUtil.generateNonceStr());
         reqdata.put("out_refund_no", "RF"+OrderNoUtil.generateOrderNo(taksId));
         reqdata.put("transaction_id",transactionId);
-        reqdata.put("total_fee",amount);//NO_CHECK：不校验真实姓名,FORCE_CHECK：强校验真实姓名
+        reqdata.put("total_fee",amount);
         reqdata.put("refund_fee",amount);
         reqdata.put("refund_desc","退款");
 
@@ -368,7 +368,7 @@ public class WXPayService {
 
         RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(8*1000).setConnectTimeout(6*1000).build();
         httpPost.setConfig(requestConfig);
-
+        logger.info("微信退款平台请求参数为："+data);
         StringEntity postEntity = new StringEntity(data, "UTF-8");
         httpPost.addHeader("Content-Type", "text/xml");
         httpPost.addHeader("User-Agent", WXPayConstants.USER_AGENT);
