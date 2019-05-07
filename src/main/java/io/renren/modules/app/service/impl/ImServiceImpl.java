@@ -58,10 +58,10 @@ public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements 
             redisUtils.zAdd("unread:" + messageTypeForm.getFromId(), messageTypeForm.getToId(), messageTypeForm.getStatus());
         }
         if (messageTypeForm.getType()==1) {
-            redisUtils.zAdd("followNotice:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
+            redisUtils.zAdd("followNotice:" + messageTypeForm.getToId(), "followNotice", messageTypeForm.getStatus());
         }
         if (messageTypeForm.getType()==2) {
-            redisUtils.zAdd("task:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
+            redisUtils.zAdd("task:" + messageTypeForm.getToId(), "SystemTaskStatus", messageTypeForm.getStatus());
         }
     }
 }
