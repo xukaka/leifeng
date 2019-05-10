@@ -253,7 +253,7 @@ public class WXPayService {
         reqdata.put("mch_appid",config.getAppId());
         reqdata.put("mchid",config.getMchId());
         reqdata.put("nonce_str",WXPayUtil.generateNonceStr());
-        reqdata.put("partner_trade_no", OrderNoUtil.generateOrderNo(new Random().nextLong()));
+        reqdata.put("partner_trade_no", OrderNoUtil.generateOrderNo(Long.valueOf(new Random().nextInt(100000))));
         reqdata.put("openid",openId);
         reqdata.put("check_name","FORCE_CHECK");//NO_CHECK：不校验真实姓名,FORCE_CHECK：强校验真实姓名
         reqdata.put("re_user_name",realName);
