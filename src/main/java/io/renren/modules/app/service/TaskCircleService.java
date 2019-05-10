@@ -9,6 +9,7 @@ import io.renren.modules.app.entity.task.TaskCircleEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskCircleForm;
+import io.renren.modules.app.form.TaskCircleUpdateForm;
 import io.renren.modules.app.form.TaskForm;
 
 import java.util.Map;
@@ -31,18 +32,18 @@ public interface TaskCircleService extends IService<TaskCircleEntity> {
     /**
      * 更新任务圈信息
      */
-    void updateCircle(TaskCircleForm form);
+    void updateCircle(TaskCircleUpdateForm form);
 
     /**
      * 解散任务圈
      */
-    void dismissCircle(Long circleId);
+    void dismissCircle(Long memberId,Long circleId);
 
 
     /**
      * 分页获取任务圈列表
      */
-    PageUtils<TaskCircleDto> getCircles(String circleName, PageWrapper page);
+    PageUtils<TaskCircleDto> getCircles(String keyword, PageWrapper page);
 
     /**
      * 分页获取我加入的任务圈列表
@@ -52,12 +53,12 @@ public interface TaskCircleService extends IService<TaskCircleEntity> {
     /**
      * 加入任务圈
      */
-    Map<String,Object> joinCircle(Long currentUserId, Long circleId);
+    Map<String,Object> joinCircle(Long memberId, Long circleId);
 
     /**
      * 退出任务圈
      */
-    void exitCircle(Long currentUserId, Long circleId);
+    void exitCircle(Long memberId, Long circleId);
 
 
     /**

@@ -16,11 +16,17 @@
         <!--关联创建人-->
         <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
             <id property="id" column="member_id"/>
-            <result property="nickName" column="nick_name"/>
-            <result property="realName" column="real_name"/>
+            <result property="nickName" column="member_nick_name"/>
+            <result property="realName" column="member_real_name"/>
             <result property="avatar" column="member_avatar"/>
             <result property="sex" column="member_sex"/>
         </association>
+        <!--标签名称列表-->
+        <collection property="tagNames" ofType="string">
+            <constructor>
+                <arg column="tag_name"/>
+            </constructor>
+        </collection>
     </resultMap>
 
 
@@ -28,13 +34,16 @@
     <select id="getCircle" resultMap="taskCircleMap">
         SELECT
         tc.*,
+        tg.name AS tag_name,
         m.id AS member_id,
-        m.nick_name,
-        m.real_name,
+        m.nick_name AS member_nick_name,
+        m.real_name AS member_real_name,
         m.avatar AS member_avatar,
         m.sex AS member_sex
         FROM t_task_circle tc
         JOIN member m ON tc.creator_id = m.id
+        JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id
         WHERE tc.id = #{circleId}
     </select>
 
@@ -42,47 +51,76 @@
     <select id="getCircles" resultMap="taskCircleMap">
         SELECT
         tc.*,
+        tg.name AS tag_name,
         m.id AS member_id,
-        m.nick_name,
-        m.real_name,
+        m.nick_name AS member_nick_name,
+        m.real_name AS member_real_name,
         m.avatar AS member_avatar,
         m.sex AS member_sex
         FROM t_task_circle tc
         JOIN member m ON tc.creator_id = m.id
-        WHERE tc.id = #{circleId} AND tc.deleted = 0 AND tc.name LIKE concat('%', #{circleName} ,'%')
+        JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id
+        WHERE tc.deleted = 0
+        <if test="keyword!=null and keyword !=''">
+            AND (tc.id=#{keyword} OR tc.name LIKE concat('%', #{keyword} ,'%'))
+        </if>
         ORDER BY tc.create_time DESC
         LIMIT #{page.offset},#{page.limit}
     </select>
 
     <!--分页查询我加入的任务圈列表-->
-    <select id="getMyJoinedCircles" resultType="io.renren.modules.app.dto.TaskCircleDto">
+    <select id="getMyJoinedCircles" resultMap="taskCircleMap">
         SELECT
-        tc.*
+        tc.*,
+        tg.name AS tag_name
         FROM t_task_circle tc
         JOIN t_task_circle_member m ON tc.id = m.circle_id
+        JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
+        JOIN t_task_tag tg ON rg.tag_id=tg.id
         WHERE m.member_id = #{memberId} AND tc.deleted = 0
         ORDER BY m.create_time DESC
         LIMIT #{page.offset},#{page.limit}
     </select>
 
 
-
+    <!--圈总数-根据关键字查询-->
     <select id="count" resultType="int">
         select count(1)
         FROM t_task_circle tc
-        WHERE tc.id = #{circleId} AND tc.deleted = 0 AND tc.name LIKE concat('%', #{circleName} ,'%')
+        WHERE tc.deleted = 0
+        <if test="keyword!=null and keyword !=''">
+            AND (tc.id=#{keyword} OR tc.name LIKE concat('%', #{keyword} ,'%'))
+        </if>
     </select>
 
+    <!--获取我加入的圈总数-->
     <select id="myJoinedCount" resultType="int">
         SELECT
-         count(1)
+        count(1)
         FROM t_task_circle tc
         JOIN t_task_circle_member m ON tc.id = m.circle_id
         WHERE m.member_id = #{memberId} AND tc.deleted = 0
     </select>
 
-
+    <!--圈成员数+inc-->
     <update id="incCircleMemberCount">
         UPDATE t_task_circle c SET c.member_count = c.member_count + #{inc} where c.id = #{circleId}
     </update>
+
+
+    <!--插入圈标签关系-->
+    <insert id="insertCircleTagRelation">
+        INSERT INTO r_task_circle_tag(circle_id,tag_id) VALUES
+        <foreach collection="tagIds" item="item" index="index" separator=",">
+            (#{circleId}, #{item})
+        </foreach>
+    </insert>
+
+    <!--删除圈标签-->
+    <delete id="deleteCircleTagRelation">
+        delete from r_task_circle_tag where circle_id=#{circleId}
+    </delete>
+
+
 </mapper>

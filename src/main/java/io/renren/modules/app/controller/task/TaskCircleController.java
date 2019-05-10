@@ -8,6 +8,7 @@ import io.renren.modules.app.entity.CircleAuditStatusEnum;
 import io.renren.modules.app.entity.task.TaskCircleEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskCircleForm;
+import io.renren.modules.app.form.TaskCircleUpdateForm;
 import io.renren.modules.app.service.TaskCircleService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
@@ -37,12 +38,12 @@ public class TaskCircleController {
 
     @GetMapping("/list")
     @ApiOperation("分页获取任务圈列表")
-    public R getCircles(@RequestParam String cricleName, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getCircles(@RequestParam String keyword, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(cricleName,page);
+        PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(keyword,page);
         return R.ok().put("result", circles);
     }
 
@@ -69,7 +70,7 @@ public class TaskCircleController {
     @Login
     @PutMapping("/update")
     @ApiOperation("更新任务圈信息")
-    public R updateCircle(@RequestBody TaskCircleForm form) {
+    public R updateCircle(@RequestBody TaskCircleUpdateForm form) {
         taskCircleService.updateCircle(form);
         return R.ok();
     }
@@ -78,7 +79,7 @@ public class TaskCircleController {
     @DeleteMapping("/dismiss/{id}")
     @ApiOperation("解散任务圈")
     public R dismissCircle(@PathVariable("id") Long id) {
-        taskCircleService.dismissCircle(id);
+        taskCircleService.dismissCircle(ReqUtils.currentUserId(),id);
         return R.ok();
     }
 

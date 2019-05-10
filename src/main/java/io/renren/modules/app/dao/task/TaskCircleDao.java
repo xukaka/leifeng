@@ -29,7 +29,7 @@ public interface TaskCircleDao extends BaseMapper<TaskCircleEntity> {
      * @param page
      * @return
      */
-    List<TaskCircleDto> getCircles(@Param("circleName") String circleName, @Param("page") PageWrapper page);
+    List<TaskCircleDto> getCircles(@Param("keyword") String circleName, @Param("page") PageWrapper page);
 
 
     /**
@@ -41,7 +41,7 @@ public interface TaskCircleDao extends BaseMapper<TaskCircleEntity> {
     List<TaskCircleDto> getMyJoinedCircles(Long memberId, PageWrapper page);
 
     //任务圈总数
-    int count(@Param("circleName") String circleName, @Param("page") PageWrapper page);
+    int count(@Param("keyword") String circleName, @Param("page") PageWrapper page);
 
     //任务圈总数-我加入的
     int myJoinedCount(@Param("memberId") Long memberId, @Param("page") PageWrapper page);
@@ -50,7 +50,8 @@ public interface TaskCircleDao extends BaseMapper<TaskCircleEntity> {
     //圈成员+inc
     void incCircleMemberCount(@Param("circleId")Long circleId,@Param("inc")Integer inc);
 
-
-
-
+    //插入圈-标签关系
+    void insertCircleTagRelation(@Param("circleId") Long circleId, @Param("tagIds") List<Long> tagIds);
+      //删除圈-标签关系
+    void deleteCircleTagRelation(@Param("circleId") Long circleId);
 }
