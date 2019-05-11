@@ -49,24 +49,31 @@
 
     <!--分页查询任务圈列表-->
     <select id="getCircles" resultMap="taskCircleMap">
-        SELECT
-        tc.*,
-        tg.name AS tag_name,
-        m.id AS member_id,
-        m.nick_name AS member_nick_name,
-        m.real_name AS member_real_name,
-        m.avatar AS member_avatar,
-        m.sex AS member_sex
-        FROM t_task_circle tc
-        JOIN member m ON tc.creator_id = m.id
-        JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
+
+        select
+            circle.* ,
+            tg.name AS tag_name
+        from
+        (
+            SELECT
+            tc.*,
+            m.id AS member_id,
+            m.nick_name AS member_nick_name,
+            m.real_name AS member_real_name,
+            m.avatar AS member_avatar,
+            m.sex AS member_sex
+            FROM t_task_circle tc
+            JOIN member m ON tc.creator_id = m.id
+            WHERE tc.deleted = 0
+            <if test="keyword!=null and keyword !=''">
+                AND (tc.id=#{keyword} OR tc.name LIKE concat('%', #{keyword} ,'%'))
+            </if>
+            ORDER BY tc.create_time DESC
+            LIMIT #{page.offset},#{page.limit}
+        ) AS circle
+        JOIN r_task_circle_tag rg ON circle.id = rg.circle_id
         JOIN t_task_tag tg ON rg.tag_id=tg.id
-        WHERE tc.deleted = 0
-        <if test="keyword!=null and keyword !=''">
-            AND (tc.id=#{keyword} OR tc.name LIKE concat('%', #{keyword} ,'%'))
-        </if>
-        ORDER BY tc.create_time DESC
-        LIMIT #{page.offset},#{page.limit}
+        ORDER BY circle.create_time DESC
     </select>
 
     <!--分页查询我加入的任务圈列表-->

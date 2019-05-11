@@ -337,6 +337,7 @@
         LEFT JOIN r_task_image ri ON task.id = ri.task_id
         LEFT JOIN r_task_tag rg ON task.id = rg.task_id
         JOIN t_task_tag tg ON rg.tag_id=tg.id
+       ORDER BY task.create_time desc
 
     </select>
 
