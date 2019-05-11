@@ -123,4 +123,13 @@
     </delete>
 
 
+    <!--获取圈成员列表-->
+    <select id="getCircleMembers" resultType="io.renren.modules.app.dto.MemberDto">
+        SELECT m.*
+        FROM t_task_circle_member cm
+        JOIN member m ON cm.member_id = m.id
+        WHERE cm.circle_id = #{circleId}
+        ORDER BY cm.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+    </select>
 </mapper>

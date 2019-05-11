@@ -113,19 +113,32 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
             return new PageUtils<>();
         }
         int total = baseMapper.count(keyword, page);
-//        setJoinStatus( memberId,circles);
+        setJoinStatus( memberId,circles);
 
         return new PageUtils<>(circles, total, page.getPageSize(), page.getCurrPage());
     }
 
     //设置加入状态
-/*    private void setJoinStatus(Long memberId,List<TaskCircleDto> circles) {
-        for (TaskCircleDto circle: circles){
-            if (existsCircleMember(memberId,circle.getId())){
-                circle.setStatus(CircleAuditStatusEnum.AGREED);
+    private void setJoinStatus(Long memberId,List<TaskCircleDto> circles) {
+        for (TaskCircleDto circle : circles) {
+
+            if (existsCircleMember(memberId, circle.getId())) {
+                circle.setJoinStatus(2);//已加入
+            }else{
+                Wrapper<TaskCircleAuditEntity> wrapper = new EntityWrapper<>();
+                wrapper.eq("applicant_id", memberId)
+                        .eq("circle_id", circle.getId())
+                        .eq("status",CircleAuditStatusEnum.UNAUDITED);
+                int count = taskCircleAuditDao.selectCount(wrapper);
+                if(count>0){
+                    circle.setJoinStatus(1);//待审核
+                }else {
+                    circle.setJoinStatus(0);//未加入
+                }
             }
         }
-    }*/
+    }
+
 
     @Override
     public PageUtils<TaskCircleDto> getMyJoinedCircles(Long memberId, PageWrapper page) {
@@ -202,6 +215,24 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
         TaskCircleDto circle = getCircle(audit.getCircleId());
 //        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_CIRCLE, ImMessageUtils.getCircleAuditMessage(audit.getId().toString(),"加入[" + circle.getName() + "]"+auditResult, "31",audit.getAuditorId().toString(), audit.getApplicantId().toString()));
 
+    }
+
+    @Override
+    public PageUtils<MemberDto> getCircleMembers(Long circleId, PageWrapper page) {
+        List<MemberDto> members = baseMapper.getCircleMembers(circleId, page);
+        if (CollectionUtils.isEmpty(members)) {
+            return new PageUtils<>();
+        }
+        int total = getCircleMemberCount(circleId);
+        return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
+
+    }
+
+    //获取圈成员数
+    private int getCircleMemberCount(Long circleId){
+        Wrapper<TaskCircleMemberEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("circle_id", circleId);
+        return taskCircleMemberDao.selectCount(wrapper);
     }
 
     //新增圈成员

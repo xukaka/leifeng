@@ -2,6 +2,7 @@ package io.renren.modules.app.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskCircleDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.CircleAuditStatusEnum;
@@ -68,6 +69,13 @@ public interface TaskCircleService extends IService<TaskCircleEntity> {
      */
     void audit(Long auditId, CircleAuditStatusEnum status);
 
+    /**
+     * 获取圈成员列表-分页
+     * @param circleId
+     * @param page
+     * @return
+     */
 
+    PageUtils<MemberDto> getCircleMembers(Long circleId, PageWrapper page);
 }
 

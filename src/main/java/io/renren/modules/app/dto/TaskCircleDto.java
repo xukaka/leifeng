@@ -57,9 +57,19 @@ public class TaskCircleDto implements Serializable {
      */
     private Long createTime;
 
+    /**
+     * 加入状态:0加入，1待审核，2已加入
+     */
+    private Integer joinStatus=0;
 
 
+    public Integer getJoinStatus() {
+        return joinStatus;
+    }
 
+    public void setJoinStatus(Integer joinStatus) {
+        this.joinStatus = joinStatus;
+    }
 
     public Member getCreator() {
         return creator;

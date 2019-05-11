@@ -3,6 +3,7 @@ package io.renren.modules.app.controller.task;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskCircleDto;
 import io.renren.modules.app.entity.CircleAuditStatusEnum;
 import io.renren.modules.app.entity.task.TaskCircleEntity;
@@ -106,5 +107,16 @@ public class TaskCircleController {
     public R audit(@RequestParam("auditId") Long auditId,@RequestParam("status")CircleAuditStatusEnum status) {
         taskCircleService.audit(auditId, status);
         return R.ok();
+    }
+
+    @GetMapping("/members")
+    @ApiOperation("分页获取圈成员列表")
+    public R getCircleMembers(@RequestParam Long circleId,@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<MemberDto> members=taskCircleService.getCircleMembers(circleId, page);
+            return R.ok().put("result", members);
     }
 }
