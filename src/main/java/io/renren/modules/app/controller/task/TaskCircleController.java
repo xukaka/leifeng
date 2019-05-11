@@ -37,6 +37,7 @@ public class TaskCircleController {
         return R.ok();
     }
 
+    @Login
     @GetMapping("/list")
     @ApiOperation("分页获取任务圈列表")
     public R getCircles(@RequestParam String keyword, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
