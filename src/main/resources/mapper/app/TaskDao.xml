@@ -22,6 +22,15 @@
     </sql>
 
     <sql id="searchTaskCondition">
+        <choose>
+            <when test="queryMap.circleId !=null and queryMap.circleId != ''">
+               AND t.circle_id =#{queryMap.circleId}
+            </when>
+            <otherwise>
+                AND t.circle_id IS NULL
+            </otherwise>
+        </choose>
+        <!--AND t.circle_id =#{queryMap.circleId}-->
         <if test="queryMap.keyword !=null and queryMap.keyword != ''">
             AND t.title like concat('%',#{queryMap.keyword},'%')
         </if>
@@ -300,7 +309,7 @@
     </select>
 
 
-    <select id="searchTasks" parameterType="map" resultMap="searchTaskMap">
+    <select id="searchTasks"  resultMap="searchTaskMap">
         select task.* ,
         ri.image_url,
         tg.name AS tag_name

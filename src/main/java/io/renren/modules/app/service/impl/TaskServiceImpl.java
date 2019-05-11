@@ -104,16 +104,17 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     private Map<String, Object> getTaskQueryMap(TaskQueryForm form) {
         Map<String, Object> queryMap = new HashMap<>();
-        if (!StringUtils.isEmpty(form.getKeyword())) {
-            queryMap.put("keyword", form.getKeyword());
-        }
         if (form.getCircleId() == null){//区分圈任务和普通任务
             if (form.getLatitude() != null && form.getLongitude() != null && form.getRaidus() != null) {
                 Map<String, Double> aroundMap = GeoUtils.getAround(form.getLatitude(), form.getLongitude(), form.getRaidus());
                 queryMap.putAll(aroundMap);
             }
+        }else{
+            queryMap.put("circleId", form.getCircleId());
         }
-
+        if (!StringUtils.isEmpty(form.getKeyword())) {
+            queryMap.put("keyword", form.getKeyword());
+        }
         if (!CollectionUtils.isEmpty(form.getTagIds())) {
             queryMap.put("tagIds", form.getTagIds());
         }
