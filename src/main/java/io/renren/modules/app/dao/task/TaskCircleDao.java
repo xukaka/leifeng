@@ -60,5 +60,7 @@ public interface TaskCircleDao extends BaseMapper<TaskCircleEntity> {
     void deleteCircleTagRelation(@Param("circleId") Long circleId);
 
     //分页获取圈成员列表
-    List<MemberDto> getCircleMembers(@Param("circleId") Long circleId, @Param("page") PageWrapper page);
+    List<MemberDto> getCircleMembers(@Param("circleId") Long circleId, @Param("keyword") String keyword,@Param("page") PageWrapper page);
+    //获取圈成员总数
+    int getCircleMemberCount(Long circleId, String keyword);
 }

@@ -111,12 +111,14 @@ public class TaskCircleController {
 
     @GetMapping("/members")
     @ApiOperation("分页获取圈成员列表")
-    public R getCircleMembers(@RequestParam Long circleId,@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R searchCircleMembers(@RequestParam Long circleId,@RequestParam String keyword,@RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<MemberDto> members=taskCircleService.getCircleMembers(circleId, page);
+        PageUtils<MemberDto> members=taskCircleService.getCircleMembers(circleId,keyword, page);
             return R.ok().put("result", members);
     }
+
+
 }

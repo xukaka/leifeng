@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import io.netty.util.internal.StringUtil;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
@@ -87,6 +88,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
+
     //计算距离
     private void setTaskDistance(TaskQueryForm form, List<TaskDto> tasks) {
         for (TaskDto task : tasks) {
@@ -105,10 +107,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (!StringUtils.isEmpty(form.getKeyword())) {
             queryMap.put("keyword", form.getKeyword());
         }
-        if (form.getLatitude() != null && form.getLongitude() != null && form.getRaidus() != null) {
-            Map<String, Double> aroundMap = GeoUtils.getAround(form.getLatitude(), form.getLongitude(), form.getRaidus());
-            queryMap.putAll(aroundMap);
+        if (form.getCircleId() == null){//区分圈任务和普通任务
+            if (form.getLatitude() != null && form.getLongitude() != null && form.getRaidus() != null) {
+                Map<String, Double> aroundMap = GeoUtils.getAround(form.getLatitude(), form.getLongitude(), form.getRaidus());
+                queryMap.putAll(aroundMap);
+            }
         }
+
         if (!CollectionUtils.isEmpty(form.getTagIds())) {
             queryMap.put("tagIds", form.getTagIds());
         }

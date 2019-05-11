@@ -76,6 +76,6 @@ public interface TaskCircleService extends IService<TaskCircleEntity> {
      * @return
      */
 
-    PageUtils<MemberDto> getCircleMembers(Long circleId, PageWrapper page);
+    PageUtils<MemberDto> getCircleMembers(Long circleId, String keyword,PageWrapper page);
 }
 

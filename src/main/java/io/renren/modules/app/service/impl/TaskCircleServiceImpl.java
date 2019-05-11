@@ -218,21 +218,14 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
     }
 
     @Override
-    public PageUtils<MemberDto> getCircleMembers(Long circleId, PageWrapper page) {
-        List<MemberDto> members = baseMapper.getCircleMembers(circleId, page);
+    public PageUtils<MemberDto> getCircleMembers(Long circleId,String keyword, PageWrapper page) {
+        List<MemberDto> members = baseMapper.getCircleMembers(circleId,keyword, page);
         if (CollectionUtils.isEmpty(members)) {
             return new PageUtils<>();
         }
-        int total = getCircleMemberCount(circleId);
+        int total = baseMapper.getCircleMemberCount(circleId,keyword);
         return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
 
-    }
-
-    //获取圈成员数
-    private int getCircleMemberCount(Long circleId){
-        Wrapper<TaskCircleMemberEntity> wrapper = new EntityWrapper<>();
-        wrapper.eq("circle_id", circleId);
-        return taskCircleMemberDao.selectCount(wrapper);
     }
 
     //新增圈成员
