@@ -43,7 +43,7 @@ public interface TaskCircleService extends IService<TaskCircleEntity> {
     /**
      * 分页获取任务圈列表
      */
-    PageUtils<TaskCircleDto> getCircles(String keyword, PageWrapper page);
+    PageUtils<TaskCircleDto> getCircles(Long memberId,String keyword, PageWrapper page);
 
     /**
      * 分页获取我加入的任务圈列表

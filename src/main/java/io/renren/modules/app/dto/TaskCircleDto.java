@@ -1,5 +1,6 @@
 package io.renren.modules.app.dto;
 
+import io.renren.modules.app.entity.CircleAuditStatusEnum;
 import io.renren.modules.app.entity.setting.Member;
 
 import java.io.Serializable;
@@ -55,6 +56,9 @@ public class TaskCircleDto implements Serializable {
      * 创建时间
      */
     private Long createTime;
+
+
+
 
 
     public Member getCreator() {
@@ -136,4 +140,7 @@ public class TaskCircleDto implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+
+
+
 }

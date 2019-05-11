@@ -3,13 +3,13 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.common.utils.DateUtils;
-import io.renren.common.utils.PageUtils;
-import io.renren.common.utils.ThreadPoolUtils;
+import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.dao.task.TaskCircleAuditDao;
 import io.renren.modules.app.dao.task.TaskCircleDao;
 import io.renren.modules.app.dao.task.TaskCircleMemberDao;
+import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskCircleDto;
 import io.renren.modules.app.entity.CircleAuditStatusEnum;
 import io.renren.modules.app.entity.task.TaskCircleAuditEntity;
@@ -18,6 +18,7 @@ import io.renren.modules.app.entity.task.TaskCircleMemberEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskCircleForm;
 import io.renren.modules.app.form.TaskCircleUpdateForm;
+import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.service.TaskCircleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,12 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
     @Resource
     private TaskCircleAuditDao taskCircleAuditDao;
 
+    @Resource
+    private RabbitMqHelper rabbitMqHelper;
+
+    @Resource
+    private MemberService memberService;
+
     @Override
     @Transactional
     public void createCircle(Long creatorId, TaskCircleForm form) {
@@ -55,6 +62,7 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
         this.insert(circle);
         //插入圈标签
         addCircleTagRelation(circle.getId(),form.getTagIds());
+        addCircleMember(circle.getId(),creatorId);
     }
 
     //添加圈-标签关系
@@ -99,14 +107,25 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
     }
 
     @Override
-    public PageUtils<TaskCircleDto> getCircles(String keyword, PageWrapper page) {
+    public PageUtils<TaskCircleDto> getCircles(Long memberId,String keyword, PageWrapper page) {
         List<TaskCircleDto> circles = baseMapper.getCircles(keyword, page);
         if (CollectionUtils.isEmpty(circles)) {
             return new PageUtils<>();
         }
         int total = baseMapper.count(keyword, page);
+//        setJoinStatus( memberId,circles);
+
         return new PageUtils<>(circles, total, page.getPageSize(), page.getCurrPage());
     }
+
+    //设置加入状态
+/*    private void setJoinStatus(Long memberId,List<TaskCircleDto> circles) {
+        for (TaskCircleDto circle: circles){
+            if (existsCircleMember(memberId,circle.getId())){
+                circle.setStatus(CircleAuditStatusEnum.AGREED);
+            }
+        }
+    }*/
 
     @Override
     public PageUtils<TaskCircleDto> getMyJoinedCircles(Long memberId, PageWrapper page) {
@@ -138,10 +157,12 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
             audit.setStatus(CircleAuditStatusEnum.UNAUDITED);
             audit.setCreateTime(DateUtils.now());
             taskCircleAuditDao.insert(audit);
-            //TODO 推消息给圈主审核
-
             result.put("status", 1);
             result.put("msg", "已申请加入圈，待圈主审核");
+            //TODO 推消息给圈主审核
+            MemberDto applicant = memberService.getMember(memberId);
+//            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_CIRCLE, ImMessageUtils.getCircleJoinMessage(circleId.toString(), audit.getId().toString(),applicant.getNickName()+" 申请加入[" + circle.getName() + "]", "30",circle.getCreatorId().toString(), applicant.toString()));
+
             return result;
         } else {
             addCircleMember(circleId,memberId);
@@ -170,12 +191,17 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
     public void audit(Long auditId, CircleAuditStatusEnum status) {
         TaskCircleAuditEntity audit = taskCircleAuditDao.selectById(auditId);
         updateAuditStatus(auditId,status);
+        String auditResult="拒绝入圈";
         if (status == CircleAuditStatusEnum.AGREED){
             addCircleMember(audit.getCircleId(),audit.getApplicantId());
             //圈人数+1
             baseMapper.incCircleMemberCount(audit.getCircleId(),1);
+            auditResult = "审核通过";
         }
         //TODO 推送消息给申请人 审核结果：同意/拒绝
+        TaskCircleDto circle = getCircle(audit.getCircleId());
+//        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_CIRCLE, ImMessageUtils.getCircleAuditMessage(audit.getId().toString(),"加入[" + circle.getName() + "]"+auditResult, "31",audit.getAuditorId().toString(), audit.getApplicantId().toString()));
+
     }
 
     //新增圈成员

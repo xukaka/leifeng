@@ -5,6 +5,7 @@ import com.mchange.lang.LongUtils;
 import io.renren.common.utils.JsonUtil;
 import io.renren.common.utils.OrderNoUtil;
 import io.renren.common.utils.R;
+import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.entity.task.TaskOrderEntity;
 import io.renren.modules.app.service.TaskOrderService;
 import io.renren.modules.app.service.impl.WXPayService;
@@ -150,6 +151,7 @@ public class WXPayController {
     }
 
     //企业转账提现功能接口
+    @Login
     @PostMapping("/transfer")
     @ApiOperation("企业转账提现功能接口")
     public R transferMoney(String openId,String realName, Integer amount, Long memberId) throws Exception{

@@ -43,7 +43,7 @@ public class TaskCircleController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(keyword,page);
+        PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(ReqUtils.currentUserId(),keyword,page);
         return R.ok().put("result", circles);
     }
 
