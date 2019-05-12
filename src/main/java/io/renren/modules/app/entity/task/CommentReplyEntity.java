@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import io.renren.modules.app.entity.BaseEntity;
 
 /**
- * 任务评论回复表
+ * 评论回复表
  */
-@TableName("t_task_comment_reply")
-public class TaskCommentReplyEntity extends BaseEntity {
+@TableName("t_comment_reply")
+public class CommentReplyEntity extends BaseEntity {
 
 
     /**

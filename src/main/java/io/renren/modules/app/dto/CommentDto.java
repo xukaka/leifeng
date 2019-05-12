@@ -1,161 +1,102 @@
 package io.renren.modules.app.dto;
 
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
+import io.renren.modules.app.entity.CommentTypeEnum;
+import io.renren.modules.app.entity.setting.Member;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * 评论返回实例
- * @author xukaijun
- * @email 383635738@qq.com
- * @date 2019-03-02 09:38:43
+ * 评论返回信息
  */
 public class CommentDto implements Serializable {
 
-	private Long id;
+    /**
+     * 评论id
+     */
+    private Long id;
 
-	private Long pmId;
-	/**
-	 * 关联member表
-	 */
-	private Long memberId;
+    /**
+     * 评论类型
+     */
+    private CommentTypeEnum type;
+    /**
+     * 业务id：任务id/日记id
+     */
+    private Long businessId;
+    /**
+     * 评论人
+     */
+    private Member commentator;
 
-	private String memberName;
 
-	private String memberAvatar;
-	/**
-	 * 内容实体 utf8mb4格式能存储emjoy表情
-	 */
-	private String content;
+    /**
+     * 内容
+     */
+    private String content;
+    /**
+     * 创建时间
+     */
+    private Long createTime;
 
-	private Long parentId;
-	/**
-	 * 
-	 */
-	private Long createTime;
-	/**
-	 * 点赞数
-	 */
-	private Integer likeCount;
-	/**
-	 * 阅读量
-	 */
-	private Integer readCount;
+    /**
+     * 评论回复列表
+     */
+    private List<CommentReplyDto> replies;
 
-	private List<CommentDto> subComment;
+    public Long getCreateTime() {
+        return createTime;
+    }
 
-	/**
-	 * 设置：
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-	/**
-	 * 获取：
-	 */
-	public Long getId() {
-		return id;
-	}
-	/**
-	 * 设置：
-	 */
-	public void setMemberId(Long memberId) {
-		this.memberId = memberId;
-	}
-	/**
-	 * 获取：
-	 */
-	public Long getMemberId() {
-		return memberId;
-	}
-	/**
-	 * 设置：
-	 */
-	public void setContent(String content) {
-		this.content = content;
-	}
-	/**
-	 * 获取：
-	 */
-	public String getContent() {
-		return content;
-	}
-	/**
-	 * 设置：
-	 */
-	public void setCreateTime(Long createTime) {
-		this.createTime = createTime;
-	}
-	/**
-	 * 获取：
-	 */
-	public Long getCreateTime() {
-		return createTime;
-	}
-	/**
-	 * 设置：点赞数
-	 */
-	public void setLikeCount(Integer likeCount) {
-		this.likeCount = likeCount;
-	}
-	/**
-	 * 获取：点赞数
-	 */
-	public Integer getLikeCount() {
-		return likeCount;
-	}
-	/**
-	 * 设置：阅读量
-	 */
-	public void setReadCount(Integer readCount) {
-		this.readCount = readCount;
-	}
-	/**
-	 * 获取：阅读量
-	 */
-	public Integer getReadCount() {
-		return readCount;
-	}
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
 
-	public String getMemberName() {
-		return memberName;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setMemberName(String memberName) {
-		this.memberName = memberName;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getMemberAvatar() {
-		return memberAvatar;
-	}
+    public Long getBusinessId() {
+        return businessId;
+    }
 
-	public void setMemberAvatar(String memberAvatar) {
-		this.memberAvatar = memberAvatar;
-	}
+    public void setBusinessId(Long businessId) {
+        this.businessId = businessId;
+    }
 
-	public List<CommentDto> getSubComment() {
-		return subComment;
-	}
+    public CommentTypeEnum getType() {
+        return type;
+    }
 
-	public void setSubComment(List<CommentDto> subComment) {
-		this.subComment = subComment;
-	}
+    public void setType(CommentTypeEnum type) {
+        this.type = type;
+    }
 
-	public Long getPmId() {
-		return pmId;
-	}
+    public Member getCommentator() {
+        return commentator;
+    }
 
-	public void setPmId(Long pmId) {
-		this.pmId = pmId;
-	}
+    public void setCommentator(Member commentator) {
+        this.commentator = commentator;
+    }
 
-	public Long getParentId() {
-		return parentId;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public void setParentId(Long parentId) {
-		this.parentId = parentId;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public List<CommentReplyDto> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<CommentReplyDto> replies) {
+        this.replies = replies;
+    }
 }

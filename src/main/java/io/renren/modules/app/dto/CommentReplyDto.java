@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * 任务评论回复返回信息
  */
-public class TaskCommentReplyDto implements Serializable {
+public class CommentReplyDto implements Serializable {
     /**
      * 回复id
      */

@@ -10,11 +10,9 @@ import io.renren.common.utils.RedisUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.MemberDto;
-import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberFeedback;
 import io.renren.modules.app.entity.setting.MemberFriend;
-import io.renren.modules.app.entity.story.PublishMessageEntity;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.MemberFeedbackService;
 import io.renren.modules.app.service.MemberFriendService;
@@ -22,18 +20,15 @@ import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.http.ContentTooLongException;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -227,7 +222,7 @@ public class MemberController {
     @ApiOperation("用户反馈列表")
     public R feedbackList(@RequestParam Map<String, Object> params){
         PageWrapper page = new PageWrapper(params);
-        List<PublishMessageEntity> list = memberFeedbackService.getPage(page);
+        List<MemberFeedback> list = memberFeedbackService.getPage(page);
         return R.ok().put("result", list)
                 .put("page",page.getCurrPage())
                 .put("size",page.getPageSize());
