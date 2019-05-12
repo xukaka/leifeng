@@ -30,4 +30,17 @@ public interface DiaryDao extends BaseMapper<DiaryEntity> {
 
     //获取日记总数
     int myDiaryCount(@Param("creatorId")Long creatorId);
+
+    //日记点赞数+inc
+    void incLikeCount(@Param("diaryId")Long diaryId,@Param("inc") Integer inc);
+
+    /**
+     * 日记评论数 +inc
+     */
+    void incCommentCount(@Param("diaryId")Long diaryId,@Param("inc")Integer inc);
+
+    /**
+     * 日记浏览数 +inc
+     */
+    void incViewCount(@Param("diaryId")Long diaryId,@Param("inc")Integer inc);
 }

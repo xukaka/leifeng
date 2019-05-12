@@ -36,6 +36,10 @@ public class DiaryDto implements Serializable {
     private Integer commentCount;
     //点赞数
     private Integer likeCount;
+    /**
+     * 是否点赞
+     */
+    private Boolean isLiked= false;
     //创建时间
     private Long createTime;
 
@@ -47,6 +51,14 @@ public class DiaryDto implements Serializable {
         this.id = id;
     }
 
+
+    public Boolean getLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(Boolean liked) {
+        isLiked = liked;
+    }
 
     public String getAvatar() {
 

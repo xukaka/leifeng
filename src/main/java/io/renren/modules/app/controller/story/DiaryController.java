@@ -6,9 +6,11 @@ import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.DiaryDto;
 import io.renren.modules.app.dto.MemberDto;
+import io.renren.modules.app.entity.LikeTypeEnum;
 import io.renren.modules.app.form.DiaryForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.DiaryService;
+import io.renren.modules.app.service.LikeService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +36,8 @@ public class DiaryController {
 
     @Autowired
     private DiaryService diaryService;
+    @Autowired
+    private LikeService likeService;
 
     @Login
     @PostMapping("/create")
@@ -44,11 +48,11 @@ public class DiaryController {
         return R.ok();
     }
 
-    //    @Login
+        @Login
     @GetMapping("/detail/{id}")
     @ApiOperation("获取日记详情")
     public R getDiary(@PathVariable("id") Long id) {
-        DiaryDto diary = diaryService.getDiary(id);
+        DiaryDto diary = diaryService.getDiary(ReqUtils.currentUserId(),id);
         return R.ok().put("result", diary);
     }
 
@@ -75,6 +79,23 @@ public class DiaryController {
         PageUtils<DiaryDto> diarys = diaryService.getMyDiarys(ReqUtils.currentUserId(), page);
         return R.ok().put("result", diarys);
 
+    }
+
+
+    @Login
+    @GetMapping("/like")
+    @ApiOperation("日记点赞")
+    public R like(@RequestParam Long diaryId) {
+        likeService.like(ReqUtils.currentUserId(),diaryId, LikeTypeEnum.diary);
+        return R.ok();
+    }
+
+    @Login
+    @GetMapping("/unlike")
+    @ApiOperation("取消日记点赞")
+    public R unlike(@RequestParam Long diaryId) {
+        likeService.unlike(ReqUtils.currentUserId(),diaryId,LikeTypeEnum.diary);
+        return R.ok();
     }
 
 

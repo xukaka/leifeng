@@ -3,11 +3,13 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.ThreadPoolUtils;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.story.DiaryContentDao;
 import io.renren.modules.app.dao.story.DiaryDao;
 import io.renren.modules.app.dto.DiaryDto;
 import io.renren.modules.app.dto.MemberDto;
+import io.renren.modules.app.entity.LikeTypeEnum;
 import io.renren.modules.app.entity.ParagraphTypeEnum;
 import io.renren.modules.app.entity.story.DiaryContentEntity;
 import io.renren.modules.app.entity.story.DiaryEntity;
@@ -15,6 +17,7 @@ import io.renren.modules.app.form.DiaryContentForm;
 import io.renren.modules.app.form.DiaryForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.DiaryService;
+import io.renren.modules.app.service.LikeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -35,6 +38,8 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
 
     @Autowired
     private DiaryContentDao diaryContentDao;
+    @Autowired
+    private LikeService likeService;
 
     @Override
     @Transactional
@@ -64,8 +69,22 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
 
 
     @Override
-    public DiaryDto getDiary(Long id) {
-       return baseMapper.getDiary(id);
+    public DiaryDto getDiary(Long curMemberId,Long id) {
+        DiaryDto diary =baseMapper.getDiary(id);
+        if (diary!=null){
+            //是否点赞
+            boolean isLiked = likeService.existsLiked(id, LikeTypeEnum.diary,curMemberId);
+            diary.setLiked(isLiked);
+        }
+
+        ThreadPoolUtils.execute(()->{
+            //浏览数+1
+            incViewCount(id,1);
+        });
+
+       return diary;
+
+
     }
 
     @Override
@@ -118,4 +137,22 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
         int total = baseMapper.myDiaryCount(creatorId);
         return new PageUtils<>(diarys, total, page.getPageSize(), page.getCurrPage());
     }
+
+    @Override
+    public void incLikeCount(Long diaryId,Integer inc){
+        baseMapper.incLikeCount(diaryId,inc);
+    }
+
+
+    @Override
+    public void incCommentCount(Long diaryId, Integer inc) {
+        baseMapper.incCommentCount(diaryId, inc);
+    }
+
+
+    @Override
+    public void incViewCount(Long diaryId, Integer inc) {
+        baseMapper.incViewCount(diaryId, inc);
+    }
+
 }

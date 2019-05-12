@@ -117,25 +117,12 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 任务点赞数+inc
      */
-//    void incLikeCount(Long taskId,Integer inc);
+    void incLikeCount(Long taskId,Integer inc);
 
     /**
      * 任务浏览数+inc
      */
     void incViewCount(Long taskId,Integer inc);
 
-    /**
-     * 任务点赞
-     * @param currentUserId
-     * @param taskId
-     */
-    void like(Long currentUserId, Long taskId);
-
-    /**
-     * 取消任务点赞
-     * @param currentUserId
-     * @param taskId
-     */
-    void unlike(Long currentUserId, Long taskId);
 }
 

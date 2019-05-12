@@ -4,29 +4,28 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.netty.util.internal.StringUtil;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.dao.task.TaskDao;
-import io.renren.modules.app.dao.task.TaskLikeDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
 import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
+import io.renren.modules.app.entity.LikeTypeEnum;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.entity.setting.MemberTagRelationEntity;
-import io.renren.modules.app.entity.task.*;
+import io.renren.modules.app.entity.task.TaskAddressEntity;
+import io.renren.modules.app.entity.task.TaskEntity;
+import io.renren.modules.app.entity.task.TaskReceiveEntity;
+import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
-import io.renren.modules.app.service.MemberService;
-import io.renren.modules.app.service.MemberTagRelationService;
-import io.renren.modules.app.service.TaskService;
-import io.renren.modules.app.service.TaskTagService;
+import io.renren.modules.app.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     private TaskReceiveDao taskReceiveDao;
 
     @Resource
-    private TaskLikeDao taskLikeDao;
+    private LikeService likeService;
     @Resource
     private TaskTagService taskTagService;
     @Resource
@@ -174,7 +173,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             boolean isReceived = existsRecevier(id, curMemberId);
             task.setReceived(isReceived);
             //是否点赞
-            boolean isLiked = existsLiked(id, curMemberId);
+            boolean isLiked = likeService.existsLiked(id, LikeTypeEnum.task,curMemberId);
             task.setLiked(isLiked);
             task.setCurSystemTime(DateUtils.now());
         }
@@ -199,13 +198,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     /**
      * 是否点赞
      */
-    private boolean existsLiked(Long taskId, Long memberId) {
-        Wrapper<TaskLikeEntity> wrapper = new EntityWrapper<>();
+  /*  private boolean existsLiked(Long taskId, Long memberId) {
+        Wrapper<LikeEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("task_id", taskId)
                 .eq("member_id", memberId);
-        int count = taskLikeDao.selectCount(wrapper);
+        int count = likeDao.selectCount(wrapper);
         return count > 0;
-    }
+    }*/
 
     @Override
     @Transactional
@@ -645,38 +644,16 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public void incCommentCount(Long taskId, Integer inc) {
         baseMapper.incCommentCount(taskId, inc);
     }
-/*
+
     @Override
     public void incLikeCount(Long taskId,Integer inc){
         baseMapper.incLikeCount(taskId,inc);
-    }*/
+    }
 
     @Override
     public void incViewCount(Long taskId, Integer inc) {
         baseMapper.incViewCount(taskId, inc);
     }
 
-    @Override
-    public void like(Long memberId, Long taskId) {
-        TaskLikeEntity like = new TaskLikeEntity(DateUtils.now(), taskId, memberId);
-        taskLikeDao.insert(like);
 
-        ThreadPoolUtils.execute(() -> {
-            //点赞数+1
-            baseMapper.incLikeCount(taskId, 1);
-        });
-    }
-
-    @Override
-    public void unlike(Long memberId, Long taskId) {
-        Wrapper<TaskLikeEntity> wrapper = new EntityWrapper<>();
-        wrapper.eq("task_id", taskId)
-                .eq("member_id", memberId);
-        taskLikeDao.delete(wrapper);
-
-        ThreadPoolUtils.execute(() -> {
-            //点赞数-1
-            baseMapper.incLikeCount(taskId, -1);
-        });
-    }
 }

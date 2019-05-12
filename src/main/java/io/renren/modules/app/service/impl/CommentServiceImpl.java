@@ -14,6 +14,7 @@ import io.renren.modules.app.entity.task.CommentEntity;
 import io.renren.modules.app.entity.task.CommentReplyEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.CommentService;
+import io.renren.modules.app.service.DiaryService;
 import io.renren.modules.app.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
     private CommentReplyDao commentReplyDao;
     @Resource
     private TaskService taskService;
+
+    @Resource
+    private DiaryService diaryService;
 
     @Override
     public PageUtils<CommentDto> getComments(Long businessId,CommentTypeEnum type, PageWrapper page) {
@@ -65,7 +69,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
                     taskService.incCommentCount(businessId,1);
                     break;
                 case diary:
-                    //TODO 日志评论数+1
+                    diaryService.incCommentCount(comment.getBusinessId(),1);
                     break;
             }
 
@@ -111,10 +115,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
                     case task:
                         taskService.incCommentCount(comment.getBusinessId(),1);
                         break;
-
                     case diary:
-                        //TODO 日记评论数+1
-
+                        diaryService.incCommentCount(comment.getBusinessId(),1);
                         break;
                 }
 

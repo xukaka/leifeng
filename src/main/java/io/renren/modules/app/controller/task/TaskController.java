@@ -6,9 +6,11 @@ import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
+import io.renren.modules.app.entity.LikeTypeEnum;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
+import io.renren.modules.app.service.LikeService;
 import io.renren.modules.app.service.TaskService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
@@ -28,6 +30,8 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private LikeService likeService;
 
     @GetMapping("/banner")
     @ApiOperation("获取任务横幅列表")
@@ -193,7 +197,7 @@ public class TaskController {
     @GetMapping("/like")
     @ApiOperation("任务点赞")
     public R like(@RequestParam Long taskId) {
-        taskService.like(ReqUtils.currentUserId(),taskId);
+        likeService.like(ReqUtils.currentUserId(),taskId,LikeTypeEnum.task);
         return R.ok();
     }
 
@@ -201,7 +205,7 @@ public class TaskController {
     @GetMapping("/unlike")
     @ApiOperation("取消任务点赞")
     public R unlike(@RequestParam Long taskId) {
-        taskService.unlike(ReqUtils.currentUserId(),taskId);
+        likeService.unlike(ReqUtils.currentUserId(),taskId,LikeTypeEnum.task);
         return R.ok();
     }
 

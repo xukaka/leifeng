@@ -119,4 +119,18 @@
         from t_diary d
         where d.creator_id = #{creatorId}  AND d.is_open = 1 AND d.deleted = 0
     </select>
+
+
+    <update id="incLikeCount">
+        update t_diary d set d.like_count = d.like_count + #{inc} where d.id = #{diaryId}
+    </update>
+
+    <update id="incCommentCount">
+        update t_diary d set d.comment_count = d.comment_count + #{inc} where d.id = #{diaryId}
+    </update>
+
+
+    <update id="incViewCount">
+        update t_diary d set d.view_count = d.view_count + #{inc} where d.id = #{diaryId}
+    </update>
 </mapper>

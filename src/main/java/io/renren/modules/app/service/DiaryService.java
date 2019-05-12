@@ -25,7 +25,7 @@ public interface DiaryService extends IService<DiaryEntity> {
      * @param id
      * @return
      */
-    DiaryDto getDiary(Long id);
+    DiaryDto getDiary(Long curMemberId,Long id);
 
     /**
      * 分页获取日记列表
@@ -40,4 +40,17 @@ public interface DiaryService extends IService<DiaryEntity> {
      * @return
      */
     PageUtils<DiaryDto> getMyDiarys(Long creatorId,PageWrapper page);
+    /**
+     * 日记点赞数+inc
+     */
+    void incLikeCount(Long diaryId, Integer inc);
+    /**
+     * 日记评论数+inc
+     */
+     void incCommentCount(Long diaryId, Integer inc);
+    /**
+     * 日记浏览数+inc
+     */
+
+     void incViewCount(Long diaryId, Integer inc) ;
 }
