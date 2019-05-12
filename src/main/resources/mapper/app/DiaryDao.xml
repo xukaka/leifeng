@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.renren.modules.app.dao.story.DiaryDao">
+    <!-- resultMap-->
+    <resultMap type="io.renren.modules.app.dto.DiaryDto" id="diaryMap">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="isOpen" column="is_open"/>
+        <result property="createTime" column="create_time"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <!--关联创建人-->
+        <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
+            <id property="id" column="creator_id"/>
+            <result property="nickName" column="creator_nick_name"/>
+            <result property="realName" column="creator_real_name"/>
+            <result property="avatar" column="creator_avatar"/>
+            <result property="sex" column="creator_sex"/>
+        </association>
+        <!--日记内容列表-->
+        <collection property="contents" ofType="io.renren.modules.app.entity.story.DiaryContentEntity">
+            <id property="id" column="content_id"/>
+            <result property="diaryId"   column="content_diary_id"/>
+            <result property="paragraphSort" column="content_paragraph_sort"/>
+            <result property="paragraph"  column="content_paragraph"/>
+            <result property="type"  column="content_type"/>
+        </collection>
+    </resultMap>
+
+    <!--获取日记详情-->
+    <select id="getDiary" resultMap="diaryMap">
+        select
+            d.*,
+            m.id AS creator_id,
+            m.nick_name AS creator_nick_name,
+            m.real_name AS creator_real_name,
+            m.avatar AS creator_avatar,
+            m.sex AS creator_sex,
+            c.id AS content_id,
+            c.diary_id AS content_diary_id,
+            c.paragraph_sort AS content_paragraph_sort,
+            c.paragraph AS content_paragraph,
+            c.type AS content_type
+        from t_diary d
+        join member m on d.creator_id = m.id
+        join t_diary_content c on d.id = c.diary_id
+        where d.id = #{id}
+    </select>
+
+   <!-- <select id="queryDeedsEntityByUserId" parameterType="java.lang.String" resultType="io.renren.modules.app.dto.DiaryDto">
+        select t.title as title,t.context as context ,t.deeds_Id as deedsId,t.image_url as imageUrl,t.read_count as readCount,t.is_open as isOpen from t_deeds_info t  where t.user_id = #{userId}
+    </select>-->
+
+</mapper>

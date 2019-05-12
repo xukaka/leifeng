@@ -1,54 +1,56 @@
 package io.renren.modules.app.controller.story;
 
-import io.renren.common.exception.RRException;
 import io.renren.common.utils.JsonUtil;
 import io.renren.common.utils.R;
-import io.renren.modules.app.dto.DeedsDto;
-import io.renren.modules.app.form.DeedsForm;
-import io.renren.modules.app.service.DeedsService;
+import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.DiaryDto;
+import io.renren.modules.app.form.DiaryForm;
+import io.renren.modules.app.service.DiaryService;
+import io.renren.modules.app.utils.ReqUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.jim.server.http.annotation.RequestPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author huangshishui
  * @date 2019/4/18 22:56
- * 关于英雄事迹的入口
  **/
+@Api(tags="日记")
 @RestController
-@RequestMapping("/app/deeds")
-public class DeedsController {
+@RequestMapping("/app/diary")
+public class DiaryController {
 
-    private final  static Logger logger = LoggerFactory.getLogger(DeedsController.class);
+    private final  static Logger logger = LoggerFactory.getLogger(DiaryController.class);
 
     @Autowired
-    private DeedsService deedsService;
+    private DiaryService diaryService;
 
-    @PostMapping("/submitDeeds")
-    @ApiOperation("提交英雄事迹")
-    public R submitDeedsInfo(@RequestBody DeedsForm deedsForm){
-        logger.info("【DeedsController.submitDeedsInfo】参数："+ JsonUtil.Java2Json(deedsForm));
-        //要增加异常和日志处理
-        try {
-            deedsService.insertDeedsInfo(deedsForm);
-        } catch (Exception e) {
-            logger.error("增加事迹信息出现错误:"+e.getMessage());
-            throw new RRException("增加事迹信息出现错误");
-        }
+    @Login
+    @PostMapping("/create")
+    @ApiOperation("创建日记")
+    public R createDiary(@RequestBody DiaryForm form){
+        logger.info("参数："+ JsonUtil.Java2Json(form));
+        diaryService.createDiary(ReqUtils.currentUserId(),form);
         return R.ok();
     }
-    @PostMapping("/queryListDeeds")
+
+//    @Login
+    @GetMapping("/detail/{id}")
+    @ApiOperation("获取日记详情")
+    public R getDiary(@PathVariable("id") Long id){
+        DiaryDto diary = diaryService.getDiary(id);
+        return R.ok().put("result",diary);
+    }
+    /*@PostMapping("/queryListDeeds")
     @ApiOperation("查询某个用户发布的日记")
     public R queryListForDeeds(@RequestParam String userId){
-        logger.info("【DeedsController.queryListForDeeds】");
+        logger.info("【DiaryController.queryListForDeeds】");
         List<Map> deedMap = new ArrayList<Map>();
-        List<DeedsDto> listDeeds = null;
+        List<DiaryDto> listDeeds = null;
         try {
            listDeeds = deedsService.queryDeedsList(userId);
 
@@ -70,6 +72,6 @@ public class DeedsController {
             throw new RRException("统计数量出错");
         }
         return R.ok();
-    }
+    }*/
 
 }
