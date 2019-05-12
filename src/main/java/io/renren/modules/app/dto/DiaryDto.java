@@ -16,8 +16,15 @@ public class DiaryDto implements Serializable {
 
     //创建人
     private Member creator;
+
+
+    //头像
+    private String avatar;
     //标题
     private String title;
+
+    //描述
+    private String description;
 
     //日记内容
     private List<DiaryContentEntity> contents;
@@ -38,6 +45,24 @@ public class DiaryDto implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+
+    public String getAvatar() {
+
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Member getCreator() {
