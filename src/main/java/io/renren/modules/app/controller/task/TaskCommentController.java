@@ -18,9 +18,9 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/app/comment")
-@Api(tags = "评论")
-public class CommentController {
+@RequestMapping("/app/comment/task")
+@Api(tags = "任务评论")
+public class TaskCommentController {
 
     @Autowired
     private CommentService commentService;
@@ -28,19 +28,19 @@ public class CommentController {
     @Login
     @PostMapping("/add")
     @ApiOperation("新增评论")
-    public R addComment(@RequestParam Long businessId, @RequestParam CommentTypeEnum type, @RequestParam String content) {
-        commentService.addComment(businessId,type, ReqUtils.currentUserId(), content);
+    public R addComment(@RequestParam Long taskId, @RequestParam String content) {
+        commentService.addComment(taskId,CommentTypeEnum.task, ReqUtils.currentUserId(), content);
         return R.ok();
     }
 
     @GetMapping("/list")
     @ApiOperation("分页获取评论列表")
-    public R getComments(@RequestParam Long businessId, @RequestParam CommentTypeEnum type,@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getComments(@RequestParam Long taskId,@RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<CommentDto> comments = commentService.getComments(businessId,type, page);
+        PageUtils<CommentDto> comments = commentService.getComments(taskId,CommentTypeEnum.task, page);
         return R.ok().put("result", comments);
     }
 

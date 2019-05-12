@@ -8,7 +8,7 @@ import io.renren.modules.app.entity.task.CommentEntity;
 import io.renren.modules.app.form.PageWrapper;
 
 /**
- * 任务评论
+ * 评论
  */
 public interface CommentService extends IService<CommentEntity> {
 
