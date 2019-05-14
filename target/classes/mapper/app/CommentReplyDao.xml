@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="io.renren.modules.app.dao.task.TaskCommentReplyDao">
+<mapper namespace="io.renren.modules.app.dao.task.CommentReplyDao">
 
-    <!--任务评论回复resultMap-->
-    <resultMap type="io.renren.modules.app.dto.TaskCommentReplyDto" id="commentReplyMap">
+    <!--评论回复resultMap-->
+    <resultMap type="io.renren.modules.app.dto.CommentReplyDto" id="commentReplyMap">
         <id property="id" column="id"/>
         <result property="commentId" column="comment_id"/>
         <result property="content" column="content"/>
@@ -44,7 +44,7 @@
             t.real_name AS to_real_name,
             t.avatar AS to_avatar,
             t.sex AS to_sex
-        FROM t_task_comment_reply r
+        FROM t_comment_reply r
         JOIN member f ON r.from_user_id = f.id
         JOIN member t ON r.to_user_id = t.id
         WHERE r.comment_id = #{commentId} and r.deleted = 0

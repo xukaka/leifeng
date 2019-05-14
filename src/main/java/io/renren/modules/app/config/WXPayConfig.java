@@ -1,12 +1,13 @@
 package io.renren.modules.app.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 @Component
@@ -188,9 +189,9 @@ public class WXPayConfig {
 
     public InputStream getCertStream(){
         try {
-            FileInputStream certInputStream = new FileInputStream(ResourceUtils.getFile(getCert()));
-            return certInputStream;
-        } catch (FileNotFoundException e) {
+            ClassPathResource source = new ClassPathResource(getCert());
+            return source.getInputStream();
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
