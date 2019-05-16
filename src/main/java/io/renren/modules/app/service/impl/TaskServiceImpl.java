@@ -18,10 +18,10 @@ import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberTagRelationEntity;
-import io.renren.modules.app.entity.task.TaskAddressEntity;
-import io.renren.modules.app.entity.task.TaskEntity;
-import io.renren.modules.app.entity.task.TaskReceiveEntity;
-import io.renren.modules.app.entity.task.TagEntity;
+import io.renren.modules.app.entity.pay.MemberWalletEntity;
+import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
+import io.renren.modules.app.entity.pay.MemberWalletRecordEntity;
+import io.renren.modules.app.entity.task.*;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
@@ -53,7 +53,18 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Resource
     private TagService taskTagService;
     @Resource
+    private TaskOrderService taskOrderService;
+    @Resource
     private MemberTagRelationService memberTagRelationService;
+
+    @Resource
+    private MemberWalletService memberWalletService;
+
+    @Resource
+    private MemberWalletRecordService memberWalletRecordService;
+
+    @Resource
+    private MemberWalletLogService memberWalletLogService;
     @Resource
     private MemberService memberService;
     @Resource
@@ -532,6 +543,36 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         task.setStatus(TaskStatusEnum.completed);
         task.setCompleteTime(DateUtils.now());
         Integer result = baseMapper.updateById(task);
+
+        //校验支付流水
+        TaskOrderEntity order = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
+        if (order!=null && "SUCCESS".equals(order.getTradeState())){
+            MemberWalletRecordEntity record = memberWalletRecordService.selectOne(new EntityWrapper<MemberWalletRecordEntity>().eq("out_trade_no", order.getOutTradeNo()));
+            record.setToMemberId(receiverId);
+            record.setFetchStatus(1);
+            record.setFetchTime(DateUtils.now());
+            memberWalletRecordService.updateById(record);
+
+            //记录钱包金额变动日志
+            MemberWalletEntity wallet = memberWalletService.selectById(receiverId);
+            MemberWalletLogEntity log = new MemberWalletLogEntity();
+            log.setMemberId(receiverId);
+            log.setChangeMoney(order.getTotalFee());
+            log.setMoney(wallet.getMoney()+order.getTotalFee());
+            log.setOutTradeNo(order.getOutTradeNo());
+            log.setRemark("领取人完成任务");
+            memberWalletLogService.insert(log);
+            //领取人钱包金额增加
+            memberWalletService.incMoney(receiverId,order.getTotalFee());
+
+
+            order.setTradeState("CLOSED");//设置为关闭,这一步很重要
+            taskOrderService.updateById(order);
+        }else {
+            throw new RRException("任务订单状态异常，请联系客服");
+        }
+
+
         if (result != null && result > 0) {
             ThreadPoolUtils.execute(() -> {
                 //发送消息给任务领取人

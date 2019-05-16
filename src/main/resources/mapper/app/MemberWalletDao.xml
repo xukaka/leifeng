@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.pay.MemberWalletDao">
+
+    <!--用户钱包金额改变-->
+    <update id="incMoney">
+        update t_member_wallet w set w.money = w.money + #{inc} where w.member_id = #{memberId}
+    </update>
+
+</mapper>

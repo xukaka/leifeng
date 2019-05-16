@@ -1,0 +1,19 @@
+package io.renren.modules.app.service;
+
+import com.baomidou.mybatisplus.service.IService;
+import io.renren.modules.app.entity.pay.MemberWalletEntity;
+
+/**
+ * 用户钱包
+ */
+public interface MemberWalletService extends IService<MemberWalletEntity> {
+
+    /**
+     * 用户金额增加+inc
+     * @param memberId
+     * @param inc
+     */
+    void incMoney(Long memberId,Long inc);
+
+}
+

@@ -20,7 +20,7 @@ public class MemberWalletRecordEntity extends BaseEntity {
     private Integer type=3;
 
     //交易金额,单位：分
-    private Integer money;
+    private Long money;
     ////支付方式 0待定 1支付宝 2微信 3银行卡 4余额
     private Integer payType=0;
     //备注信息
@@ -70,11 +70,12 @@ public class MemberWalletRecordEntity extends BaseEntity {
         this.type = type;
     }
 
-    public Integer getMoney() {
+
+    public Long getMoney() {
         return money;
     }
 
-    public void setMoney(Integer money) {
+    public void setMoney(Long money) {
         this.money = money;
     }
 
