@@ -7666,7 +7666,7 @@ Operation.prototype.setContentTypes = function (args, opts) {
         consumes = 'multipart/form-data';
       } else {
         if (this.consumes && this.consumes.length > 0) {
-          // use the consumes setting
+          // use the consumes member
           for(var c in this.consumes) {
             var chk = this.consumes[c];
             if(chk.indexOf('application/x-www-form-urlencoded') === 0 || chk.indexOf('multipart/form-data') === 0) {

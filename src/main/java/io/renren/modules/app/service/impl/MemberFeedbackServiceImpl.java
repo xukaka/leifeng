@@ -5,12 +5,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
-import io.renren.modules.app.dao.setting.MemberFeedbackDao;
-import io.renren.modules.app.dao.setting.MemberFriendDao;
-import io.renren.modules.app.entity.setting.MemberFeedback;
-import io.renren.modules.app.entity.setting.MemberFriend;
+import io.renren.modules.app.dao.member.MemberFeedbackDao;
+import io.renren.modules.app.entity.member.MemberFeedback;
 import io.renren.modules.app.service.MemberFeedbackService;
-import io.renren.modules.app.service.MemberFriendService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

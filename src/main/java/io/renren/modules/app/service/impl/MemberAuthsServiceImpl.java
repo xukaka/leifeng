@@ -2,8 +2,8 @@ package io.renren.modules.app.service.impl;
 
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.modules.app.dao.setting.MemberAuthsDao;
-import io.renren.modules.app.entity.setting.MemberAuths;
+import io.renren.modules.app.dao.member.MemberAuthsDao;
+import io.renren.modules.app.entity.member.MemberAuths;
 import io.renren.modules.app.service.MemberAuthsService;
 import org.springframework.stereotype.Service;
 

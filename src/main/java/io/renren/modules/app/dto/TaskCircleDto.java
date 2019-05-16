@@ -1,7 +1,6 @@
 package io.renren.modules.app.dto;
 
-import io.renren.modules.app.entity.CircleAuditStatusEnum;
-import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.member.Member;
 
 import java.io.Serializable;
 import java.util.List;

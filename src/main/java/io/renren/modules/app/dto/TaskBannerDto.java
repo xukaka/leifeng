@@ -1,6 +1,6 @@
 package io.renren.modules.app.dto;
 
-import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 

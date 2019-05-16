@@ -1,6 +1,5 @@
 package io.renren.common.io.body;
 
-import io.renren.modules.app.entity.setting.Member;
 import org.jim.common.packets.Message;
 
 /**

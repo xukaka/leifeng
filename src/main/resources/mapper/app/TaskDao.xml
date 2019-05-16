@@ -74,7 +74,7 @@
             <result property="detail" column="address_detail"/>
         </association>
         <!--关联任务完成人-->
-        <association property="receiver" javaType="io.renren.modules.app.entity.setting.Member">
+        <association property="receiver" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="completer_id"/>
             <result property="nickName" column="completer_nick_name"/>
             <result property="realName" column="completer_real_name"/>
@@ -109,7 +109,7 @@
             <result property="detail" column="address_detail"/>
         </association>
         <!--关联创建人-->
-        <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
+        <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="creator_id"/>
             <result property="nickName" column="creator_nick_name"/>
             <result property="realName" column="creator_real_name"/>
@@ -120,7 +120,7 @@
             <result property="level" column="creator_level"/>
         </association>
         <!--关联领取人-->
-        <association property="receiver" javaType="io.renren.modules.app.entity.setting.Member">
+        <association property="receiver" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="receiver_id"/>
             <result property="nickName" column="receiver_nick_name"/>
             <result property="realName" column="receiver_real_name"/>
@@ -162,7 +162,7 @@
             <result property="detail" column="address_detail"/>
         </association>
         <!--关联创建人-->
-        <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
+        <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="creator_id"/>
             <result property="nickName" column="creator_nick_name"/>
             <result property="realName" column="creator_real_name"/>
@@ -203,7 +203,7 @@
             <result property="detail" column="address_detail"/>
         </association>
         <!--关联创建人-->
-        <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
+        <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="creator_id"/>
             <result property="nickName" column="creator_nick_name"/>
             <result property="realName" column="creator_real_name"/>

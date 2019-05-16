@@ -51,4 +51,13 @@ public class DiaryForm {
     public void setContents(List<DiaryContentForm> contents) {
         this.contents = contents;
     }
+
+    @Override
+    public String toString() {
+        return "DiaryForm{" +
+                "title='" + title + '\'' +
+                ", contents=" + contents +
+                ", isOpen=" + isOpen +
+                '}';
+    }
 }

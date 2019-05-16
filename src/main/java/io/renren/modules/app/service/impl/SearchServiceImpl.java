@@ -3,32 +3,21 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.common.exception.RRException;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.RedisKeys;
 import io.renren.common.utils.RedisUtils;
-import io.renren.config.SwaggerConfig;
 import io.renren.modules.app.dao.search.SearchDao;
-import io.renren.modules.app.dao.task.TaskTagDao;
 import io.renren.modules.app.dto.HotSearchDto;
-import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.entity.search.SearchHistoryEntity;
 import io.renren.modules.app.entity.search.SearchLogEntity;
-import io.renren.modules.app.entity.task.TaskEntity;
-import io.renren.modules.app.entity.task.TaskTagEntity;
 import io.renren.modules.app.service.SearchService;
-import io.renren.modules.app.service.TaskTagService;
-import io.swagger.annotations.Authorization;
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service

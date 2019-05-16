@@ -2,7 +2,7 @@ package io.renren.modules.app.service;
 
 
 import com.baomidou.mybatisplus.service.IService;
-import io.renren.modules.app.entity.setting.MemberAuths;
+import io.renren.modules.app.entity.member.MemberAuths;
 
 /**
  * 用户授权

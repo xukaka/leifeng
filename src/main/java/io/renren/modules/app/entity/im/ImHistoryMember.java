@@ -1,7 +1,6 @@
 package io.renren.modules.app.entity.im;
 
-import com.baomidou.mybatisplus.annotations.TableId;
-import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.member.Member;
 
 /**
  * @auther: Easy

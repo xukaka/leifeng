@@ -4,10 +4,9 @@ package io.renren.modules.app.service;
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.MemberDto;
-import io.renren.modules.app.entity.setting.Member;
-import io.renren.modules.app.entity.setting.MemberAuths;
+import io.renren.modules.app.entity.member.Member;
+import io.renren.modules.app.entity.member.MemberAuths;
 import io.renren.modules.app.form.*;
-import io.renren.modules.app.utils.ReqUtils;
 
 import java.util.Map;
 

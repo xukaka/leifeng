@@ -20,13 +20,14 @@ import java.util.List;
 
 @Service
 public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements ImService {
-    private final static Logger logger = LoggerFactory.getLogger(ImServiceImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ImServiceImpl.class);
 
     @Autowired
     private RedisUtils redisUtils;
 
     @Override
     public PageUtils<ImGroupNotice> getGroupNotices(Long memberId, PageWrapper page) {
+        LOG.debug("get group notices params:memberId={},page={}", memberId, page);
         List<ImGroupNotice> notices = baseMapper.getGroupNotices(memberId, page);
         if (CollectionUtils.isEmpty(notices)) {
             return new PageUtils<>();
@@ -36,7 +37,8 @@ public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements 
     }
 
     @Override
-    public void addGroupNotice(String groupId, String from,String  businessType,Long businessId,String content) {
+    public void addGroupNotice(String groupId, String from, String businessType, Long businessId, String content) {
+        LOG.debug("add group notice params:groupId={},from={},businessType={},businessId={},content={}", groupId, from, businessType, businessId, content);
         ImGroupNotice notice = new ImGroupNotice();
         notice.setGroupId(groupId);
         notice.setFrom(from);
@@ -50,17 +52,17 @@ public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements 
 
     @Override
     public void setMessageType(MessageTypeForm messageTypeForm) {
-        logger.info("[ImController.info] 请求参数id={}", messageTypeForm.getFromId(), messageTypeForm.getToId(), messageTypeForm.getType(), messageTypeForm.getStatus());
-        if (messageTypeForm.getStatus() == 1&& messageTypeForm.getType()==0) {
+        LOG.info("[Im.setMessageType] 请求参数messageTypeForm={}", messageTypeForm);
+        if (messageTypeForm.getStatus() == 1 && messageTypeForm.getType() == 0) {
             redisUtils.zAdd("unread:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
         } else {
             redisUtils.zAdd("unread:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
             redisUtils.zAdd("unread:" + messageTypeForm.getFromId(), messageTypeForm.getToId(), messageTypeForm.getStatus());
         }
-        if (messageTypeForm.getType()==1) {
+        if (messageTypeForm.getType() == 1) {
             redisUtils.zAdd("followNotice:" + messageTypeForm.getToId(), "followNotice", messageTypeForm.getStatus());
         }
-        if (messageTypeForm.getType()==2) {
+        if (messageTypeForm.getType() == 2) {
             redisUtils.zAdd("task:" + messageTypeForm.getToId(), "SystemTaskStatus", messageTypeForm.getStatus());
         }
     }

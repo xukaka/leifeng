@@ -5,10 +5,9 @@ import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.ThreadPoolUtils;
 import io.renren.common.validator.ValidatorUtils;
-import io.renren.modules.app.dao.story.DiaryContentDao;
-import io.renren.modules.app.dao.story.DiaryDao;
+import io.renren.modules.app.dao.diary.DiaryContentDao;
+import io.renren.modules.app.dao.diary.DiaryDao;
 import io.renren.modules.app.dto.DiaryDto;
-import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.entity.LikeTypeEnum;
 import io.renren.modules.app.entity.ParagraphTypeEnum;
 import io.renren.modules.app.entity.story.DiaryContentEntity;
@@ -21,29 +20,27 @@ import io.renren.modules.app.service.LikeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> implements DiaryService {
-    private final static Logger logger = LoggerFactory.getLogger(DiaryServiceImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DiaryServiceImpl.class);
 
-    @Autowired
-    private DiaryDao diaryDao;
-
-    @Autowired
+    @Resource
     private DiaryContentDao diaryContentDao;
-    @Autowired
+    @Resource
     private LikeService likeService;
 
     @Override
     @Transactional
     public void createDiary(Long memberId,DiaryForm form) {
+        LOG.debug("create diary params:memberId={},form={}",memberId,form);
         ValidatorUtils.validateEntity(form);
         DiaryEntity diary = new DiaryEntity();
         BeanUtils.copyProperties(form, diary);
@@ -70,6 +67,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
 
     @Override
     public DiaryDto getDiary(Long curMemberId,Long id) {
+        LOG.debug("get diary params:curMemberId={},id={}",curMemberId,id);
         DiaryDto diary =baseMapper.getDiary(id);
         if (diary!=null){
             //是否点赞
@@ -89,6 +87,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
 
     @Override
     public PageUtils<DiaryDto> getDiarys(PageWrapper page) {
+        LOG.debug("get diarys params:page={}",page);
         List<DiaryDto> diarys = baseMapper.getDiarys( page);
         if (CollectionUtils.isEmpty(diarys)) {
             return new PageUtils<>();
@@ -129,6 +128,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
 
     @Override
     public PageUtils<DiaryDto> getMyDiarys(Long creatorId,PageWrapper page) {
+        LOG.debug("get my diarys params:creatorId={},page={}",creatorId,page);
         List<DiaryDto> diarys = baseMapper.getMyDiarys(creatorId, page);
         if (CollectionUtils.isEmpty(diarys)) {
             return new PageUtils<>();

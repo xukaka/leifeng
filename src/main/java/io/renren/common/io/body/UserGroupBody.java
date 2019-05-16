@@ -3,8 +3,8 @@ package io.renren.common.io.body;
 import org.jim.common.packets.Message;
 
 public class UserGroupBody extends Message {
-    String id;
-    String userId;
+    private String id;
+    private String userId;
 
     @Override
     public String getId() {

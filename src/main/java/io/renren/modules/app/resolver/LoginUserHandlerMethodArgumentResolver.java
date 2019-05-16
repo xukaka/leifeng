@@ -1,7 +1,7 @@
 package io.renren.modules.app.resolver;
 
 import io.renren.modules.app.annotation.LoginUser;
-import io.renren.modules.app.entity.setting.Member;
+import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.interceptor.AuthorizationInterceptor;
 import io.renren.modules.app.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;

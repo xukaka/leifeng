@@ -16,12 +16,12 @@ import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.LikeTypeEnum;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
-import io.renren.modules.app.entity.setting.Member;
-import io.renren.modules.app.entity.setting.MemberTagRelationEntity;
+import io.renren.modules.app.entity.member.Member;
+import io.renren.modules.app.entity.member.MemberTagRelationEntity;
 import io.renren.modules.app.entity.task.TaskAddressEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskReceiveEntity;
-import io.renren.modules.app.entity.task.TaskTagEntity;
+import io.renren.modules.app.entity.task.TagEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
@@ -51,7 +51,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Resource
     private LikeService likeService;
     @Resource
-    private TaskTagService taskTagService;
+    private TagService taskTagService;
     @Resource
     private MemberTagRelationService memberTagRelationService;
     @Resource
@@ -559,9 +559,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     //给任务领取人添加技能标签
     private void addTag2Member(Long receiverId, Long taskId) {
-        List<TaskTagEntity> tags = taskTagService.getTagsByTaskId(taskId);
+        List<TagEntity> tags = taskTagService.getTagsByTaskId(taskId);
         if (!CollectionUtils.isEmpty(tags)) {
-            List<Long> tagIds = tags.stream().map(TaskTagEntity::getId).collect(Collectors.toList());
+            List<Long> tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toList());
             Wrapper<MemberTagRelationEntity> wrapper = new EntityWrapper<>();
             wrapper.eq("member_id", receiverId)
                     .in("tag_id", tagIds);

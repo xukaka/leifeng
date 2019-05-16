@@ -11,7 +11,7 @@
         <result property="content" column="content"/>
         <result property="createTime" column="create_time"/>
         <!--关联评论人-->
-        <association property="commentator" javaType="io.renren.modules.app.entity.setting.Member">
+        <association property="commentator" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="member_id"/>
             <result property="nickName" column="nick_name"/>
             <result property="realName" column="real_name"/>

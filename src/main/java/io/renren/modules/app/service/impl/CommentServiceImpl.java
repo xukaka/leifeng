@@ -27,7 +27,7 @@ import java.util.*;
 
 @Service
 public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> implements CommentService {
-    private final static Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(CommentServiceImpl.class);
 
     @Resource
     private CommentReplyDao commentReplyDao;
@@ -38,13 +38,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
     private DiaryService diaryService;
 
     @Override
-    public PageUtils<CommentDto> getComments(Long businessId,CommentTypeEnum type, PageWrapper page) {
-        List<CommentDto> comments = baseMapper.getComments(businessId,type, page);
+    public PageUtils<CommentDto> getComments(Long businessId, CommentTypeEnum type, PageWrapper page) {
+        LOG.debug("get comments params:businessId={},type={},page={}", businessId, type, page);
+        List<CommentDto> comments = baseMapper.getComments(businessId, type, page);
         if (CollectionUtils.isEmpty(comments)) {
             return new PageUtils<>();
         }
         setCommentRepies(comments);
-        int total = baseMapper.count(businessId,type);
+        int total = baseMapper.count(businessId, type);
         return new PageUtils<>(comments, total, page.getPageSize(), page.getCurrPage());
     }
 
@@ -57,19 +58,20 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
 
     @Override
-    public void addComment(Long businessId, CommentTypeEnum type,Long commentatorId, String content) {
-        checkCommentParam(businessId,type, commentatorId, content);
-        CommentEntity comment = new CommentEntity(DateUtils.now(), commentatorId, businessId,type, content);
+    public void addComment(Long businessId, CommentTypeEnum type, Long commentatorId, String content) {
+        LOG.debug("add comment params:businessId={},type={},commentatorId={},content={}", businessId, type, commentatorId, content);
+        checkCommentParam(businessId, type, commentatorId, content);
+        CommentEntity comment = new CommentEntity(DateUtils.now(), commentatorId, businessId, type, content);
         this.insert(comment);
 
-        ThreadPoolUtils.execute(()->{
+        ThreadPoolUtils.execute(() -> {
             //评论数 +1
-            switch (type){
+            switch (type) {
                 case task:
-                    taskService.incCommentCount(businessId,1);
+                    taskService.incCommentCount(businessId, 1);
                     break;
                 case diary:
-                    diaryService.incCommentCount(comment.getBusinessId(),1);
+                    diaryService.incCommentCount(comment.getBusinessId(), 1);
                     break;
             }
 
@@ -77,7 +79,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
         });
     }
 
-    private void checkCommentParam(Long businessId, CommentTypeEnum type,Long commentatorId, String content) {
+    private void checkCommentParam(Long businessId, CommentTypeEnum type, Long commentatorId, String content) {
         if (businessId == null)
             throw new RRException("businessId is null.");
         if (type == null)
@@ -90,6 +92,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     @Override
     public void deleteComment(Long id) {
+        LOG.debug("delete comment params:id={}", id);
+
         CommentEntity comment = this.selectById(id);
         if (comment != null) {
             comment.setDeleted(true);
@@ -99,6 +103,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     @Override
     public void addCommentReply(Long commentId, Long fromUserId, Long toUserId, String content) {
+        LOG.debug("add comment reply params:commentId={},fromUserId={},toUserId={},content={}", commentId, fromUserId, toUserId, content);
         checkCommentReplyParam(commentId, fromUserId, toUserId, content);
         CommentReplyEntity reply = new CommentReplyEntity();
         reply.setCommentId(commentId);
@@ -107,16 +112,16 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
         reply.setContent(content);
         reply.setCreateTime(DateUtils.now());
         commentReplyDao.insert(reply);
-        ThreadPoolUtils.execute(()->{
+        ThreadPoolUtils.execute(() -> {
             //评论数 +1
-            CommentEntity comment= selectById(commentId);
-            if (comment!=null){
-                switch (comment.getType()){
+            CommentEntity comment = selectById(commentId);
+            if (comment != null) {
+                switch (comment.getType()) {
                     case task:
-                        taskService.incCommentCount(comment.getBusinessId(),1);
+                        taskService.incCommentCount(comment.getBusinessId(), 1);
                         break;
                     case diary:
-                        diaryService.incCommentCount(comment.getBusinessId(),1);
+                        diaryService.incCommentCount(comment.getBusinessId(), 1);
                         break;
                 }
 
@@ -137,6 +142,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     @Override
     public void deleteCommentReply(Long replyId) {
+        LOG.debug("delete comment reply params:replyId={}",replyId);
+
         CommentReplyEntity reply = commentReplyDao.selectById(replyId);
         if (reply != null) {
             reply.setDeleted(true);

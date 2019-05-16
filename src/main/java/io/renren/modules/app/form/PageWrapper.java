@@ -72,4 +72,14 @@ public class PageWrapper extends HashMap {
     public void setLimit(int limit) {
         this.limit = limit;
     }
+
+    @Override
+    public String toString() {
+        return "PageWrapper{" +
+                "currPage=" + currPage +
+                ", pageSize=" + pageSize +
+                ", offset=" + offset +
+                ", limit=" + limit +
+                '}';
+    }
 }

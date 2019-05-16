@@ -6,7 +6,6 @@ import io.renren.common.io.service.user.processor.UserLoginServer;
 import io.renren.common.io.service.user.resp.UserRespBody;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.dto.MemberDto;
-import io.renren.modules.app.entity.setting.Member;
 import io.renren.modules.app.service.MemberService;
 import org.jim.common.ImPacket;
 import org.jim.common.ImSessionContext;

@@ -10,7 +10,7 @@
         <result property="content" column="content"/>
         <result property="createTime" column="create_time"/>
         <!--关联回复人-->
-        <association property="fromUser" javaType="io.renren.modules.app.entity.setting.Member">
+        <association property="fromUser" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="from_id"/>
             <result property="nickName" column="from_nick_name"/>
             <result property="realName" column="from_real_name"/>
@@ -18,7 +18,7 @@
             <result property="sex" column="from_sex"/>
         </association>
         <!--关联被回复人-->
-        <association property="toUser" javaType="io.renren.modules.app.entity.setting.Member">
+        <association property="toUser" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="to_id"/>
             <result property="nickName" column="to_nick_name"/>
             <result property="realName" column="to_real_name"/>

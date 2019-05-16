@@ -14,7 +14,7 @@
         <result property="memberCount" column="member_count"/>
         <result property="taskCount" column="task_count"/>
         <!--关联创建人-->
-        <association property="creator" javaType="io.renren.modules.app.entity.setting.Member">
+        <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="member_id"/>
             <result property="nickName" column="member_nick_name"/>
             <result property="realName" column="member_real_name"/>
