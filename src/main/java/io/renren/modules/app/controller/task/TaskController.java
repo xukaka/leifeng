@@ -44,7 +44,7 @@ public class TaskController {
     @PostMapping("/create")
     @ApiOperation("创建任务")
     public R createTask(@RequestBody TaskForm form) {
-        taskService.createTask(ReqUtils.currentUserId(), form);
+        taskService.createTask(ReqUtils.curMemberId(), form);
         return R.ok();
     }
 
@@ -52,7 +52,7 @@ public class TaskController {
     @GetMapping("/detail/{id}")
     @ApiOperation("获取任务详细信息")
     public R getTask(@PathVariable("id") Long id) {
-        TaskDto task = taskService.getTask(ReqUtils.currentUserId(), id);
+        TaskDto task = taskService.getTask(ReqUtils.curMemberId(), id);
         return R.ok().put("result", task);
     }
 
@@ -97,14 +97,14 @@ public class TaskController {
     @GetMapping("/receive")
     @ApiOperation("领取任务")
     public R receiveTask(@RequestParam Long taskId) {
-        taskService.receiveTask(ReqUtils.currentUserId(), taskId);
+        taskService.receiveTask(ReqUtils.curMemberId(), taskId);
 
         return R.ok();
     }
     @GetMapping("/testReceive")
     @ApiOperation("领取任务")
     public R testReceive(@RequestParam Long taskId) {
-        taskService.receiveTask(ReqUtils.currentUserId(), taskId);
+        taskService.receiveTask(ReqUtils.curMemberId(), taskId);
 
         return R.ok();
     }
@@ -113,7 +113,7 @@ public class TaskController {
     @GetMapping("/execute")
     @ApiOperation("执行任务")
     public R executeTask(@RequestParam Long taskId) {
-        taskService.executeTask(taskId, ReqUtils.currentUserId());
+        taskService.executeTask(taskId, ReqUtils.curMemberId());
         return R.ok();
     }
 
@@ -121,7 +121,7 @@ public class TaskController {
     @GetMapping("/receiverCancel")
     @ApiOperation("领取人取消任务")
     public R cancelTaskByReceiver(@RequestParam Long taskId) {
-        taskService.cancelTaskByReceiver(ReqUtils.currentUserId(), taskId);
+        taskService.cancelTaskByReceiver(ReqUtils.curMemberId(), taskId);
         return R.ok();
     }
 
@@ -129,7 +129,7 @@ public class TaskController {
     @GetMapping("/publisherCancel")
     @ApiOperation("发布人取消任务")
     public R cancelTaskByPublisher(@RequestParam Long taskId) {
-        taskService.cancelTaskByPublisher(ReqUtils.currentUserId(), taskId);
+        taskService.cancelTaskByPublisher(ReqUtils.curMemberId(), taskId);
         return R.ok();
     }
 
@@ -137,7 +137,7 @@ public class TaskController {
     @GetMapping("/republish")
     @ApiOperation("重新发布任务")
     public R republishTask(@RequestParam Long taskId) {
-        taskService.republishTask(ReqUtils.currentUserId(), taskId);
+        taskService.republishTask(ReqUtils.curMemberId(), taskId);
         return R.ok();
     }
 
@@ -146,7 +146,7 @@ public class TaskController {
     @GetMapping("/submit")
     @ApiOperation("提交任务")
     public R submitTask(@RequestParam Long taskId) {
-        taskService.submitTask(ReqUtils.currentUserId(), taskId);
+        taskService.submitTask(ReqUtils.curMemberId(), taskId);
         return R.ok();
     }
 
@@ -197,7 +197,7 @@ public class TaskController {
     @GetMapping("/like")
     @ApiOperation("任务点赞")
     public R like(@RequestParam Long taskId) {
-        likeService.like(ReqUtils.currentUserId(),taskId,LikeTypeEnum.task);
+        likeService.like(ReqUtils.curMemberId(),taskId,LikeTypeEnum.task);
         return R.ok();
     }
 
@@ -205,7 +205,7 @@ public class TaskController {
     @GetMapping("/unlike")
     @ApiOperation("取消任务点赞")
     public R unlike(@RequestParam Long taskId) {
-        likeService.unlike(ReqUtils.currentUserId(),taskId,LikeTypeEnum.task);
+        likeService.unlike(ReqUtils.curMemberId(),taskId,LikeTypeEnum.task);
         return R.ok();
     }
 

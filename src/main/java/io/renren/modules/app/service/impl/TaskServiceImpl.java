@@ -554,7 +554,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             memberWalletRecordService.updateById(record);
 
             //记录钱包金额变动日志
-            MemberWalletEntity wallet = memberWalletService.selectById(receiverId);
+            MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>().eq("member_id",receiverId));
             MemberWalletLogEntity log = new MemberWalletLogEntity();
             log.setMemberId(receiverId);
             log.setChangeMoney(order.getTotalFee());

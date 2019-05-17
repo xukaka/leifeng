@@ -29,7 +29,7 @@ public class TaskCommentController {
     @PostMapping("/add")
     @ApiOperation("新增评论")
     public R addComment(@RequestParam Long taskId, @RequestParam String content) {
-        commentService.addComment(taskId,CommentTypeEnum.task, ReqUtils.currentUserId(), content);
+        commentService.addComment(taskId,CommentTypeEnum.task, ReqUtils.curMemberId(), content);
         return R.ok();
     }
 
@@ -57,7 +57,7 @@ public class TaskCommentController {
     @PostMapping("/reply/add")
     @ApiOperation("新增评论回复")
     public R addCommentReply(@RequestParam Long commentId, @RequestParam Long toUserId, @RequestParam String content) {
-        commentService.addCommentReply(commentId,ReqUtils.currentUserId(),toUserId,content);
+        commentService.addCommentReply(commentId,ReqUtils.curMemberId(),toUserId,content);
         return R.ok();
     }
 

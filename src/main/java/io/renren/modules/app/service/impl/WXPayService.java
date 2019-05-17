@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -37,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-@Component
+@Service
 public class WXPayService {
     private final static Logger logger = LoggerFactory.getLogger(WXPayService.class);
     @Autowired
@@ -253,13 +254,13 @@ public class WXPayService {
         reqdata.put("mch_appid",config.getAppId());
         reqdata.put("mchid",config.getMchId());
         reqdata.put("nonce_str",WXPayUtil.generateNonceStr());
-        reqdata.put("partner_trade_no", OrderNoUtil.generateOrderNo(Long.valueOf(new Random().nextInt(100000))));
+        reqdata.put("partner_trade_no", OrderNoUtil.generateOrderNo((long)new Random().nextInt(100000)));
         reqdata.put("openid",openId);
         reqdata.put("check_name","FORCE_CHECK");//NO_CHECK：不校验真实姓名,FORCE_CHECK：强校验真实姓名
         reqdata.put("re_user_name",realName);
         reqdata.put("amount",amount);
         reqdata.put("desc","企业转账提现");
-        reqdata.put("spbill_create_ip", ReqUtils.getRequest().getRemoteAddr());
+        reqdata.put("spbill_create_ip", ReqUtils.getRemoteAddr());
 
         String sign = WXPayUtil.generateSignature(reqdata, config.getKey());
         reqdata.put("sign",sign);

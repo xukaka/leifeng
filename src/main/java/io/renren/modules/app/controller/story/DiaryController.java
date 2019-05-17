@@ -44,7 +44,7 @@ public class DiaryController {
     @ApiOperation("创建日记")
     public R createDiary(@RequestBody DiaryForm form) {
         logger.info("参数：" + JsonUtil.Java2Json(form));
-        diaryService.createDiary(ReqUtils.currentUserId(), form);
+        diaryService.createDiary(ReqUtils.curMemberId(), form);
         return R.ok();
     }
 
@@ -52,7 +52,7 @@ public class DiaryController {
     @GetMapping("/detail/{id}")
     @ApiOperation("获取日记详情")
     public R getDiary(@PathVariable("id") Long id) {
-        DiaryDto diary = diaryService.getDiary(ReqUtils.currentUserId(),id);
+        DiaryDto diary = diaryService.getDiary(ReqUtils.curMemberId(),id);
         return R.ok().put("result", diary);
     }
 
@@ -76,7 +76,7 @@ public class DiaryController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<DiaryDto> diarys = diaryService.getMyDiarys(ReqUtils.currentUserId(), page);
+        PageUtils<DiaryDto> diarys = diaryService.getMyDiarys(ReqUtils.curMemberId(), page);
         return R.ok().put("result", diarys);
 
     }
@@ -86,7 +86,7 @@ public class DiaryController {
     @GetMapping("/like")
     @ApiOperation("日记点赞")
     public R like(@RequestParam Long diaryId) {
-        likeService.like(ReqUtils.currentUserId(),diaryId, LikeTypeEnum.diary);
+        likeService.like(ReqUtils.curMemberId(),diaryId, LikeTypeEnum.diary);
         return R.ok();
     }
 
@@ -94,7 +94,7 @@ public class DiaryController {
     @GetMapping("/unlike")
     @ApiOperation("取消日记点赞")
     public R unlike(@RequestParam Long diaryId) {
-        likeService.unlike(ReqUtils.currentUserId(),diaryId,LikeTypeEnum.diary);
+        likeService.unlike(ReqUtils.curMemberId(),diaryId,LikeTypeEnum.diary);
         return R.ok();
     }
 

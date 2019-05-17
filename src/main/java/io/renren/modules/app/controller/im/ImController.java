@@ -118,7 +118,7 @@ public class ImController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<ImGroupNotice> notices = imService.getGroupNotices(ReqUtils.currentUserId(), page);
+        PageUtils<ImGroupNotice> notices = imService.getGroupNotices(ReqUtils.curMemberId(), page);
         return R.ok().put("result", notices);
     }
 

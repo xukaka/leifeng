@@ -32,11 +32,11 @@ public interface CommentService extends IService<CommentEntity> {
     /**
      * 新增评论回复
      * @param commentId 评论id
-     * @param fromUserId 回复人id
-     * @param toUserId 被回复人id
+     * @param fromMemberId 回复人id
+     * @param toMemberId 被回复人id
      * @param content 回复内容
      */
-    void addCommentReply(Long commentId, Long fromUserId, Long toUserId,  String content);
+    void addCommentReply(Long commentId, Long fromMemberId, Long toMemberId,  String content);
 
     /**
      * 删除评论回复

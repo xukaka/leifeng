@@ -39,7 +39,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     @Override
     public PageUtils<CommentDto> getComments(Long businessId, CommentTypeEnum type, PageWrapper page) {
-        LOG.debug("get comments params:businessId={},type={},page={}", businessId, type, page);
         List<CommentDto> comments = baseMapper.getComments(businessId, type, page);
         if (CollectionUtils.isEmpty(comments)) {
             return new PageUtils<>();
@@ -59,7 +58,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     @Override
     public void addComment(Long businessId, CommentTypeEnum type, Long commentatorId, String content) {
-        LOG.debug("add comment params:businessId={},type={},commentatorId={},content={}", businessId, type, commentatorId, content);
         checkCommentParam(businessId, type, commentatorId, content);
         CommentEntity comment = new CommentEntity(DateUtils.now(), commentatorId, businessId, type, content);
         this.insert(comment);
@@ -92,8 +90,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     @Override
     public void deleteComment(Long id) {
-        LOG.debug("delete comment params:id={}", id);
-
         CommentEntity comment = this.selectById(id);
         if (comment != null) {
             comment.setDeleted(true);
@@ -103,7 +99,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     @Override
     public void addCommentReply(Long commentId, Long fromUserId, Long toUserId, String content) {
-        LOG.debug("add comment reply params:commentId={},fromUserId={},toUserId={},content={}", commentId, fromUserId, toUserId, content);
         checkCommentReplyParam(commentId, fromUserId, toUserId, content);
         CommentReplyEntity reply = new CommentReplyEntity();
         reply.setCommentId(commentId);
@@ -142,8 +137,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     @Override
     public void deleteCommentReply(Long replyId) {
-        LOG.debug("delete comment reply params:replyId={}",replyId);
-
         CommentReplyEntity reply = commentReplyDao.selectById(replyId);
         if (reply != null) {
             reply.setDeleted(true);

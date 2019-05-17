@@ -245,9 +245,9 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
 
 
     //成员是否已在圈中
-    private boolean existsCircleMember(Long currentUserId, Long circleId) {
+    private boolean existsCircleMember(Long curMemberId, Long circleId) {
         Wrapper<TaskCircleMemberEntity> wrapper = new EntityWrapper<>();
-        wrapper.eq("member_id", currentUserId)
+        wrapper.eq("member_id", curMemberId)
                 .eq("circle_id", circleId);
         int count = taskCircleMemberDao.selectCount(wrapper);
         return count > 0;

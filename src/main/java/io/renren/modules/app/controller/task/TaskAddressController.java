@@ -27,7 +27,7 @@ public class TaskAddressController {
     @PostMapping("/create")
     @ApiOperation("创建任务地址")
     public R createAddress( @RequestBody TaskAddressForm form) {
-        taskAddressService.createAddress(ReqUtils.currentUserId(), form);
+        taskAddressService.createAddress(ReqUtils.curMemberId(), form);
         return R.ok();
     }
 
@@ -36,7 +36,7 @@ public class TaskAddressController {
     @GetMapping("/list")
     @ApiOperation("获取任务地址列表")
     public R getAddresses() {
-        List<TaskAddressEntity> addresses = taskAddressService.getAddresses(ReqUtils.currentUserId());
+        List<TaskAddressEntity> addresses = taskAddressService.getAddresses(ReqUtils.curMemberId());
         return R.ok().put("result", addresses);
     }
 

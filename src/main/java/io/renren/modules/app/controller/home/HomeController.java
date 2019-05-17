@@ -35,7 +35,7 @@ public class HomeController {
     @GetMapping("/checkIn")
     @ApiOperation("用户签到")
     public R checkIn() {
-        Map<String,Object> result=memberService.checkIn(ReqUtils.currentUserId(),1);
+        Map<String,Object> result=memberService.checkIn(ReqUtils.curMemberId(),1);
         return R.ok().put("result",result);
     }
 

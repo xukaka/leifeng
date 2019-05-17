@@ -28,7 +28,7 @@ public class SearchController {
     @GetMapping("/history/save")
     @ApiOperation("保存搜索历史")
     public R saveHistory( @RequestParam String keyword) {
-        searchService.saveHistory(ReqUtils.currentUserId(), keyword);
+        searchService.saveHistory(ReqUtils.curMemberId(), keyword);
         return R.ok();
     }
 
@@ -36,7 +36,7 @@ public class SearchController {
     @GetMapping("/history/list")
     @ApiOperation("获取搜索历史列表")
     public R getHistories() {
-        List<SearchHistoryEntity> histories = searchService.getHistories(ReqUtils.currentUserId());
+        List<SearchHistoryEntity> histories = searchService.getHistories(ReqUtils.curMemberId());
         return R.ok().put("result", histories);
     }
 
@@ -44,7 +44,7 @@ public class SearchController {
     @DeleteMapping("/history/clear")
     @ApiOperation("清空搜索历史")
     public R clearHistories() {
-        searchService.clearHistories(ReqUtils.currentUserId());
+        searchService.clearHistories(ReqUtils.curMemberId());
         return R.ok();
     }
 

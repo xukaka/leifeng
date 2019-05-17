@@ -94,12 +94,12 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 任务领取人取消任务
      */
-    void cancelTaskByReceiver(Long currentUserId, Long taskId);
+    void cancelTaskByReceiver(Long curMemberId, Long taskId);
 
     /**
      * 任务发布人取消任务
      */
-    void cancelTaskByPublisher(Long currentUserId, Long taskId);
+    void cancelTaskByPublisher(Long curMemberId, Long taskId);
 
     /**
      * 重新发布任务

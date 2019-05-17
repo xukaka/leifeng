@@ -33,7 +33,7 @@ public class TaskCircleController {
     @PostMapping("/create")
     @ApiOperation("创建任务圈")
     public R createCircle(@RequestBody TaskCircleForm form) {
-        taskCircleService.createCircle(ReqUtils.currentUserId(), form);
+        taskCircleService.createCircle(ReqUtils.curMemberId(), form);
         return R.ok();
     }
 
@@ -45,7 +45,7 @@ public class TaskCircleController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(ReqUtils.currentUserId(),keyword,page);
+        PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(ReqUtils.curMemberId(),keyword,page);
         return R.ok().put("result", circles);
     }
 
@@ -57,7 +57,7 @@ public class TaskCircleController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskCircleDto> circles = taskCircleService.getMyJoinedCircles(ReqUtils.currentUserId(),page);
+        PageUtils<TaskCircleDto> circles = taskCircleService.getMyJoinedCircles(ReqUtils.curMemberId(),page);
         return R.ok().put("result", circles);
     }
 
@@ -81,7 +81,7 @@ public class TaskCircleController {
     @DeleteMapping("/dismiss/{id}")
     @ApiOperation("解散任务圈")
     public R dismissCircle(@PathVariable("id") Long id) {
-        taskCircleService.dismissCircle(ReqUtils.currentUserId(),id);
+        taskCircleService.dismissCircle(ReqUtils.curMemberId(),id);
         return R.ok();
     }
 
@@ -90,7 +90,7 @@ public class TaskCircleController {
     @GetMapping("/join")
     @ApiOperation("加入任务圈")
     public R joinCircle(@RequestParam("circleId") Long circleId) {
-        taskCircleService.joinCircle(ReqUtils.currentUserId(), circleId);
+        taskCircleService.joinCircle(ReqUtils.curMemberId(), circleId);
         return R.ok();
     }
 
@@ -98,7 +98,7 @@ public class TaskCircleController {
     @GetMapping("/exit")
     @ApiOperation("退出任务圈")
     public R exitCircle(@RequestParam("circleId") Long circleId) {
-        taskCircleService.exitCircle(ReqUtils.currentUserId(), circleId);
+        taskCircleService.exitCircle(ReqUtils.curMemberId(), circleId);
         return R.ok();
     }
 

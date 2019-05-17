@@ -37,6 +37,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -60,17 +61,22 @@ public class WXPayController {
     private MemberWalletLogService memberWalletLogService;
 
 
-
     @Login
     @PostMapping("/prePay")
     @ApiOperation("微信预下订单接口")
     public R prePay(String prodDesc, float totalFee, String openid, Long taskId) throws Exception {
-        logger.info("[WXPayController.prePay] request:prodDesc={},totleFee={},openid={}", prodDesc, totalFee, openid);
+ /*       Long memberId = ReqUtils.curMemberId();
+        MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>().eq("member_id", memberId));
+        if (wallet == null) {
+            return R.error("请绑定钱包");
+        }*/
+
+        logger.info("[WXPayController.prePay] request:prodDesc={},totleFee={},openid={}", "雷锋在线-任务下单", totalFee,openid);
         Map<String, String> reqData = new HashMap<>();
-        reqData.put("body", prodDesc); //商品描述
+        reqData.put("body", "雷锋在线-任务下单"); //商品描述
         reqData.put("out_trade_no", "NO" + OrderNoUtil.generateOrderNo(taskId));
-        reqData.put("total_fee", String.valueOf((int) (totalFee * 100))); //交易的金额，单位为分
-        reqData.put("spbill_create_ip", ReqUtils.getRequest().getRemoteAddr());
+        reqData.put("total_fee", String.valueOf((long) (totalFee * 100))); //交易的金额，单位为分
+        reqData.put("spbill_create_ip", ReqUtils.getRemoteAddr());
         reqData.put("openid", openid);
         Map<String, String> reqDataComp = wxPayService.fillRequestData(reqData);
         logger.info("微信预下订单请求参数：{}", JsonUtil.Java2Json(reqDataComp));
@@ -81,13 +87,13 @@ public class WXPayController {
         int count = taskOrderService.selectCount(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
         if (count == 0) { //新增
 
-            MemberWalletRecordEntity record = new MemberWalletRecordEntity();
-            record.setFromMemberId(ReqUtils.currentUserId());
+ /*           MemberWalletRecordEntity record = new MemberWalletRecordEntity();
+            record.setFromMemberId(ReqUtils.curMemberId());
             record.setMoney((long) (totalFee * 100));
             record.setPayType(0);
             record.setOutTradeNo(reqData.get("out_trade_no"));
             record.setCreateTime(DateUtils.now());
-            memberWalletRecordService.insert(record);
+            memberWalletRecordService.insert(record);*/
 
             TaskOrderEntity torder = new TaskOrderEntity();
             torder.setOutTradeNo(reqData.get("out_trade_no"));
@@ -111,7 +117,7 @@ public class WXPayController {
         InputStream inputStream = request.getInputStream();
         StringBuilder sb = new StringBuilder();
         String s;
-        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         while ((s = in.readLine()) != null) {
             sb.append(s);
         }
@@ -119,29 +125,27 @@ public class WXPayController {
         inputStream.close();
 
         // 解析xml成map
-        Map<String, String> map = new HashMap<String, String>();
-        map = WXPayUtil.xmlToMap(sb.toString());
+        Map<String, String> map = WXPayUtil.xmlToMap(sb.toString());
         logger.info("微信回调的内容为：{}", map);
 
-        if (!StringUtils.isEmpty(map.get("return_code")) && "SUCCESS".equals(map.get("return_code"))) {
+        if ("SUCCESS".equals(map.get("return_code"))) {
             //签名校验
             boolean signFlag = wxPayService.validateSign(map);
 
             if ("SUCCESS".equals(map.get("result_code")) && signFlag) {
                 String outTradeNo = map.get("out_trade_no");
-                int totalFee = Integer.valueOf(map.get("total_fee"));
+                long totalFee = Long.valueOf(map.get("total_fee"));
                 TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("out_trade_no", outTradeNo));
                 Long orderTotalFee = torder.getTotalFee();
-                MemberWalletRecordEntity record = memberWalletRecordService.selectOne(new EntityWrapper<MemberWalletRecordEntity>().eq("out_trade_no", outTradeNo));
+               // MemberWalletRecordEntity record = memberWalletRecordService.selectOne(new EntityWrapper<MemberWalletRecordEntity>().eq("out_trade_no", outTradeNo));
                 logger.info("根据单号获取到系统订单为：{}", JsonUtil.Java2Json(torder));
-                if (orderTotalFee != null && orderTotalFee.intValue() == totalFee
-                        && record != null && record.getMoney() == totalFee) {
+                if (orderTotalFee != null && orderTotalFee.intValue() == totalFee) {
 
-                    record.setPayType(2);
+              /*      record.setPayType(2);
                     record.setPayStatus(1);
                     record.setPayTime(DateUtils.now());
                     memberWalletRecordService.updateById(record);
-
+*/
                     torder.setTransactionId(map.get("transaction_id"));
                     torder.setTimeEnd(map.get("time_end"));
                     torder.setTradeState(WXPayConstants.SUCCESS);
@@ -191,14 +195,20 @@ public class WXPayController {
     @Login
     @PostMapping("/transfer")
     @ApiOperation("企业转账提现功能接口")
-    public R transferMoney(String openId, String realName, Integer amount) throws Exception {
-        Long memberId = ReqUtils.currentUserId();
-        MemberWalletEntity wallet = memberWalletService.selectById(memberId);
-        if (wallet==null || wallet.getMoney()< amount){
+    public R transferMoney(String openId, String realName, Long amount) throws Exception {
+        /*Long memberId = ReqUtils.curMemberId();
+        MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>().eq("member_id", memberId));
+        if (wallet == null || wallet.getMoney() < amount) {
             return R.error("提现余额不足");
-        }
+        }*/
         logger.info("[WXPayController.transferMoney] 进入");
-        String transdata = wxPayService.transferMoneyRequest(wallet.getOpenId(), wallet.getRealName(), String.valueOf(amount));
+        String transdata = wxPayService.transferMoneyRequest(openId, realName, String.valueOf(amount));
+
+     /*   TaskOrderEntity torder = new TaskOrderEntity();
+        torder.setOutTradeNo("TX" + OrderNoUtil.generateOrderNo(memberId));
+        torder.setAttach("提现");
+        torder.setTotalFee(amount);
+        taskOrderService.insert(torder);*/
         logger.info("转账提现接口微信返回结果：{}", transdata);
 
         Map<String, String> map = WXPayUtil.xmlToMap(transdata);
@@ -214,19 +224,15 @@ public class WXPayController {
                 memberWalletRecordService.updateById(record);*/
 
                 //记录钱包金额变动日志
-                MemberWalletLogEntity log = new MemberWalletLogEntity();
-                log.setMemberId(memberId);
-                log.setChangeMoney(-(long)amount);
-                log.setMoney(wallet.getMoney()-amount));
-                log.setOutTradeNo(order.getOutTradeNo());
-                log.setRemark("提现");
-                memberWalletLogService.insert(log);
+//                MemberWalletLogEntity log = new MemberWalletLogEntity();
+//                log.setMemberId(memberId);
+//                log.setChangeMoney(-(long)amount);
+//                log.setMoney(wallet.getMoney()-amount));
+//                log.setOutTradeNo(order.getOutTradeNo());
+//                log.setRemark("提现");
+//                memberWalletLogService.insert(log);
                 //用户钱包金额减少
-                memberWalletService.incMoney(memberId,-(long)amount);
-
-
-
-
+//                memberWalletService.incMoney(memberId, -(long) amount);
 
 
                 return R.ok().put("tradeNo", map.get("partner_trade_no"))
@@ -248,7 +254,7 @@ public class WXPayController {
     public R refund(Long taskId) throws Exception {
         logger.info("[WXPayController.refund] 进入 request param taskId=" + taskId);
         TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
-        if (torder != null && torder.getTotalFee().intValue() > 0) {
+        if (torder != null && torder.getTotalFee() > 0) {
             String refunddata = wxPayService.refundRequest(torder.getTransactionId(), taskId, String.valueOf(torder.getTotalFee()));
             logger.info("退款接口微信返回结果：{}", refunddata);
 

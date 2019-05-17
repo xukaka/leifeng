@@ -73,7 +73,7 @@ public class MemberController {
     @GetMapping("/detail")
     @ApiOperation("获取用户信息")
     public R getMember(@RequestParam("memberId") Long memberId) {
-        MemberDto member = memberService.getMember(ReqUtils.currentUserId(),memberId);
+        MemberDto member = memberService.getMember(ReqUtils.curMemberId(),memberId);
         return R.ok().put("result", member);
     }
 
@@ -97,7 +97,7 @@ public class MemberController {
     @PostMapping("/location")
     @ApiOperation("更新用户位置")
     public R updateLocation(@RequestBody LocationForm locationForm) {
-        memberService.updateLocationNumber(ReqUtils.currentUserId(),locationForm);
+        memberService.updateLocationNumber(ReqUtils.curMemberId(),locationForm);
         return R.ok();
     }
 
@@ -136,7 +136,7 @@ public class MemberController {
     @GetMapping("/follow")
     @ApiOperation("关注用户")
     public R followMember(@RequestParam Long toMemberId) {
-        memberService.followMember(ReqUtils.currentUserId(), toMemberId);
+        memberService.followMember(ReqUtils.curMemberId(), toMemberId);
         return R.ok();
     }
 
@@ -144,7 +144,7 @@ public class MemberController {
     @GetMapping("/unfollow")
     @ApiOperation("取消关注")
     public R unfollowMember(@RequestParam Long toMemberId) {
-        memberService.unfollowMember(ReqUtils.currentUserId(), toMemberId);
+        memberService.unfollowMember(ReqUtils.curMemberId(), toMemberId);
         return R.ok();
     }
 
@@ -156,7 +156,7 @@ public class MemberController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<MemberDto> members = memberService.getFollowMembers(ReqUtils.currentUserId(), page);
+        PageUtils<MemberDto> members = memberService.getFollowMembers(ReqUtils.curMemberId(), page);
         return R.ok().put("result", members);
     }
 
@@ -169,7 +169,7 @@ public class MemberController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<MemberDto> members = memberService.getFansMembers(ReqUtils.currentUserId(), page);
+        PageUtils<MemberDto> members = memberService.getFansMembers(ReqUtils.curMemberId(), page);
         return R.ok().put("result", members);
     }
 
@@ -178,7 +178,7 @@ public class MemberController {
     @PostMapping("/score")
     @ApiOperation("用户评分")
     public R socre(@RequestBody MemberScoreForm form) {
-        memberService.score(ReqUtils.currentUserId(), form);
+        memberService.score(ReqUtils.curMemberId(), form);
         return R.ok();
     }
 
