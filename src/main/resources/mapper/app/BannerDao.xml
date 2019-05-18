@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.renren.modules.app.dao.banner.BannerDao">
+    <!-- resultMap-->
+    <resultMap type="io.renren.modules.app.dto.BannerDto" id="bannerMap">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="coverUrl" column="cover_url"/>
+        <result property="linkUrl" column="link_url"/>
+        <result property="type" column="type"/>
+        <result property="createTime" column="create_time"/>
+
+        <!--关联创建人-->
+        <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
+            <id property="id" column="creator_id"/>
+            <result property="nickName" column="creator_nick_name"/>
+            <result property="realName" column="creator_real_name"/>
+            <result property="avatar" column="creator_avatar"/>
+            <result property="sex" column="creator_sex"/>
+        </association>
+    </resultMap>
+
+    <!--获取横幅详情-->
+    <select id="getBanner" resultMap="bannerMap">
+        select
+        b.*,
+        m.nick_name AS creator_nick_name,
+        m.real_name AS creator_real_name,
+        m.avatar AS creator_avatar,
+        m.sex AS creator_sex
+        from t_banner b
+        join member m on b.creator_id = m.id
+        where b.id = #{id}
+    </select>
+
+    <!--分页获取橫幅列表-->
+    <select id="getBanners" resultMap="bannerMap">
+        select
+        b.*,
+        m.nick_name AS creator_nick_name,
+        m.real_name AS creator_real_name,
+        m.avatar AS creator_avatar,
+        m.sex AS creator_sex
+        from t_banner b
+        join member m on b.creator_id = m.id
+        where b.deleted = 0
+        <if test="type!=null">
+            AND b.type = #{type}
+        </if>
+        ORDER BY b.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+
+    </select>
+
+    <!--获取橫幅总数-->
+    <select id="count" resultType="int">
+        select
+        count(1)
+        from t_banner b
+        where d.deleted = 0
+        <if test="type!=null">
+            AND b.type = #{type}
+        </if>
+    </select>
+</mapper>

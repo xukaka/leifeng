@@ -6,10 +6,7 @@ import io.renren.modules.app.entity.story.DiaryContentEntity;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * @author huangshishui
- * @date 2019/4/26 0:49
- **/
+
 public class DiaryDto implements Serializable {
     //日记id
     private Long id;
