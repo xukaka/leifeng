@@ -7,7 +7,7 @@
     <select id="getTagsByTaskId" resultType="io.renren.modules.app.entity.task.TagEntity">
         SELECT
           t.*
-        FROM t_task_tag t
+        FROM t_tag t
         JOIN r_task_tag r
         WHERE r.id = #{taskId}
     </select>

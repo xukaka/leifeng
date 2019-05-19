@@ -23,10 +23,9 @@ public class BannerForm {
     @ApiModelProperty("链接url")
     private String linkUrl;
 
-    @NotEmpty
+    @NotNull
     @ApiModelProperty("类型")
     private BannerTypeEnum type;
-
 
 
     public String getTitle() {

@@ -9,9 +9,6 @@ import io.renren.modules.app.entity.BaseEntity;
 public class BannerEntity extends BaseEntity {
 
 
-    //创建人id
-    private Long creatorId;
-
     //标题
     private String title;
 
@@ -25,13 +22,6 @@ public class BannerEntity extends BaseEntity {
     //类型
     private BannerTypeEnum type;
 
-    public Long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Long creatorId) {
-        this.creatorId = creatorId;
-    }
 
     public String getTitle() {
         return title;

@@ -12,8 +12,6 @@ public class BannerDto implements Serializable {
     //横幅id
     private Long id;
 
-    //创建人
-    private Member creator;
 
 
     //标题
@@ -29,6 +27,9 @@ public class BannerDto implements Serializable {
     //类型
     private BannerTypeEnum type;
 
+    //创建时间
+    private Long createTime;
+
     public Long getId() {
         return id;
     }
@@ -37,13 +38,6 @@ public class BannerDto implements Serializable {
         this.id = id;
     }
 
-    public Member getCreator() {
-        return creator;
-    }
-
-    public void setCreator(Member creator) {
-        this.creator = creator;
-    }
 
     public String getTitle() {
         return title;
@@ -75,5 +69,13 @@ public class BannerDto implements Serializable {
 
     public void setType(BannerTypeEnum type) {
         this.type = type;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
     }
 }

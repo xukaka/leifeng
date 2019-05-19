@@ -6,7 +6,7 @@ import io.renren.modules.app.entity.BaseEntity;
 /**
  * 任务标签表
  */
-@TableName("t_task_tag")
+@TableName("t_tag")
 public class TagEntity extends BaseEntity {
 
     /**

@@ -43,7 +43,7 @@
         FROM t_task_circle tc
         JOIN member m ON tc.creator_id = m.id
         JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
-        JOIN t_task_tag tg ON rg.tag_id=tg.id
+        JOIN t_tag tg ON rg.tag_id=tg.id
         WHERE tc.id = #{circleId}
     </select>
 
@@ -72,7 +72,7 @@
             LIMIT #{page.offset},#{page.limit}
         ) AS circle
         JOIN r_task_circle_tag rg ON circle.id = rg.circle_id
-        JOIN t_task_tag tg ON rg.tag_id=tg.id
+        JOIN t_tag tg ON rg.tag_id=tg.id
         ORDER BY circle.create_time DESC
     </select>
 
@@ -84,7 +84,7 @@
         FROM t_task_circle tc
         JOIN t_task_circle_member m ON tc.id = m.circle_id
         JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
-        JOIN t_task_tag tg ON rg.tag_id=tg.id
+        JOIN t_tag tg ON rg.tag_id=tg.id
         WHERE m.member_id = #{memberId} AND tc.deleted = 0
         ORDER BY m.create_time DESC
         LIMIT #{page.offset},#{page.limit}

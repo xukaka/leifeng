@@ -26,9 +26,9 @@ public interface BannerService {
 
 
     //创建横幅
-    void createBanner(Long creatorId, BannerForm form);
+    void createBanner(BannerForm form);
     //获取横幅详情
-    BannerDto getBanner(Long bannerId);
+    BannerDto getBanner(Long id);
 
     //修改横幅信息
     void updateBanner(BannerUpdateForm form);

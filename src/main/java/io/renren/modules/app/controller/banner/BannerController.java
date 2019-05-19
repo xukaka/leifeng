@@ -24,13 +24,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/app/banner")
-@Api(tags = "首页")
+@Api(tags = "横幅")
 public class BannerController {
     @Autowired
     private BannerService bannerService;
 
 
-    @Login
     @GetMapping("/list")
     @ApiOperation("分页获取横幅列表")
     public R getBanners(@RequestParam BannerTypeEnum type, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
@@ -42,11 +41,10 @@ public class BannerController {
         return R.ok().put("result", banners);
     }
 
-    @Login
     @PostMapping("/create")
     @ApiOperation("创建横幅")
     public R createBanner(@RequestBody BannerForm form) {
-        bannerService.createBanner(ReqUtils.curMemberId(), form);
+        bannerService.createBanner( form);
         return R.ok();
     }
 
