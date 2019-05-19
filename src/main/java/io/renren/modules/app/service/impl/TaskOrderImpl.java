@@ -7,7 +7,7 @@ import io.renren.modules.app.service.TaskOrderService;
 import org.springframework.stereotype.Service;
 
 
-@Service("taskOrderService")
+@Service
 public class TaskOrderImpl extends ServiceImpl<TaskOrderDao, TaskOrderEntity> implements TaskOrderService {
 
 }

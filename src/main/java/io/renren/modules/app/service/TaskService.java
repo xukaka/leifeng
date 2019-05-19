@@ -79,7 +79,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 完成任务
      */
-    void completeTask(Long receiverId, Long taskId);
+    void completeTask(Long curMemberId,Long receiverId, Long taskId);
 
     /**
      * 选择任务领取人

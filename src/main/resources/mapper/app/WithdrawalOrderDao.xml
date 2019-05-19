@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.task.WithdrawalOrderDao">
+    <!--任务resultMap-->
+    <resultMap type="io.renren.modules.app.dto.WithdrawalOrderDto" id="withdrawalOrderMap">
+        <id property="id" column="id"/>
+        <result property="outTradeNo" column="out_trade_no"/>
+        <result property="totalFee" column="total_fee"/>
+        <result property="attach" column="attach"/>
+        <result property="createTime" column="create_time"/>
+        <result property="tradeState" column="trade_state"/>
+        <result property="timeEnd" column="time_end"/>
+        <!--关联创建人-->
+        <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
+            <id property="id" column="member_id"/>
+            <result property="nickName" column="member_nick_name"/>
+            <result property="realName" column="member_real_name"/>
+            <result property="avatar" column="member_avatar"/>
+            <result property="sex" column="member_sex"/>
+        </association>
+
+    </resultMap>
+
+
+    <select id="getWithdrawalOrders" resultMap="withdrawalOrderMap">
+       select o.*,
+        m.id AS member_id,
+        m.nick_name AS member_nick_name,
+        m.real_name AS member_real_name,
+        m.avatar AS member_avatar,
+        m.sex AS member_sex
+        from
+        t_withdrawal_order o
+        join member m on o.member_id=m.id
+        ORDER BY o.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+
+   </select>
+
+
+    <select id="count" resultType="int">
+        select count(1)
+        from
+        t_withdrawal_order o
+        join member m on o.member_id=m.id
+
+    </select>
+
+</mapper>

@@ -1,5 +1,7 @@
 package io.renren.modules.app.controller.story;
 
+import com.alibaba.druid.util.StringUtils;
+import io.netty.util.internal.StringUtil;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.Constant;
 import io.renren.common.utils.IPUtils;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import sun.misc.BASE64Decoder;
+
+import java.io.IOException;
 
 /**
  * @author xukaijun
@@ -43,5 +48,38 @@ public class ImageController {
         logger.info("upload image,get url:"+url);
 
         return R.ok().put("result", url+ Constant.IMAGE_STYLE);
+    }
+    /**
+     * 上传文件Base64
+     */
+    @PostMapping("/uploadBase64")
+    @ApiOperation("图片上传(Base64)")
+    public R uploadBase64(String file) throws Exception {
+        if (StringUtils.isEmpty(file)) {
+            throw new RRException("上传文件不能为空");
+        }
+
+
+        byte[] data= base642Byte(file);
+
+        //上传文件
+//        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+        String url = OSSFactory.build().uploadSuffix(data, "png");
+        logger.info("upload image,get url:"+url);
+
+        return R.ok().put("result", url+ Constant.IMAGE_STYLE);
+    }
+
+    private byte[] base642Byte(String file){
+
+        BASE64Decoder d = new BASE64Decoder();
+        try {
+            byte[] data = d.decodeBuffer(file);
+            return data;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
 }

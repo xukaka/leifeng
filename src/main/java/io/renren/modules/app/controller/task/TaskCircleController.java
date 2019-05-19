@@ -45,7 +45,7 @@ public class TaskCircleController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(ReqUtils.curMemberId(),keyword,page);
+        PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(ReqUtils.curMemberId(), keyword, page);
         return R.ok().put("result", circles);
     }
 
@@ -57,7 +57,7 @@ public class TaskCircleController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<TaskCircleDto> circles = taskCircleService.getMyJoinedCircles(ReqUtils.curMemberId(),page);
+        PageUtils<TaskCircleDto> circles = taskCircleService.getMyJoinedCircles(ReqUtils.curMemberId(), page);
         return R.ok().put("result", circles);
     }
 
@@ -81,7 +81,7 @@ public class TaskCircleController {
     @DeleteMapping("/dismiss/{id}")
     @ApiOperation("解散任务圈")
     public R dismissCircle(@PathVariable("id") Long id) {
-        taskCircleService.dismissCircle(ReqUtils.curMemberId(),id);
+        taskCircleService.dismissCircle(ReqUtils.curMemberId(), id);
         return R.ok();
     }
 
@@ -105,20 +105,20 @@ public class TaskCircleController {
     @Login
     @GetMapping("/audit")
     @ApiOperation("入圈审核")
-    public R audit(@RequestParam("auditId") Long auditId,@RequestParam("status")CircleAuditStatusEnum status) {
+    public R audit(@RequestParam("auditId") Long auditId, @RequestParam("status") CircleAuditStatusEnum status) {
         taskCircleService.audit(auditId, status);
         return R.ok();
     }
 
     @GetMapping("/members")
     @ApiOperation("分页获取圈成员列表")
-    public R searchCircleMembers(@RequestParam Long circleId,@RequestParam String keyword,@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R searchCircleMembers(@RequestParam Long circleId, @RequestParam String keyword, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<MemberDto> members=taskCircleService.getCircleMembers(circleId,keyword, page);
-            return R.ok().put("result", members);
+        PageUtils<MemberDto> members = taskCircleService.getCircleMembers(circleId, keyword, page);
+        return R.ok().put("result", members);
     }
 
 

@@ -18,5 +18,7 @@ import java.util.List;
  */
 public interface TaskOrderService extends IService<TaskOrderEntity> {
 
+    void checkTaskOrder();
+
 }
 

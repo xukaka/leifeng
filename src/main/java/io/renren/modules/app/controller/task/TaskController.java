@@ -154,7 +154,7 @@ public class TaskController {
     @GetMapping("/complete")
     @ApiOperation("确认完成任务")
     public R completeTask(@RequestParam Long receiverId, @RequestParam Long taskId) {
-        taskService.completeTask(receiverId, taskId);
+        taskService.completeTask(ReqUtils.curMemberId(),receiverId, taskId);
         return R.ok();
     }
 
