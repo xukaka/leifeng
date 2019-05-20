@@ -28,14 +28,14 @@ public class DiaryCommentController {
     @Login
     @PostMapping("/add")
     @ApiOperation("新增评论")
-    public R addComment(@RequestParam Long diaryId, @RequestParam String content) {
+    public R addComment( Long diaryId,  String content) {
         commentService.addComment(diaryId,CommentTypeEnum.diary, ReqUtils.curMemberId(), content);
         return R.ok();
     }
 
     @GetMapping("/list")
     @ApiOperation("分页获取评论列表")
-    public R getComments(@RequestParam Long diaryId,@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getComments(Long diaryId, Integer curPage,  Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -56,7 +56,7 @@ public class DiaryCommentController {
     @Login
     @PostMapping("/reply/add")
     @ApiOperation("新增评论回复")
-    public R addCommentReply(@RequestParam Long commentId, @RequestParam Long toUserId, @RequestParam String content) {
+    public R addCommentReply( Long commentId,  Long toUserId,  String content) {
         commentService.addCommentReply(commentId,ReqUtils.curMemberId(),toUserId,content);
         return R.ok();
     }

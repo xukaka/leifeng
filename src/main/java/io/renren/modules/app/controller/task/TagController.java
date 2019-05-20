@@ -26,15 +26,14 @@ public class TagController {
 
     @PostMapping("/create")
     @ApiOperation("创建标签")
-    public R createTag(@RequestParam String tagName) {
+    public R createTag(String tagName) {
         tagService.createTag(tagName);
         return R.ok();
     }
 
     @GetMapping("/list")
     @ApiOperation("分页获取标签列表")
-    @ApiImplicitParam(name = "curPage", required = true, value = "分页page从1开始", dataType = "Integer", paramType = "query")
-    public R getTags(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getTags(Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("limit", pageSize);
@@ -51,7 +50,7 @@ public class TagController {
 
     @PutMapping("/update")
     @ApiOperation("更新标签信息")
-    public R updateTag(@RequestParam Long tagId, @RequestParam String tagName) {
+    public R updateTag(Long tagId, String tagName) {
         tagService.updateTag(tagId, tagName);
         return R.ok();
     }

@@ -113,7 +113,7 @@ public class ImController {
     @Login
     @GetMapping(value = "/groupNotice/list")
     @ApiOperation("分页获取群组通知列表")
-    public R getGroupNotices(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getGroupNotices( Integer curPage,  Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);

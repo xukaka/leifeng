@@ -37,7 +37,7 @@ public class ImageController {
      */
     @PostMapping("/upload")
     @ApiOperation("图片上传")
-    public R upload(@RequestParam("file") MultipartFile file) throws Exception {
+    public R upload( MultipartFile file) throws Exception {
         if (file.isEmpty()) {
             throw new RRException("上传文件不能为空");
         }

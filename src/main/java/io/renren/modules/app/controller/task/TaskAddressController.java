@@ -26,7 +26,7 @@ public class TaskAddressController {
     @Login
     @PostMapping("/create")
     @ApiOperation("创建任务地址")
-    public R createAddress( @RequestBody TaskAddressForm form) {
+    public R createAddress(@RequestBody TaskAddressForm form) {
         taskAddressService.createAddress(ReqUtils.curMemberId(), form);
         return R.ok();
     }

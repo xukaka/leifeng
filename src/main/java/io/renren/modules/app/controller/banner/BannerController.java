@@ -32,7 +32,7 @@ public class BannerController {
 
     @GetMapping("/list")
     @ApiOperation("分页获取横幅列表")
-    public R getBanners(@RequestParam BannerTypeEnum type, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getBanners( BannerTypeEnum type,  Integer curPage,  Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -51,14 +51,14 @@ public class BannerController {
 
     @GetMapping("/detail")
     @ApiOperation("获取横幅详情")
-    public R getBanner(@RequestParam Long id) {
+    public R getBanner( Long id) {
         BannerDto banner = bannerService.getBanner(id);
         return R.ok().put("result", banner);
     }
 
     @DeleteMapping("/delete")
     @ApiOperation("删除横幅")
-    public R deleteBanner(@RequestParam Long id) {
+    public R deleteBanner( Long id) {
         bannerService.deleteBanner(id);
         return R.ok();
     }

@@ -54,8 +54,6 @@ public class MemberController {
     private RedisUtils redisUtils;
 
 
-
-
     @PostMapping("/list")
     @ApiOperation("搜索用户列表-分页")
     public R searchMembers(@RequestBody MemberQueryForm form) {
@@ -68,12 +66,11 @@ public class MemberController {
     }
 
 
-
     @Login
     @GetMapping("/detail")
     @ApiOperation("获取用户信息")
-    public R getMember(@RequestParam("memberId") Long memberId) {
-        MemberDto member = memberService.getMember(ReqUtils.curMemberId(),memberId);
+    public R getMember(Long memberId) {
+        MemberDto member = memberService.getMember(ReqUtils.curMemberId(), memberId);
         return R.ok().put("result", member);
     }
 
@@ -97,7 +94,7 @@ public class MemberController {
     @PostMapping("/location")
     @ApiOperation("更新用户位置")
     public R updateLocation(@RequestBody LocationForm locationForm) {
-        memberService.updateLocationNumber(ReqUtils.curMemberId(),locationForm);
+        memberService.updateLocationNumber(ReqUtils.curMemberId(), locationForm);
         return R.ok();
     }
 
@@ -127,7 +124,7 @@ public class MemberController {
     @ApiOperation("rabbitmq消息发送-接收测试")
     public R rabbitmq() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("msg","test get a rabbitmq messge");
+        jsonObject.put("msg", "test get a rabbitmq messge");
         rabbitMqHelper.sendMessage(RabbitMQConfig.QUEUE_NAME, jsonObject.toJSONString());
         return R.ok().put("result", "rabbit send a babbitmq message.");
     }
@@ -135,7 +132,7 @@ public class MemberController {
     @Login
     @GetMapping("/follow")
     @ApiOperation("关注用户")
-    public R followMember(@RequestParam Long toMemberId) {
+    public R followMember(Long toMemberId) {
         memberService.followMember(ReqUtils.curMemberId(), toMemberId);
         return R.ok();
     }
@@ -143,7 +140,7 @@ public class MemberController {
     @Login
     @GetMapping("/unfollow")
     @ApiOperation("取消关注")
-    public R unfollowMember(@RequestParam Long toMemberId) {
+    public R unfollowMember(Long toMemberId) {
         memberService.unfollowMember(ReqUtils.curMemberId(), toMemberId);
         return R.ok();
     }
@@ -151,7 +148,7 @@ public class MemberController {
     @Login
     @GetMapping("/follow/list")
     @ApiOperation("分页获取关注的用户列表")
-    public R getFollowMembers(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getFollowMembers(Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -164,7 +161,7 @@ public class MemberController {
     @Login
     @GetMapping("/fans/list")
     @ApiOperation("分页获取粉丝用户列表")
-    public R getFansMembers(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getFansMembers(Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -184,27 +181,27 @@ public class MemberController {
 
     @GetMapping("/avatar/phone")
     @ApiOperation("根据手机号获取用户头像")
-    public R getAvatarByPhone(@RequestParam String phone){
-        if(StringUtils.isEmpty(phone)){
-            return R.error(HttpStatus.SC_BAD_REQUEST,"手机号不为空");
+    public R getAvatarByPhone(String phone) {
+        if (StringUtils.isEmpty(phone)) {
+            return R.error(HttpStatus.SC_BAD_REQUEST, "手机号不为空");
         }
         String avatar = "";
         Member member = memberService.selectOne(new EntityWrapper<Member>().eq("mobile", phone));
-        if(!ObjectUtils.isEmpty(member))
+        if (!ObjectUtils.isEmpty(member))
             avatar = member.getAvatar();
 
-        return R.ok().put("result",avatar);
+        return R.ok().put("result", avatar);
     }
 
     @Login
     @PostMapping("/feedback/save")
     @ApiOperation("保存用户反馈")
-    public R savefeedback(Long memberId , String content){
-        if(memberId == null || memberId <=0){
-            return R.error(HttpStatus.SC_BAD_REQUEST,"memberId不为空");
+    public R savefeedback(Long memberId, String content) {
+        if (memberId == null || memberId <= 0) {
+            return R.error(HttpStatus.SC_BAD_REQUEST, "memberId不为空");
         }
-        if(StringUtils.isEmpty(content)){
-            return R.error(HttpStatus.SC_BAD_REQUEST,"content不为空");
+        if (StringUtils.isEmpty(content)) {
+            return R.error(HttpStatus.SC_BAD_REQUEST, "content不为空");
         }
         MemberFeedback feedback = new MemberFeedback();
         feedback.setContent(content);
@@ -216,12 +213,12 @@ public class MemberController {
 
     @PostMapping("/feedback/list")
     @ApiOperation("用户反馈列表")
-    public R feedbackList(@RequestParam Map<String, Object> params){
+    public R feedbackList(Map<String, Object> params) {
         PageWrapper page = new PageWrapper(params);
         List<MemberFeedback> list = memberFeedbackService.getPage(page);
         return R.ok().put("result", list)
-                .put("page",page.getCurrPage())
-                .put("size",page.getPageSize());
+                .put("page", page.getCurrPage())
+                .put("size", page.getPageSize());
     }
 
 }

@@ -26,6 +26,7 @@ import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
 import io.renren.modules.app.service.*;
+import io.renren.modules.app.utils.WXPayConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -522,13 +523,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         //校验支付流水
         TaskOrderEntity order = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
-        if (order!=null && "SUCCESS".equals(order.getTradeState())){
-        /*    MemberWalletRecordEntity record = new MemberWalletRecordEntity();
-            record.setOutTradeNo(order.getOutTradeNo());
-            record.setFromMemberId(curMemberId);
-            record.setToMemberId(receiverId);
-            record.setPayTime(DateUtils.now());
-            memberWalletRecordService.insert(record);*/
+        if (order!=null && WXPayConstants.SUCCESS.equals(order.getTradeState())){
 
             //记录钱包金额变动日志
             MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>().eq("member_id",receiverId));
@@ -537,14 +532,15 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             log.setChangeMoney(order.getTotalFee());
             log.setMoney(wallet.getMoney()+order.getTotalFee());
             log.setOutTradeNo(order.getOutTradeNo());
-            log.setRemark("领取人完成任务");
+            log.setRemark("入账流水");
             memberWalletLogService.insert(log);
             //领取人钱包金额增加
             memberWalletService.incMoney(receiverId,order.getTotalFee());
 
-            order.setTradeState("CLOSED");//设置为关闭,这一步很重要
+//            order.setTradeState(WXPayConstants.CLOSED);//设置为关闭,这一步很重要
             taskOrderService.updateById(order);
         }else {
+            logger.info("任务订单状态异常，请联系客服");
             throw new RRException("任务订单状态异常，请联系客服");
         }
 

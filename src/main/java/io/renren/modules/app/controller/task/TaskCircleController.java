@@ -40,7 +40,7 @@ public class TaskCircleController {
     @Login
     @GetMapping("/list")
     @ApiOperation("分页获取任务圈列表")
-    public R getCircles(@RequestParam String keyword, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getCircles(String keyword, Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -52,7 +52,7 @@ public class TaskCircleController {
     @Login
     @GetMapping("/list/myJoined")
     @ApiOperation("分页获取我加入的任务圈列表")
-    public R getMyJoinedCircles(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getMyJoinedCircles(Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -89,7 +89,7 @@ public class TaskCircleController {
     @Login
     @GetMapping("/join")
     @ApiOperation("加入任务圈")
-    public R joinCircle(@RequestParam("circleId") Long circleId) {
+    public R joinCircle(Long circleId) {
         taskCircleService.joinCircle(ReqUtils.curMemberId(), circleId);
         return R.ok();
     }
@@ -97,7 +97,7 @@ public class TaskCircleController {
     @Login
     @GetMapping("/exit")
     @ApiOperation("退出任务圈")
-    public R exitCircle(@RequestParam("circleId") Long circleId) {
+    public R exitCircle(Long circleId) {
         taskCircleService.exitCircle(ReqUtils.curMemberId(), circleId);
         return R.ok();
     }
@@ -105,14 +105,14 @@ public class TaskCircleController {
     @Login
     @GetMapping("/audit")
     @ApiOperation("入圈审核")
-    public R audit(@RequestParam("auditId") Long auditId, @RequestParam("status") CircleAuditStatusEnum status) {
+    public R audit(Long auditId, CircleAuditStatusEnum status) {
         taskCircleService.audit(auditId, status);
         return R.ok();
     }
 
     @GetMapping("/members")
     @ApiOperation("分页获取圈成员列表")
-    public R searchCircleMembers(@RequestParam Long circleId, @RequestParam String keyword, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R searchCircleMembers(Long circleId, String keyword, Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);

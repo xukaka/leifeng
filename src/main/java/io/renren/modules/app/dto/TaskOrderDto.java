@@ -1,19 +1,26 @@
-package io.renren.modules.app.entity.task;
+package io.renren.modules.app.dto;
 
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import io.renren.modules.app.entity.BaseEntity;
-import org.springframework.data.annotation.Id;
+import io.renren.modules.app.entity.TaskStatusEnum;
 
-@TableName("t_task_order")
-public class TaskOrderEntity extends BaseEntity {
+import java.io.Serializable;
 
+public class TaskOrderDto implements Serializable {
+
+    private Long id;
     //微信支付订单号
     private String transactionId;
     //商户订单号
     private String outTradeNo;
     //关联任务id
     private Long taskId;
+    //任务标题
+    private String taskTitle;
+    //任务状态
+    private TaskStatusEnum taskStatus;
+    //任务创建人昵称
+    private String taskCreatorNickName;
+    //任务创建人id
+    private Long taskCreatorId;
     //订单金额，单位为分
     private Long totalFee;
     //交易状态，SUCCESS—支付成功,REFUND—转入退款,NOTPAY—未支付
@@ -23,6 +30,57 @@ public class TaskOrderEntity extends BaseEntity {
     private String attach;
     //支付时间格式为yyyyMMddHHmmss
     private String timeEnd;
+
+    //创建时间
+    private Long createTime;
+
+    public String getTaskTitle() {
+        return taskTitle;
+    }
+
+    public void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
+    }
+
+    public TaskStatusEnum getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(TaskStatusEnum taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
+    public String getTaskCreatorNickName() {
+        return taskCreatorNickName;
+    }
+
+    public void setTaskCreatorNickName(String taskCreatorNickName) {
+        this.taskCreatorNickName = taskCreatorNickName;
+    }
+
+    public Long getTaskCreatorId() {
+        return taskCreatorId;
+    }
+
+    public void setTaskCreatorId(Long taskCreatorId) {
+        this.taskCreatorId = taskCreatorId;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getTransactionId() {
         return transactionId;

@@ -3,4 +3,41 @@
 
 <mapper namespace="io.renren.modules.app.dao.task.TaskOrderDao">
 
+    <select id="getTaskOrders" resultType="io.renren.modules.app.dto.TaskOrderDto">
+        select
+        o.*,
+        t.id as taskId,
+        t.title as taskTitle,
+        t.status as taskStatus,
+        m.nick_name as taskCreatorNiceName,
+        m.id as taskCreatorId
+        from
+        t_task_order o
+        join t_task t on o.task_id = t.id
+        join member m on m.id = t.creator_id
+        where 1 = 1
+        <if test="tradeState!=null and tradeState!=''">
+            and o.trade_state=#{tradeState}
+        </if>
+        ORDER BY o.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+    </select>
+
+    <select id="count" resultType="int">
+         select count(1) from  t_task_order o
+        where 1 = 1
+        <if test="tradeState!=null and tradeState!=''">
+            and o.trade_state=#{tradeState}
+        </if>
+    </select>
+
+    <select id="sumTotalFee" resultType="long">
+        select sum(o.total_fee) from t_task_order o
+        where 1 = 1
+        <if test="tradeState!=null and tradeState!=''">
+            and o.trade_state=#{tradeState}
+        </if>
+
+    </select>
+
 </mapper>

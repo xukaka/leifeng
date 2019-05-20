@@ -27,7 +27,7 @@ public class SearchController {
     @Login
     @GetMapping("/history/save")
     @ApiOperation("保存搜索历史")
-    public R saveHistory( @RequestParam String keyword) {
+    public R saveHistory(  String keyword) {
         searchService.saveHistory(ReqUtils.curMemberId(), keyword);
         return R.ok();
     }

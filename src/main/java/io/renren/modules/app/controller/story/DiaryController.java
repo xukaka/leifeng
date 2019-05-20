@@ -58,7 +58,7 @@ public class DiaryController {
 
     @GetMapping("/list")
     @ApiOperation("分页获取日记列表")
-    public R getDiarys(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getDiarys( Integer curPage,  Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -71,7 +71,7 @@ public class DiaryController {
     @Login
     @GetMapping("/list/my")
     @ApiOperation("分页获取我的日记列表")
-    public R getMyDiarys(@RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getMyDiarys( Integer curPage,  Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -85,7 +85,7 @@ public class DiaryController {
     @Login
     @GetMapping("/like")
     @ApiOperation("日记点赞")
-    public R like(@RequestParam Long diaryId) {
+    public R like( Long diaryId) {
         likeService.like(ReqUtils.curMemberId(),diaryId, LikeTypeEnum.diary);
         return R.ok();
     }
@@ -93,7 +93,7 @@ public class DiaryController {
     @Login
     @GetMapping("/unlike")
     @ApiOperation("取消日记点赞")
-    public R unlike(@RequestParam Long diaryId) {
+    public R unlike( Long diaryId) {
         likeService.unlike(ReqUtils.curMemberId(),diaryId,LikeTypeEnum.diary);
         return R.ok();
     }

@@ -1,12 +1,10 @@
 package io.renren.modules.app.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dao.task.WithdrawalOrderDao;
 import io.renren.modules.app.dto.WithdrawalOrderDto;
-import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.task.WithdrawalOrderEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.MemberWalletService;
@@ -26,9 +24,10 @@ public class WithdrawalOrderImpl extends ServiceImpl<WithdrawalOrderDao, Withdra
     private MemberWalletService memberWalletService;
     @Autowired
     private TaskOrderService taskOrderService;
+
     @Override
     public PageUtils<WithdrawalOrderDto> getWithdrawalOrders(PageWrapper page) {
-        List<WithdrawalOrderDto> orders = baseMapper.getWithdrawalOrders( page);
+        List<WithdrawalOrderDto> orders = baseMapper.getWithdrawalOrders(page);
         if (CollectionUtils.isEmpty(orders)) {
             return new PageUtils<>();
         }
@@ -36,15 +35,16 @@ public class WithdrawalOrderImpl extends ServiceImpl<WithdrawalOrderDao, Withdra
         return new PageUtils<>(orders, total, page.getPageSize(), page.getCurrPage());
     }
 
+
+
     @Override
     public void checkWithdrawalOrder(Long id) {
         WithdrawalOrderEntity order = this.selectById(id);
-        if (order==null)
-        {
+        if (order == null) {
             throw new RRException("提现订单不存在");
         }
-        if (!"AUDIT".equals(order.getTradeState())){
-            throw new RRException("提现订单状态异常");
+        if (!"AUDIT".equals(order.getTradeState())) {
+            throw new RRException("提现订单状态异常:TradeState=" + order.getTradeState());
         }
 
         /**

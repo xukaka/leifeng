@@ -19,6 +19,9 @@ public class WXPayConstants {
 
     public static final String FAIL     = "FAIL";
     public static final String SUCCESS  = "SUCCESS";
+    public static final String CLOSED  = "CLOSED";
+    public static final String AUDIT  = "AUDIT";
+    public static final String REFUND  = "REFUND";
     public static final String HMACSHA256 = "HMAC-SHA256";
     public static final String MD5 = "MD5";
 

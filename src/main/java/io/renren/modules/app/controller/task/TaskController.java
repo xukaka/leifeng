@@ -76,7 +76,7 @@ public class TaskController {
 
     @GetMapping("/receiver/list")
     @ApiOperation("分页获取任务领取人列表")
-    public R getTaskReceivers(@RequestParam Long taskId, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getTaskReceivers(Long taskId, Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -88,7 +88,7 @@ public class TaskController {
     @Login
     @GetMapping("/receiver/choose")
     @ApiOperation("选择确定任务领取人")
-    public R chooseTaskReceiver(@RequestParam Long taskId, @RequestParam Long receiverId) {
+    public R chooseTaskReceiver(Long taskId, Long receiverId) {
         taskService.chooseTaskReceiver(taskId, receiverId);
         return R.ok();
     }
@@ -96,14 +96,15 @@ public class TaskController {
     @Login
     @GetMapping("/receive")
     @ApiOperation("领取任务")
-    public R receiveTask(@RequestParam Long taskId) {
+    public R receiveTask(Long taskId) {
         taskService.receiveTask(ReqUtils.curMemberId(), taskId);
 
         return R.ok();
     }
+
     @GetMapping("/testReceive")
     @ApiOperation("领取任务")
-    public R testReceive(@RequestParam Long taskId) {
+    public R testReceive(Long taskId) {
         taskService.receiveTask(ReqUtils.curMemberId(), taskId);
 
         return R.ok();
@@ -112,7 +113,7 @@ public class TaskController {
     @Login
     @GetMapping("/execute")
     @ApiOperation("执行任务")
-    public R executeTask(@RequestParam Long taskId) {
+    public R executeTask(Long taskId) {
         taskService.executeTask(taskId, ReqUtils.curMemberId());
         return R.ok();
     }
@@ -120,7 +121,7 @@ public class TaskController {
     @Login
     @GetMapping("/receiverCancel")
     @ApiOperation("领取人取消任务")
-    public R cancelTaskByReceiver(@RequestParam Long taskId) {
+    public R cancelTaskByReceiver(Long taskId) {
         taskService.cancelTaskByReceiver(ReqUtils.curMemberId(), taskId);
         return R.ok();
     }
@@ -128,7 +129,7 @@ public class TaskController {
     @Login
     @GetMapping("/publisherCancel")
     @ApiOperation("发布人取消任务")
-    public R cancelTaskByPublisher(@RequestParam Long taskId) {
+    public R cancelTaskByPublisher(Long taskId) {
         taskService.cancelTaskByPublisher(ReqUtils.curMemberId(), taskId);
         return R.ok();
     }
@@ -136,7 +137,7 @@ public class TaskController {
     @Login
     @GetMapping("/republish")
     @ApiOperation("重新发布任务")
-    public R republishTask(@RequestParam Long taskId) {
+    public R republishTask(Long taskId) {
         taskService.republishTask(ReqUtils.curMemberId(), taskId);
         return R.ok();
     }
@@ -145,7 +146,7 @@ public class TaskController {
     @Login
     @GetMapping("/submit")
     @ApiOperation("提交任务")
-    public R submitTask(@RequestParam Long taskId) {
+    public R submitTask(Long taskId) {
         taskService.submitTask(ReqUtils.curMemberId(), taskId);
         return R.ok();
     }
@@ -153,15 +154,15 @@ public class TaskController {
     @Login
     @GetMapping("/complete")
     @ApiOperation("确认完成任务")
-    public R completeTask(@RequestParam Long receiverId, @RequestParam Long taskId) {
-        taskService.completeTask(ReqUtils.curMemberId(),receiverId, taskId);
+    public R completeTask(Long receiverId, Long taskId) {
+        taskService.completeTask(ReqUtils.curMemberId(), receiverId, taskId);
         return R.ok();
     }
 
 
     @GetMapping("/receive/list")
     @ApiOperation("分页获取领取任务列表")
-    public R getReceivedTasks(@RequestParam Long receiverId, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getReceivedTasks(Long receiverId, Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -172,7 +173,7 @@ public class TaskController {
 
     @GetMapping("/publish/list")
     @ApiOperation("分页获取发布任务列表")
-    public R getPublishedTasks(@RequestParam Long publisherId, @RequestParam Integer curPage, @RequestParam Integer pageSize) {
+    public R getPublishedTasks(Long publisherId, Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
@@ -196,16 +197,16 @@ public class TaskController {
     @Login
     @GetMapping("/like")
     @ApiOperation("任务点赞")
-    public R like(@RequestParam Long taskId) {
-        likeService.like(ReqUtils.curMemberId(),taskId,LikeTypeEnum.task);
+    public R like(Long taskId) {
+        likeService.like(ReqUtils.curMemberId(), taskId, LikeTypeEnum.task);
         return R.ok();
     }
 
     @Login
     @GetMapping("/unlike")
     @ApiOperation("取消任务点赞")
-    public R unlike(@RequestParam Long taskId) {
-        likeService.unlike(ReqUtils.curMemberId(),taskId,LikeTypeEnum.task);
+    public R unlike(Long taskId) {
+        likeService.unlike(ReqUtils.curMemberId(), taskId, LikeTypeEnum.task);
         return R.ok();
     }
 
