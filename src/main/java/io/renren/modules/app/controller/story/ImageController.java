@@ -67,7 +67,7 @@ public class ImageController {
         return R.ok().put("result", url+ Constant.IMAGE_STYLE);
     }
 
-    private byte[] base642Byte(String file){
+    private static byte[] base642Byte(String file){
 
         BASE64Decoder d = new BASE64Decoder();
         try {
@@ -79,4 +79,5 @@ public class ImageController {
         return null;
 
     }
+
 }

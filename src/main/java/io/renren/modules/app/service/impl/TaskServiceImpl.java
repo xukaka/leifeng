@@ -232,7 +232,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             throw new RRException("任务未支付");
         }
         TaskEntity task = baseMapper.selectById(taskId);
-        if (task != null && publisherId != null && publisherId.equals(task.getCreatorId())) {
+        if (publisherId.equals(task.getCreatorId())) {
             updateTaskStatus(taskId, TaskStatusEnum.published);
         }
     }

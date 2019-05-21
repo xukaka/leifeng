@@ -8,8 +8,11 @@ import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskOrderDto;
 import io.renren.modules.app.dto.WithdrawalOrderDto;
+import io.renren.modules.app.entity.member.Member;
+import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.task.TaskOrderEntity;
 import io.renren.modules.app.form.PageWrapper;
+import io.renren.modules.app.service.MemberWalletService;
 import io.renren.modules.app.service.TaskOrderService;
 import io.renren.modules.app.service.WithdrawalOrderService;
 import io.renren.modules.app.service.impl.WXPayService;
@@ -48,28 +51,37 @@ public class WXPayController {
     private TaskOrderService taskOrderService;
     @Autowired
     private WithdrawalOrderService withdrawalOrderService;
+    @Autowired
+    private MemberWalletService memberWalletService;
 
+    @Login
     @PostMapping("/prePay")
     @ApiOperation("微信预下订单接口")
-    public R prePay(String prodDesc, float totalFee, String openid, Long taskId) throws Exception {
-        logger.info("[WXPayController.prePay] request:prodDesc={},totleFee={},openid={}", prodDesc, totalFee, openid);
-        String outTradeNo = "NO" + OrderNoUtil.generateOrderNo(taskId);
-        String totalFeeStr = String.valueOf((int) (totalFee * 100));//交易的金额，单位为分
-        Map<String, String> reqDataComp = wxPayService.fillRequestData(prodDesc, outTradeNo, totalFeeStr, ReqUtils.getRemoteAddr(), openid);
-        logger.info("微信预下订单请求参数：{}", JsonUtil.Java2Json(reqDataComp));
-        String wxResponse = wxPayService.prePayRequest(WXPayUtil.mapToXml(reqDataComp));
-        logger.info("微信预下订单请求结果：{}", wxResponse);
-
+    public R prePay( float totalFee, Long taskId) throws Exception {
+        MemberWalletEntity wallet= memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>()
+                .eq("member_id", ReqUtils.curMemberId()));
+        String prodDesc="任务订单";
+        logger.info("[WXPayController.prePay] request:prodDesc={},totleFee={},openid={}", prodDesc, totalFee, wallet.getOpenId());
         //生成taskorder订单入库
-        int count = taskOrderService.selectCount(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
-        if (count == 0) { //新增
+        String outTradeNo;
+        TaskOrderEntity taskOrder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
+        if (taskOrder == null) { //新增
             TaskOrderEntity torder = new TaskOrderEntity();
+            outTradeNo= "NO" + OrderNoUtil.generateOrderNo(taskId);
             torder.setOutTradeNo(outTradeNo);
             torder.setAttach(prodDesc);
+            torder.setTradeState(WXPayConstants.NOTPAY);
             torder.setTaskId(taskId);
             torder.setTotalFee((long) (totalFee * 100));
             taskOrderService.insert(torder);
+        }else{
+            outTradeNo= taskOrder.getOutTradeNo();
         }
+        String totalFeeStr = String.valueOf((int) (totalFee * 100));//交易的金额，单位为分
+        Map<String, String> reqDataComp = wxPayService.fillRequestData(prodDesc, outTradeNo, totalFeeStr, ReqUtils.getRemoteAddr(), wallet.getOpenId());
+        logger.info("微信预下订单请求参数：{}", JsonUtil.Java2Json(reqDataComp));
+        String wxResponse = wxPayService.prePayRequest(WXPayUtil.mapToXml(reqDataComp));
+        logger.info("微信预下订单请求结果：{}", wxResponse);
         Map<String, String> wxPayMap = wxPayService.reGenerateParamForApp(wxResponse);
         return R.ok().put("result", wxPayMap);
     }

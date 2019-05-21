@@ -62,9 +62,9 @@ public class RegisterController {
     @Autowired
     private WXRequest wxRequest;
 
-    @PostMapping("register")
-    //@ApiOperation("注册")
-    public R wxRegister(@RequestBody RegisterForm form) {
+    /* @PostMapping("register")
+    @ApiOperation("注册")
+   public R wxRegister(@RequestBody RegisterForm form) {
         logger.info("[AppRegisterController.wxRegister] request param:{}", JSON.toJSONString(form));
         //表单校验
         ValidatorUtils.validateEntity(form);
@@ -80,7 +80,7 @@ public class RegisterController {
         memberService.registerMemberWithAuth(member, auths);
 
         return R.ok();
-    }
+    }*/
 
     /**
      * 微信登录
@@ -109,7 +109,7 @@ public class RegisterController {
                 auths.setCredential(DigestUtils.sha256Hex(wxSession.getOpenid()));
                 auths.setIdentityType(Constant.WX_TYPE);
                 auths.setIdentifier(Constant.WX_IDENTIFIER);
-                memberService.registerMemberWithAuth(member, auths);
+                memberService.registerMemberWithAuth(wxSession.getOpenid(),member, auths);
             }
 
             String token = jwtUtils.generateToken(auths.getMemberId());

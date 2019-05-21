@@ -5,6 +5,8 @@ public enum TaskStatusEnum {
 
     notpay("未支付"),
 
+    payed("已支付"),
+
     published("已发布"),
 
     received("已领取"),

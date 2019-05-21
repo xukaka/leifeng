@@ -51,7 +51,7 @@ public interface MemberService extends IService<Member> {
     /**
      * 同时写入member表和member_auths表
      */
-    void registerMemberWithAuth(Member member, MemberAuths auths);
+    void registerMemberWithAuth(String openId,Member member, MemberAuths auths);
 
     void updateLocationNumber(Long memberId,LocationForm locationForm);
 
