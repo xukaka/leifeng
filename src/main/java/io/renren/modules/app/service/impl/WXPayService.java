@@ -427,7 +427,7 @@ public class WXPayService {
      * @param memberId
      * @param amount
      */
-    @Transactional
+//    @Transactional
     public void preWithdrawal(Long memberId, Long amount) {
         MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>()
                 .eq("member_id", memberId));

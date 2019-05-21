@@ -8,42 +8,55 @@ import io.renren.modules.app.entity.BaseEntity;
  */
 @TableName("t_im_task_status_notice")
 public class ImTaskStatusNotice extends BaseEntity {
-    /**
-     * 通知发布人id
-     */
-    private Long fromMemberId;
-    /**
-     * 被通知人id
-     */
-    private Long toMemberId;
 
     /**
-     * 扩展json
+     * 发送方
      */
-    private String extrasJson;
+    private String from;
+    /**
+     * 接收方
+     */
+    private String to;
 
+    /**
+     * 任务id
+     */
+    private Long taskId;
 
-    public Long getFromMemberId() {
-        return fromMemberId;
+    /**
+     * 内容
+     */
+    private String content;
+
+    public String getFrom() {
+        return from;
     }
 
-    public void setFromMemberId(Long fromMemberId) {
-        this.fromMemberId = fromMemberId;
+    public void setFrom(String from) {
+        this.from = from;
     }
 
-    public Long getToMemberId() {
-        return toMemberId;
+    public String getTo() {
+        return to;
     }
 
-    public void setToMemberId(Long toMemberId) {
-        this.toMemberId = toMemberId;
+    public void setTo(String to) {
+        this.to = to;
     }
 
-    public String getExtrasJson() {
-        return extrasJson;
+    public Long getTaskId() {
+        return taskId;
     }
 
-    public void setExtrasJson(String extrasJson) {
-        this.extrasJson = extrasJson;
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

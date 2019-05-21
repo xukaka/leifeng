@@ -309,6 +309,8 @@
     </select>
 
 
+
+
     <select id="searchTasks"  resultMap="searchTaskMap">
         select task.* ,
         ri.image_url,
@@ -368,7 +370,7 @@
             COUNT(1)
             FROM t_task t
             WHERE NOT EXISTS
-                (SELECT 1 FROM t_task_receive re WHERE t.id = re.task_id AND re.receiver_id = #{receiverId})
+                (SELECT 1 FROM t_task_receive re WHERE t.id = re.task_id AND re.receiver_id = #{receiverId} AND t.id=#{taskId})
                 AND t.deleted = 0 AND t.status = 'published' AND t.id= #{taskId}
     </select>
 
@@ -377,7 +379,7 @@
           SELECT
             COUNT(1)
             FROM t_task t
-            JOIN t_task_receive re ON re.task_id = t.id AND t.status = 'published' AND re.status='published'
+            JOIN t_task_receive re ON re.task_id = t.id AND t.status = 'published' AND re.status='received'
             WHERE  t.id= #{taskId} AND re.receiver_id = #{receiverId}
     </select>
 
@@ -385,7 +387,7 @@
           SELECT
             COUNT(1)
             FROM t_task t
-            JOIN t_task_receive re ON re.task_id = t.id AND t.status = 'received' AND re.status='received'
+            JOIN t_task_receive re ON re.task_id = t.id AND t.status = 'received' AND re.status='choosed'
             WHERE  t.deleted = 0 AND t.id= #{taskId} AND re.receiver_id = #{receiverId}
     </select>
 

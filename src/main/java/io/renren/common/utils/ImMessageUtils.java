@@ -59,47 +59,29 @@ public final class ImMessageUtils{
     }
 
     //任务状态消息
-    public static String getTaskStatusMessage(String taskId,String content,String businessCode,String toId,String fromId){
+    public static String getTaskStatusMessage(Long taskId,String content,String to,String from){
         JSONObject msg = new JSONObject();
-        JSONObject extras = new JSONObject();
-        extras.put("businessCode", businessCode);
-        extras.put("taskId", taskId);
-        extras.put("content", content);
-        msg.put("toId", toId);
-        msg.put("fromId", fromId);
-        msg.put("extras",extras);
-        return msg.toJSONString();
-    }
-
-//    组消息
-    public static String getGroupMessage(String id,String type,String content,String businessCode,String groupId,String from){
-        JSONObject msg = new JSONObject();
-        JSONObject extras = new JSONObject();
-        extras.put("businessCode", businessCode);//10，发布任务/笔记
-        extras.put("type", type);//类型为任务|笔记
-        extras.put("id", id);
-        extras.put("content", content);
+        msg.put("taskId", taskId);
+        msg.put("content", content);
+        msg.put("to", to);
         msg.put("from", from);
-        msg.put("groupId", groupId);
-        msg.put("extras",extras);
         return msg.toJSONString();
     }
 
-    public  static void sendTaskStatusMessage(String taskId,String content,String businessCode,String toId,String fromId){
-        JSONObject msg = new JSONObject();
-        JSONObject extras = new JSONObject();
-        extras.put("businessCode", businessCode);//2，确认领取任务
-        extras.put("taskId", taskId);
-        extras.put("content", content);
-        msg.put("toId", toId);
-        msg.put("fromId", fromId);
-        msg.put("extras",extras);
-        logger.info("任务状态变更消息，msg=" + msg.toJSONString());
-        sendSingleMessage(msg);
+    //群组消息
+    public static String getGroupMsg(String groupId, String businessType, Long businessId, String content, String from) {
+        JSONObject groupMsg = new JSONObject();
+        groupMsg.put("businessType", businessType);//类型为任务|笔记
+        groupMsg.put("businessId", businessId);//任务/笔记id
+        groupMsg.put("content", content);
+        groupMsg.put("from", from);
+        groupMsg.put("groupId", groupId);
+        return groupMsg.toJSONString();
     }
+
+
     //推送单个消息
     public static void sendSingleMessage(JSONObject object){
-
         ChatBody chatBody= new ChatBody.Builder()
                 .setFrom(object.getString("fromId"))
                 .setTo(object.getString("toId"))
@@ -119,8 +101,7 @@ public final class ImMessageUtils{
         }
     }
     //推送单个消息
-    public static void sendSingleMessage(String from ,String content, String to, JSONObject object){
-
+    public static void sendSingleMessage(String from ,String content, String to, Object extras){
         ChatBody chatBody= new ChatBody.Builder()
                 .setFrom(from)
                 .setTo(to)
@@ -129,7 +110,7 @@ public final class ImMessageUtils{
                 .setCmd(11)
                 .setContent(content)
                 .setCreateTime(DateUtils.now())
-                .addExtra("data",object.get("extras"))
+                .addExtra("data",extras)
                 .build();
         String params = JSONObject.toJSONString(chatBody);
         try {
@@ -139,29 +120,9 @@ public final class ImMessageUtils{
             logger.error(e.toString(),e);
         }
     }
-    //推送群组消息
-    public static void sendGroupMessage(JSONObject groupMsg){
 
-        ChatBody chatBody= new ChatBody.Builder()
-                .setFrom(groupMsg.getString("from"))
-                .setChatType(1)
-                .setMsgType(0)
-                .setGroup_id(groupMsg.getString("groupId"))
-                .setCmd(11)
-                .setCreateTime(DateUtils.now())
-                .addExtra("data",groupMsg.get("extras"))
-                .build();
-        String params = JSONObject.toJSONString(chatBody);
-        try {
-            String result =   HttpHelper.post(null,params,IM_MESSAGE_URL,3000);
-            logger.info(result);
-        }catch (Exception e){
-            logger.error(e.toString(),e);
-        }
-    }
     //推送群组消息
     public static void sendGroupMessage(String from , String groupId){
-
         ChatBody chatBody= new ChatBody.Builder()
                 .setFrom(from)
                 .setChatType(1)
@@ -178,4 +139,5 @@ public final class ImMessageUtils{
             logger.error(e.toString(),e);
         }
     }
+
 }

@@ -25,12 +25,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+
 @RestController
 @RequestMapping("/app/wallet")
 @Api(tags = "用户钱包")
 public class MemberWalletController {
     private final static Logger logger = LoggerFactory.getLogger(MemberWalletController.class);
-    @Autowired
+    @Resource
     private WXPayService wxPayService;
     @Autowired
     private TaskOrderService taskOrderService;

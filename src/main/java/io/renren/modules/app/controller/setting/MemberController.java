@@ -105,12 +105,6 @@ public class MemberController {
         return R.ok().put("result", userId);
     }
 
-    @GetMapping("notToken")
-    @ApiOperation("忽略Token验证测试")
-    public R notToken() {
-
-        return R.ok().put("result", "无需token也能访问。。。");
-    }
 
     @GetMapping("/test/redis")
     @ApiOperation("redis连接测试")

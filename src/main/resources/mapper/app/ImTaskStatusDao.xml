@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.im.ImTaskStatusDao">
+
+    <select id="getTaskStatusNotices" resultType="io.renren.modules.app.dto.ImTaskStatusNoticeDto">
+        select n.*,
+        t.title as taskTitle,
+        m.id as toMemberId,
+        m.nice_name as toMemberNiceName
+        from t_im_task_status_notice n
+        join member m  on n.to=m.id
+        join t_task t on t.id = n.task_id
+        where n.deleted=0 and n.to = #{to}
+        ORDER BY n.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+    </select>
+
+    <select id="getTaskStatusNoticeCount" resultType="int">
+       select count(1)
+        from t_im_task_status_notice n
+        join member m  on n.to=m.id
+        join t_task t on t.id = n.task_id
+        where n.deleted=0 and n.to = #{to}
+    </select>
+</mapper>

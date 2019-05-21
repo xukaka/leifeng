@@ -4,6 +4,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.ImTaskStatusNoticeDto;
 import io.renren.modules.app.entity.im.ImFollowNoticeStatus;
 import io.renren.modules.app.entity.im.ImGroupNotice;
 import io.renren.modules.app.entity.im.ImHistoryMember;
@@ -50,29 +51,29 @@ public class ImController {
         logger.info("[ImController.info] 请求参数id={}", memberId);
         if (type == 0) {
             List<ImHistoryMember> members = new ArrayList<>();
-            List<Map<String,Object>> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
+            List<Map<String, Object>> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
             System.out.println(list.isEmpty());
-            if(!list.isEmpty()){
-            for (Map<String,Object> map : list) {
-                ImHistoryMember imHistoryMember = new ImHistoryMember();
-                Double score = (Double) map.get("score");
-                imHistoryMember.setStatus(score.intValue());
-                if(map.get("value")!=null){
-                    imHistoryMember.setMember(memberService.getMember(Long.parseLong(map.get("value").toString())));
+            if (!list.isEmpty()) {
+                for (Map<String, Object> map : list) {
+                    ImHistoryMember imHistoryMember = new ImHistoryMember();
+                    Double score = (Double) map.get("score");
+                    imHistoryMember.setStatus(score.intValue());
+                    if (map.get("value") != null) {
+                        imHistoryMember.setMember(memberService.getMember(Long.parseLong(map.get("value").toString())));
+                    }
+                    members.add(imHistoryMember);
                 }
-                members.add(imHistoryMember);
-            }
-            return R.ok().put("result", members);
-            }else{
+                return R.ok().put("result", members);
+            } else {
                 return R.ok().put("result", "没有未读联系人");
 
             }
         } else if (type == 1) {
             List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
-            List<Map<String,Object>> list = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
+            List<Map<String, Object>> list = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
 
 
-            for (Map<String,Object> map : list) {
+            for (Map<String, Object> map : list) {
                 ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
                 Double score = (Double) map.get("score");
                 imFollowNoticeStatus.setStatus(score.intValue());
@@ -81,9 +82,9 @@ public class ImController {
             return R.ok().put("result", followStatus);
         } else if (type == 2) {
             List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
-            List<Map<String,Object>> list = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
+            List<Map<String, Object>> list = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
 
-            for (Map<String,Object> map : list) {
+            for (Map<String, Object> map : list) {
                 ImFollowNoticeStatus imFollowNoticeStatus = new ImFollowNoticeStatus();
                 Double score = (Double) map.get("score");
                 imFollowNoticeStatus.setStatus(score.intValue());
@@ -113,12 +114,24 @@ public class ImController {
     @Login
     @GetMapping(value = "/groupNotice/list")
     @ApiOperation("分页获取群组通知列表")
-    public R getGroupNotices( Integer curPage,  Integer pageSize) {
+    public R getGroupNotices(Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<ImGroupNotice> notices = imService.getGroupNotices(ReqUtils.curMemberId(), page);
+        return R.ok().put("result", notices);
+    }
+
+    @Login
+    @GetMapping(value = "/taskStatusNotice/list")
+    @ApiOperation("分页获取任务状态通知列表")
+    public R getTaskStatusNotices(Integer curPage, Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<ImTaskStatusNoticeDto> notices = imService.getTaskStatusNotices(ReqUtils.curMemberId().toString(), page);
         return R.ok().put("result", notices);
     }
 

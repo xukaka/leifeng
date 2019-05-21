@@ -97,7 +97,7 @@ public class TaskDto implements Serializable {
     /**
      * 浏览数
      */
-    private Integer viewCount = 0;
+    private Integer viewCount;
     /**
      * 创建时间
      */

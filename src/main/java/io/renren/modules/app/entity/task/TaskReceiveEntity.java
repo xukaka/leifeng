@@ -33,8 +33,10 @@ public class TaskReceiveEntity extends BaseEntity {
     public TaskReceiveEntity() {
     }
 
-    public TaskReceiveEntity(Long createTime, Long receiverId, Long taskId) {
+    public TaskReceiveEntity(Long createTime,Long updateTime, Long receiverId, Long taskId,TaskStatusEnum status) {
         super(createTime);
+        this.updateTime = updateTime;
+        this.status = status;
         this.receiverId = receiverId;
         this.taskId = taskId;
     }

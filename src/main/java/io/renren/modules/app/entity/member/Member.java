@@ -25,7 +25,7 @@ public class Member implements Serializable {
     //个性说明
     private String selfIntro;
     //等级
-    private Integer level;
+    private Integer level=0;
     //维度
     private Double lat;
     //经度

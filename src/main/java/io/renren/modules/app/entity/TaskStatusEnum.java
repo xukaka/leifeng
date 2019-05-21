@@ -2,34 +2,30 @@ package io.renren.modules.app.entity;
 
 public enum TaskStatusEnum {
 
-    published(0, "已发布"),
 
-    received(1, "已领取"),
+    notpay("未支付"),
 
-    executing(2, "执行中"),
+    published("已发布"),
 
-    submitted(3, "已提交"),
+    received("已领取"),
+    choosed("已选择"),
 
-    completed(4, "已完成"),
+    executing("执行中"),
 
-    cancelled(5, "已取消");
+    submitted("已提交"),
 
-    private int value;
+    completed("已完成"),
+
+    cancelled("已取消");
+
 
     private String msg;
 
-    TaskStatusEnum(int value, String msg) {
-        this.value = value;
+    TaskStatusEnum(String msg) {
+
         this.msg = msg;
     }
 
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
 
     public String getMsg() {
         return msg;

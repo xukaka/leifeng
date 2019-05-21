@@ -1,10 +1,8 @@
 package io.renren.modules.app.controller.story;
 
 import com.alibaba.druid.util.StringUtils;
-import io.netty.util.internal.StringUtil;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.Constant;
-import io.renren.common.utils.IPUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.oss.cloud.OSSFactory;
 import io.swagger.annotations.Api;
@@ -13,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Decoder;

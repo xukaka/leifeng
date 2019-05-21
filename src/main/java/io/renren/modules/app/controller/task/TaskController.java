@@ -49,6 +49,14 @@ public class TaskController {
     }
 
     @Login
+    @PostMapping("/publish")
+    @ApiOperation("发布任务")
+    public R publishTask(Long taskId){
+        taskService.publishTask(ReqUtils.curMemberId(), taskId);
+        return R.ok();
+    }
+
+    @Login
     @GetMapping("/detail/{id}")
     @ApiOperation("获取任务详细信息")
     public R getTask(@PathVariable("id") Long id) {
@@ -69,7 +77,7 @@ public class TaskController {
     @Login
     @DeleteMapping("/delete/{id}")
     @ApiOperation("删除任务")
-    public R deleteTask(@PathVariable Long id) {
+    public R deleteTask(@PathVariable("id") Long id) {
         taskService.deleteTask(id);
         return R.ok();
     }
@@ -87,7 +95,7 @@ public class TaskController {
 
     @Login
     @GetMapping("/receiver/choose")
-    @ApiOperation("选择确定任务领取人")
+    @ApiOperation("选择任务领取人")
     public R chooseTaskReceiver(Long taskId, Long receiverId) {
         taskService.chooseTaskReceiver(taskId, receiverId);
         return R.ok();
@@ -98,15 +106,6 @@ public class TaskController {
     @ApiOperation("领取任务")
     public R receiveTask(Long taskId) {
         taskService.receiveTask(ReqUtils.curMemberId(), taskId);
-
-        return R.ok();
-    }
-
-    @GetMapping("/testReceive")
-    @ApiOperation("领取任务")
-    public R testReceive(Long taskId) {
-        taskService.receiveTask(ReqUtils.curMemberId(), taskId);
-
         return R.ok();
     }
 
@@ -134,13 +133,13 @@ public class TaskController {
         return R.ok();
     }
 
-    @Login
+/*    @Login
     @GetMapping("/republish")
     @ApiOperation("重新发布任务")
     public R republishTask(Long taskId) {
         taskService.republishTask(ReqUtils.curMemberId(), taskId);
         return R.ok();
-    }
+    }*/
 
 
     @Login

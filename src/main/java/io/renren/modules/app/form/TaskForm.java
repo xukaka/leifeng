@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -27,13 +28,13 @@ import java.util.List;
 public class TaskForm {
     @ApiModelProperty(value = "任务id[创建时id不填，更新时id必填]", example = "")
     private Long id;
-    @ApiModelProperty(value = "主题", example = "帮忙抢火车票")
+    @ApiModelProperty(value = "标题", example = "帮忙抢火车票")
     @NotBlank
     private String title;
     @ApiModelProperty(value = "圈id", example = "")
     private Long circleId;
     @ApiModelProperty(value = "描述", example = "")
-    @NotBlank(message = "描述")
+    @NotBlank
     private String description;
 
     @ApiModelProperty(value = "图片url列表", example = "")
@@ -57,9 +58,6 @@ public class TaskForm {
     @ApiModelProperty(value = "任务地址id", example = "")
     @NotNull
     private Long addressId;
-
-/*    @ApiModelProperty(value = "被通知的用户id列表", example = "")
-    private List<Long> notifiedUserIds;*/
 
     public String getTitle() {
         return title;
@@ -124,14 +122,6 @@ public class TaskForm {
     public void setAddressId(Long addressId) {
         this.addressId = addressId;
     }
-/*
-    public List<Long> getNotifiedUserIds() {
-        return notifiedUserIds;
-    }
-
-    public void setNotifiedUserIds(List<Long> notifiedUserIds) {
-        this.notifiedUserIds = notifiedUserIds;
-    }*/
 
     public Long getId() {
         return id;

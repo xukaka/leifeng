@@ -29,7 +29,6 @@ public interface TaskService extends IService<TaskEntity> {
      */
     PageUtils<TaskDto> searchTasks(TaskQueryForm form, PageWrapper page);
 
-
     /**
      * 分页获取发布的任务
      */
@@ -40,6 +39,7 @@ public interface TaskService extends IService<TaskEntity> {
      */
     PageUtils<TaskDto> getReceivedTasks(Long receiverId, PageWrapper page);
 
+
     /**
      * 获取任务-根据id
      */
@@ -49,6 +49,11 @@ public interface TaskService extends IService<TaskEntity> {
      * 创建任务
      */
     void createTask(Long creatorId, TaskForm form);
+
+    /**
+     * 发布任务
+     */
+    void publishTask(Long publisherId, Long taskId);
 
     /**
      * 更新任务
@@ -106,7 +111,7 @@ public interface TaskService extends IService<TaskEntity> {
      *
      * @param taskId
      */
-    void republishTask(Long publisher, Long taskId);
+//    void republishTask(Long publisher, Long taskId);
 
     /**
      * 任务评论数+inc
