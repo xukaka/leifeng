@@ -46,7 +46,7 @@ public class JsSdkUtils {
 
                     JSONObject obj_content = JSONObject.parseObject(rs);
                     String accessToken = obj_content.getString("access_token");
-                    Integer time = Integer.parseInt(obj_content.getString("expires_in").toString());
+                    int time = Integer.parseInt(obj_content.getString("expires_in"));
 
                     //写缓存
                     redisUtils.set("WEIXIN_BASE_ACCESS_TOKEN", accessToken, time - 3600);
@@ -73,18 +73,14 @@ public class JsSdkUtils {
                     //缓存中没有、或已经失效
                     //获取全局的access_token，唯一票据
                     String accessToken = getBaseAccessToken();
-
                     String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+ accessToken +"&type=jsapi";
-
                     String rs = HttpHelper.get(url,3000);
 
                     JSONObject obj_content = JSONObject.parseObject(rs);
                     String jsapi_ticket = obj_content.getString("ticket");
-                    Integer time = Integer.parseInt(obj_content.getString("expires_in").toString());
-
+                    int time = Integer.parseInt(obj_content.getString("expires_in"));
                     //写缓存
                     redisUtils.set("WEIXIN_JS_API_TICKET", jsapi_ticket, time - 3600);
-
                     return jsapi_ticket;
                 }
             }
