@@ -61,4 +61,4 @@ server:
         key-store: classpath:pet.fangzheng.fun.jks
         key-store-password: xukaka
         key-store-type: JKS
-    port: 8443
+    port: 443
