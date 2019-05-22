@@ -587,12 +587,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     //是否已支付
     private boolean isPayedTask(Long taskId) {
         TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
-        return WXPayConstants.SUCCESS.equals(torder.getTradeState());
+        TaskEntity task = selectById(taskId);
+        return WXPayConstants.SUCCESS.equals(torder.getTradeState()) && task.getStatus() == TaskStatusEnum.payed;
     }
 
 
     //更新任务状态
-    private void updateTaskStatus(Long taskId, TaskStatusEnum status) {
+    public void updateTaskStatus(Long taskId, TaskStatusEnum status) {
         TaskEntity task = new TaskEntity();
         task.setStatus(status);
         Wrapper<TaskEntity> wrapper = new EntityWrapper<>();

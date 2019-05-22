@@ -8,12 +8,14 @@ import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.TaskOrderDto;
 import io.renren.modules.app.dto.WithdrawalOrderDto;
+import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.task.TaskOrderEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.MemberWalletService;
 import io.renren.modules.app.service.TaskOrderService;
+import io.renren.modules.app.service.TaskService;
 import io.renren.modules.app.service.WithdrawalOrderService;
 import io.renren.modules.app.service.impl.WXPayService;
 import io.renren.modules.app.utils.ReqUtils;
@@ -49,6 +51,8 @@ public class WXPayController {
     private WXPayService wxPayService;
     @Autowired
     private TaskOrderService taskOrderService;
+    @Autowired
+    private TaskService taskService;
     @Autowired
     private WithdrawalOrderService withdrawalOrderService;
     @Autowired
@@ -123,6 +127,8 @@ public class WXPayController {
                     torder.setTimeEnd(map.get("time_end"));
                     torder.setTradeState(WXPayConstants.SUCCESS);
                     taskOrderService.updateById(torder);
+                    //任务状态改为已支付
+//                    taskService.updateTaskStatus(torder.getTaskId(), TaskStatusEnum.payed);
                     //返回微信，已接收到结果
                     BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
                     Map<String, String> returnCode = new HashMap<>();

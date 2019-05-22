@@ -5,6 +5,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
+import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
@@ -59,6 +60,9 @@ public interface TaskService extends IService<TaskEntity> {
      * 更新任务
      */
     void updateTask(TaskForm form);
+
+    //更新任务状态
+    void updateTaskStatus(Long taskId, TaskStatusEnum status);
 
     /**
      * 删除任务-逻辑删除
