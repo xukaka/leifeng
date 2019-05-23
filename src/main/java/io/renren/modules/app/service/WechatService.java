@@ -1,6 +1,5 @@
 package io.renren.modules.app.service;
 
-import com.alibaba.fastjson.JSON;
 import io.renren.modules.app.utils.JsSdkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -33,20 +31,22 @@ public class WechatService {
      * timestamp 当前时间戳
      * @param url 当前页面url
      */
-    public Map<String,String> createSignature(String url) throws IOException {
+    public Map<String,String> createSignature(String url) {
         String nonceStr = create_nonce_str();
         String timestamp = create_timestamp();
 
-        String signature = "jsapi_ticket="+ jsSdkUtils.getJsapiTicket();
-        signature += "&noncestr="+nonceStr;
-        signature += "&timestamp="+timestamp;
-        signature += "&url="+url;
-
+        StringBuilder sb  = new StringBuilder();
+        sb.append("jsapi_ticket=") .append(jsSdkUtils.getJsapiTicket())
+                .append("&noncestr=").append(nonceStr)
+                .append("&timestamp=").append(timestamp)
+                .append("&url=").append(url);
+        String signature = null;
         try {
             MessageDigest crypt = MessageDigest.getInstance("SHA-1");
             crypt.reset();
-            crypt.update(signature.getBytes("UTF-8"));
+            crypt.update(sb.toString().getBytes("UTF-8"));
             signature = byteToHex(crypt.digest());
+
         } catch (Exception e) {
             LOGGER.error("Signature for SHA-1 is error:{}",e);
         }
@@ -57,7 +57,6 @@ public class WechatService {
         map.put("signature", signature);
         map.put("appid", WX_APPID);
         return map;
-//        return JSON.toJSONString(map, true);
     }
 
     private static String byteToHex(final byte[] hash) {

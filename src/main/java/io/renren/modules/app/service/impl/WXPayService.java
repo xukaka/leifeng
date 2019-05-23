@@ -210,10 +210,8 @@ public class WXPayService {
         Map<String, String> map = WXPayUtil.xmlToMap(wxResponseData);
         System.out.println("xml转成map后为=" + JsonUtil.Java2Json(map));
         Map<String, String> backData = new HashMap<>();
-        String returnCode = map.get("return_code");
-        if (!StringUtils.isEmpty(returnCode) && "SUCCESS".equals(returnCode)) {
-            String resultCode = map.get("result_code");
-            if (!StringUtils.isEmpty(resultCode) && "SUCCESS".equals(resultCode)) {
+        if ("SUCCESS".equals(map.get("return_code"))) {
+            if ("SUCCESS".equals(map.get("result_code"))) {
                 String prePayId = map.get("prepay_id");
                 backData.put("package", "prepay_id=" + prePayId);
                 backData.put("nonceStr", WXPayUtil.generateNonceStr());
@@ -427,7 +425,7 @@ public class WXPayService {
      * @param memberId
      * @param amount
      */
-//    @Transactional
+    @Transactional
     public void preWithdrawal(Long memberId, Long amount) {
         MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>()
                 .eq("member_id", memberId));

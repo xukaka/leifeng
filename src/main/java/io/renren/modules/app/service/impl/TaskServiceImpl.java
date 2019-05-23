@@ -228,9 +228,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public void publishTask(Long publisherId, Long taskId) {
-        if (!isPayedTask(taskId)){
+      /*  if (!isPayedTask(taskId)){
             throw new RRException("任务未支付");
-        }
+        }*/
         TaskEntity task = baseMapper.selectById(taskId);
         if (publisherId.equals(task.getCreatorId())) {
             updateTaskStatus(taskId, TaskStatusEnum.published);

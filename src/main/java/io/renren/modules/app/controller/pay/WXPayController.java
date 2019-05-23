@@ -11,6 +11,7 @@ import io.renren.modules.app.dto.WithdrawalOrderDto;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
+import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskOrderEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.MemberWalletService;
@@ -64,8 +65,8 @@ public class WXPayController {
     public R prePay( float totalFee, Long taskId) throws Exception {
         MemberWalletEntity wallet= memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>()
                 .eq("member_id", ReqUtils.curMemberId()));
+
         String prodDesc="任务订单";
-        logger.info("[WXPayController.prePay] request:prodDesc={},totleFee={},openid={}", prodDesc, totalFee, wallet.getOpenId());
         //生成taskorder订单入库
         String outTradeNo;
         TaskOrderEntity taskOrder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
@@ -74,17 +75,16 @@ public class WXPayController {
             outTradeNo= "NO" + OrderNoUtil.generateOrderNo(taskId);
             torder.setOutTradeNo(outTradeNo);
             torder.setAttach(prodDesc);
-            torder.setTradeState(WXPayConstants.NOTPAY);
             torder.setTaskId(taskId);
-            torder.setTotalFee((long) (totalFee * 100));
+            torder.setTotalFee((long)(totalFee * 100));
             taskOrderService.insert(torder);
         }else{
             outTradeNo= taskOrder.getOutTradeNo();
         }
-        String totalFeeStr = String.valueOf((int) (totalFee * 100));//交易的金额，单位为分
-        Map<String, String> reqDataComp = wxPayService.fillRequestData(prodDesc, outTradeNo, totalFeeStr, ReqUtils.getRemoteAddr(), wallet.getOpenId());
-        logger.info("微信预下订单请求参数：{}", JsonUtil.Java2Json(reqDataComp));
-        String wxResponse = wxPayService.prePayRequest(WXPayUtil.mapToXml(reqDataComp));
+        String totalFeeStr = String.valueOf((long)(totalFee * 100));//交易的金额，单位为分
+        Map<String, String> reqData = wxPayService.fillRequestData(prodDesc, outTradeNo, totalFeeStr, ReqUtils.getRemoteAddr(), wallet.getOpenId());
+        logger.info("微信预下订单请求参数：{}", JsonUtil.Java2Json(reqData));
+        String wxResponse = wxPayService.prePayRequest(WXPayUtil.mapToXml(reqData));
         logger.info("微信预下订单请求结果：{}", wxResponse);
         Map<String, String> wxPayMap = wxPayService.reGenerateParamForApp(wxResponse);
         return R.ok().put("result", wxPayMap);
@@ -115,7 +115,6 @@ public class WXPayController {
         if (WXPayConstants.SUCCESS.equals(map.get("return_code"))) {
             //签名校验
             boolean signFlag = wxPayService.validateSign(map);
-
             if (WXPayConstants.SUCCESS.equals(map.get("result_code")) && signFlag) {
                 String outTradeNo = map.get("out_trade_no");
                 long totalFee = Long.valueOf(map.get("total_fee"));
@@ -127,8 +126,6 @@ public class WXPayController {
                     torder.setTimeEnd(map.get("time_end"));
                     torder.setTradeState(WXPayConstants.SUCCESS);
                     taskOrderService.updateById(torder);
-                    //任务状态改为已支付
-//                    taskService.updateTaskStatus(torder.getTaskId(), TaskStatusEnum.payed);
                     //返回微信，已接收到结果
                     BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
                     Map<String, String> returnCode = new HashMap<>();
@@ -210,6 +207,8 @@ public class WXPayController {
         if (!WXPayConstants.SUCCESS.equals(torder.getTradeState())) {
             return R.error("任务订单状态异常：TradeState="+torder.getTradeState());
         }
+ /*       TaskEntity task = taskService.selectById(taskId);
+        if (task.getStatus()!=TaskStatusEnum)*/
 
         String refundData = wxPayService.refundRequest(torder.getTransactionId(), taskId, String.valueOf(torder.getTotalFee()));
         logger.info("退款接口微信返回结果：{}", refundData);
@@ -262,8 +261,6 @@ public class WXPayController {
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<WithdrawalOrderDto> orders = withdrawalOrderService.getWithdrawalOrders(page);
         return R.ok().put("result", orders);
-
-
     }
 
 
