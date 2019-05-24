@@ -87,7 +87,6 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
 
     @Override
     public PageUtils<DiaryDto> getDiarys(PageWrapper page) {
-        LOG.debug("get diarys params:page={}",page);
         List<DiaryDto> diarys = baseMapper.getDiarys( page);
         if (CollectionUtils.isEmpty(diarys)) {
             return new PageUtils<>();

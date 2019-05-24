@@ -45,7 +45,7 @@ public class MemberWalletController {
     @Autowired
     private MemberWalletRecordService memberWalletRecordService;
 
-    @Login
+    /*@Login
     @PostMapping("/withdraw")
     @ApiOperation("提现申请")
     @Transactional
@@ -84,7 +84,7 @@ public class MemberWalletController {
         memberWalletLogService.insert(log);
 
         return R.ok();
-    }
+    }*/
 
 
 

@@ -1,15 +1,13 @@
-package io.renren.modules.app.entity.pay;
+package io.renren.modules.app.dto;
 
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import io.renren.modules.app.entity.BaseEntity;
+import java.io.Serializable;
 
 /**
- * 用户钱包日志
+ * 钱包交易日志
  */
-@TableName("t_member_wallet_log")
-public class MemberWalletLogEntity extends BaseEntity {
+public class MemberWalletLogDto implements Serializable {
 
+    private Long id;
     private String  outTradeNo;//交易流水号
 
     private Long memberId;//用户id
@@ -19,7 +17,20 @@ public class MemberWalletLogEntity extends BaseEntity {
 
     private String type;//日志类型：withdrawal提现，taskIncome任务入账
 
+    private String tradeState;//交易状态
+
     private String remark;//备注
+
+    //创建时间
+    private Long createTime;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getOutTradeNo() {
         return outTradeNo;
@@ -53,6 +64,22 @@ public class MemberWalletLogEntity extends BaseEntity {
         this.money = money;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTradeState() {
+        return tradeState;
+    }
+
+    public void setTradeState(String tradeState) {
+        this.tradeState = tradeState;
+    }
+
     public String getRemark() {
         return remark;
     }
@@ -61,11 +88,11 @@ public class MemberWalletLogEntity extends BaseEntity {
         this.remark = remark;
     }
 
-    public String getType() {
-        return type;
+    public Long getCreateTime() {
+        return createTime;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
     }
 }

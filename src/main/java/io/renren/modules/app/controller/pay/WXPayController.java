@@ -6,18 +6,17 @@ import io.renren.common.utils.OrderNoUtil;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.MemberWalletLogDto;
 import io.renren.modules.app.dto.TaskOrderDto;
 import io.renren.modules.app.dto.WithdrawalOrderDto;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
+import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskOrderEntity;
 import io.renren.modules.app.form.PageWrapper;
-import io.renren.modules.app.service.MemberWalletService;
-import io.renren.modules.app.service.TaskOrderService;
-import io.renren.modules.app.service.TaskService;
-import io.renren.modules.app.service.WithdrawalOrderService;
+import io.renren.modules.app.service.*;
 import io.renren.modules.app.service.impl.WXPayService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.renren.modules.app.utils.WXPayConstants;
@@ -58,6 +57,9 @@ public class WXPayController {
     private WithdrawalOrderService withdrawalOrderService;
     @Autowired
     private MemberWalletService memberWalletService;
+
+    @Autowired
+    private MemberWalletLogService memberWalletLogService;
 
     @Login
     @PostMapping("/prePay")
@@ -238,7 +240,7 @@ public class WXPayController {
     @PostMapping("/preWithdrawal")
     @ApiOperation("提现订单申请接口")
     public R preWithdrawal(Long amount) {
-        wxPayService.preWithdrawal(27L, amount);
+        wxPayService.preWithdrawal(ReqUtils.curMemberId(), amount);
         return R.ok();
     }
 
@@ -252,6 +254,17 @@ public class WXPayController {
         return R.ok().put("result", result);
     }
 
+    @GetMapping("/logs")
+    @ApiOperation("分页获取交易日志列表")
+    public R getLogs(Long memberId,Integer curPage, Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<MemberWalletLogDto> logs = memberWalletLogService.getLogs(memberId,page);
+        return R.ok().put("result", logs);
+    }
+
     @GetMapping("/withdrawal/list")
     @ApiOperation("分页获取企业提现订单列表")
     public R getWithdrawalOrders(Integer curPage, Integer pageSize) {
@@ -262,6 +275,7 @@ public class WXPayController {
         PageUtils<WithdrawalOrderDto> orders = withdrawalOrderService.getWithdrawalOrders(page);
         return R.ok().put("result", orders);
     }
+
 
 
     @GetMapping("/withdrawal/check")

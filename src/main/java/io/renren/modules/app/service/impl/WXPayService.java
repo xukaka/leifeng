@@ -453,6 +453,7 @@ public class WXPayService {
         log.setChangeMoney(-amount);
         log.setMoney(wallet.getMoney() - amount);
         log.setOutTradeNo(outTradeNo);
+        log.setType("withdrawal");
         log.setRemark("提现");
         log.setCreateTime(DateUtils.now());
         memberWalletLogService.insert(log);

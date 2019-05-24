@@ -495,6 +495,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             log.setMemberId(receiverId);
             log.setChangeMoney(order.getTotalFee());
             log.setMoney(wallet.getMoney() + order.getTotalFee());
+            log.setType("taskIncome");//任务入账
             log.setOutTradeNo(order.getOutTradeNo());
             log.setRemark("入账流水");
             memberWalletLogService.insert(log);
