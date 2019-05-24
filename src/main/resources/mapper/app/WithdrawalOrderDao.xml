@@ -10,7 +10,6 @@
         <result property="attach" column="attach"/>
         <result property="createTime" column="create_time"/>
         <result property="tradeState" column="trade_state"/>
-        <result property="timeEnd" column="time_end"/>
         <!--关联创建人-->
         <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="member_id"/>

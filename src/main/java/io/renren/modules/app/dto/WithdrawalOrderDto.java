@@ -16,7 +16,7 @@ public class WithdrawalOrderDto implements Serializable {
     //提现订单号
     private String outTradeNo;
     //提现用户
-    private Member member;
+    private Member creator;
     //订单金额，单位为分
     private Long totalFee;
     //交易状态，SUCCESS—提现成功
@@ -24,8 +24,9 @@ public class WithdrawalOrderDto implements Serializable {
     private String tradeState;
     //附件描述信息
     private String attach;
-    //提现时间格式为yyyyMMddHHmmss
-    private String timeEnd;
+
+    //创建时间
+    private Long createTime;
 
     public Long getId() {
         return id;
@@ -43,12 +44,12 @@ public class WithdrawalOrderDto implements Serializable {
         this.outTradeNo = outTradeNo;
     }
 
-    public Member getMember() {
-        return member;
+    public Member getCreator() {
+        return creator;
     }
 
-    public void setMember(Member member) {
-        this.member = member;
+    public void setCreator(Member creator) {
+        this.creator = creator;
     }
 
     public Long getTotalFee() {
@@ -75,11 +76,11 @@ public class WithdrawalOrderDto implements Serializable {
         this.attach = attach;
     }
 
-    public String getTimeEnd() {
-        return timeEnd;
+    public Long getCreateTime() {
+        return createTime;
     }
 
-    public void setTimeEnd(String timeEnd) {
-        this.timeEnd = timeEnd;
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
     }
 }

@@ -234,11 +234,11 @@ public class WXPayController {
     }
 
     //企业提现订单
-    @Login
+//    @Login
     @PostMapping("/preWithdrawal")
     @ApiOperation("提现订单申请接口")
     public R preWithdrawal(Long amount) {
-        wxPayService.preWithdrawal(ReqUtils.curMemberId(), amount);
+        wxPayService.preWithdrawal(27L, amount);
         return R.ok();
     }
 
