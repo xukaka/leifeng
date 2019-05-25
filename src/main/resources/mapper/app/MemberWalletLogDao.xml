@@ -16,4 +16,35 @@
     </select>
 -->
 
+   <select id="getLogs" resultType="io.renren.modules.app.entity.pay.MemberWalletLogEntity">
+      select log.*
+      from
+      t_member_wallet_log log
+      where log.member_id = #{memberId}
+      ORDER BY log.create_time desc
+      LIMIT #{page.offset},#{page.limit}
+   </select>
+
+   <select id="count" resultType="int">
+      select count(1)
+      from
+      t_member_wallet_log log
+      where log.member_id = #{memberId}
+   </select>
+
+
+   <!--校验总金额-->
+   <select id="checkTotalMoney" resultType="io.renren.modules.app.dto.MoneyCheckDto">
+      SELECT
+      log.member_id AS memberId,
+      sum(log.change_money) AS totalBalance,
+      sum( CASE WHEN log.change_money &gt; 0 THEN log.change_money  ELSE 0 END ) AS totalIncome,
+      sum( CASE WHEN log.change_money &lt; 0 THEN log.change_money  ELSE 0 END ) AS totalExpense
+      FROM   t_member_wallet_log log
+      where log.member_id = #{memberId}
+
+   </select>
+
+
+
 </mapper>

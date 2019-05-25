@@ -8,4 +8,18 @@
         update t_member_wallet w set w.money = w.money + #{inc} where w.member_id = #{memberId}
     </update>
 
+
+    <select id="getWallet" resultType="io.renren.modules.app.dto.MemberWalletDto">
+        select w.money,
+        m.id as memberId,
+        m.nick_name as nickName,
+        m.sex,
+        m.avatar
+        from
+        t_member_wallet w
+        join member m on m.id = w.member_id
+        where w.member_id =#{memberId}
+
+    </select>
+
 </mapper>

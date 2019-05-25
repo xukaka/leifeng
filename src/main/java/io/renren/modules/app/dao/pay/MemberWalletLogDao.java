@@ -1,6 +1,7 @@
 package io.renren.modules.app.dao.pay;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import io.renren.modules.app.dto.MoneyCheckDto;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
 import io.renren.modules.app.form.PageWrapper;
@@ -20,4 +21,7 @@ public interface MemberWalletLogDao extends BaseMapper<MemberWalletLogEntity> {
 
   //获取交易日志总数
   int count(@Param("memberId")Long memberId);
+
+  //校验总金额
+  MoneyCheckDto checkTotalMoney(@Param("memberId")Long memberId);
 }

@@ -7,6 +7,7 @@ import io.renren.modules.app.dao.task.WithdrawalOrderDao;
 import io.renren.modules.app.dto.WithdrawalOrderDto;
 import io.renren.modules.app.entity.task.WithdrawalOrderEntity;
 import io.renren.modules.app.form.PageWrapper;
+import io.renren.modules.app.service.MemberWalletLogService;
 import io.renren.modules.app.service.MemberWalletService;
 import io.renren.modules.app.service.TaskOrderService;
 import io.renren.modules.app.service.WithdrawalOrderService;
@@ -22,6 +23,8 @@ public class WithdrawalOrderImpl extends ServiceImpl<WithdrawalOrderDao, Withdra
 
     @Autowired
     private MemberWalletService memberWalletService;
+    @Autowired
+    private MemberWalletLogService memberWalletLogService;
     @Autowired
     private TaskOrderService taskOrderService;
 
@@ -46,6 +49,7 @@ public class WithdrawalOrderImpl extends ServiceImpl<WithdrawalOrderDao, Withdra
         if (!"AUDIT".equals(order.getTradeState())) {
             throw new RRException("提现订单状态异常:TradeState=" + order.getTradeState());
         }
+//        memberWalletLogService.checkTotalMoney()
 
         /**
          * 校验钱包入账流水是否正常

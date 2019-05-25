@@ -2,6 +2,7 @@ package io.renren.modules.app.dao.pay;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import io.renren.modules.app.dto.CommentDto;
+import io.renren.modules.app.dto.MemberWalletDto;
 import io.renren.modules.app.entity.CommentTypeEnum;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.pay.MemberWalletRecordEntity;
@@ -18,4 +19,6 @@ import java.util.List;
 public interface MemberWalletDao extends BaseMapper<MemberWalletEntity> {
 
     void incMoney(@Param("memberId")Long memberId,@Param("inc")Long inc);
+
+    MemberWalletDto getWallet(@Param("memberId")Long memberId);
   }

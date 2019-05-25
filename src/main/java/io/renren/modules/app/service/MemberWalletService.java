@@ -1,6 +1,7 @@
 package io.renren.modules.app.service;
 
 import com.baomidou.mybatisplus.service.IService;
+import io.renren.modules.app.dto.MemberWalletDto;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 
 /**
@@ -14,6 +15,9 @@ public interface MemberWalletService extends IService<MemberWalletEntity> {
      * @param inc
      */
     void incMoney(Long memberId,Long inc);
+
+    //获取钱包信息
+    MemberWalletDto getWallet(Long memberId);
 
 }
 

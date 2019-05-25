@@ -6,6 +6,7 @@ import io.renren.common.utils.OrderNoUtil;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.MemberWalletDto;
 import io.renren.modules.app.dto.MemberWalletLogDto;
 import io.renren.modules.app.dto.TaskOrderDto;
 import io.renren.modules.app.dto.WithdrawalOrderDto;
@@ -236,7 +237,7 @@ public class WXPayController {
     }
 
     //企业提现订单
-//    @Login
+    @Login
     @PostMapping("/preWithdrawal")
     @ApiOperation("提现订单申请接口")
     public R preWithdrawal(Long amount) {
@@ -296,6 +297,15 @@ public class WXPayController {
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<TaskOrderDto> orders = taskOrderService.getTaskOrders(tradeState, page);
         return R.ok().put("result", orders);
+    }
+
+
+    @Login
+    @GetMapping("/wallet")
+    @ApiOperation("获取用户钱包信息")
+    public R getWallet() {
+        MemberWalletDto wallet = memberWalletService.getWallet(ReqUtils.curMemberId());
+        return R.ok().put("result", wallet);
     }
 
 }
