@@ -113,10 +113,14 @@ public class RegisterController {
             }
 
             String token = jwtUtils.generateToken(auths.getMemberId());
+            Member member = memberService.selectById(auths.getMemberId());
             Map<String, Object> map = new HashMap<>();
             map.put("token", token);
             map.put("memberId", auths.getMemberId());
             map.put("openId",wxSession.getOpenid());
+            map.put("avatar",member.getAvatar());
+            map.put("nickName",member.getNickName());
+            map.put("sex",member.getSex());
             return R.ok(map);
 
         } else {
