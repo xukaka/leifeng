@@ -129,6 +129,9 @@ public class WXPayController {
                     torder.setTimeEnd(map.get("time_end"));
                     torder.setTradeState(WXPayConstants.SUCCESS);
                     taskOrderService.updateById(torder);
+                    //发布任务
+                    taskService.publishTask(torder.getTaskId());
+
                     //返回微信，已接收到结果
                     BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
                     Map<String, String> returnCode = new HashMap<>();

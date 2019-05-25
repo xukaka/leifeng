@@ -294,8 +294,8 @@ public class WXPayService {
         reqdata.put("nonce_str", WXPayUtil.generateNonceStr());
         reqdata.put("partner_trade_no", OrderNoUtil.generateOrderNo((long) new Random().nextInt(100000)));
         reqdata.put("openid", openId);
-        reqdata.put("check_name", "FORCE_CHECK");//NO_CHECK：不校验真实姓名,FORCE_CHECK：强校验真实姓名
-        reqdata.put("re_user_name", realName);
+        reqdata.put("check_name", "NO_CHECK");//NO_CHECK：不校验真实姓名,FORCE_CHECK：强校验真实姓名
+//        reqdata.put("re_user_name", realName);
         reqdata.put("amount", amount);
         reqdata.put("desc", "企业转账提现");
         reqdata.put("spbill_create_ip", ReqUtils.getRemoteAddr());

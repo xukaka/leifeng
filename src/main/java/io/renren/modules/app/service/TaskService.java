@@ -54,7 +54,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 发布任务
      */
-    void publishTask(Long publisherId, Long taskId);
+    void publishTask(Long taskId);
 
     /**
      * 更新任务
