@@ -26,11 +26,11 @@ public class TaskEntity extends BaseEntity {
     /**
      * 任务开始时间
      */
-    private Long startTime;
+//    private Long startTime;
     /**
      * 任务过期时间
      */
-    private Long expireTime;
+//    private Long expireTime;
     /**
      * 虚拟货币(雷锋币)
      */
@@ -83,21 +83,6 @@ public class TaskEntity extends BaseEntity {
     }
 
 
-    public Long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Long startTime) {
-        this.startTime = startTime;
-    }
-
-    public Long getExpireTime() {
-        return expireTime;
-    }
-
-    public void setExpireTime(Long expireTime) {
-        this.expireTime = expireTime;
-    }
 
     public Integer getVirtualCurrency() {
         return virtualCurrency;

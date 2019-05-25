@@ -43,13 +43,13 @@ public class TaskForm {
     @ApiModelProperty(value = "标签id列表", example = "")
     private List<Long> tagIds;
 
-    @ApiModelProperty(value = "任务开始时间", example = "")
+    /*@ApiModelProperty(value = "任务开始时间", example = "")
     @NotNull
     private Long startTime;
 
     @ApiModelProperty(value = "任务过期时间", example = "")
     @NotNull
-    private Long expireTime;
+    private Long expireTime;*/
 
     @ApiModelProperty(value = "虚拟货币（雷锋币）", example = "")
     @NotNull
@@ -91,21 +91,6 @@ public class TaskForm {
         this.tagIds = tagIds;
     }
 
-    public Long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Long startTime) {
-        this.startTime = startTime;
-    }
-
-    public Long getExpireTime() {
-        return expireTime;
-    }
-
-    public void setExpireTime(Long expireTime) {
-        this.expireTime = expireTime;
-    }
 
     public Integer getVirtualCurrency() {
         return virtualCurrency;
