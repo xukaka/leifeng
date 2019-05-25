@@ -52,7 +52,7 @@ public class TaskController {
     @PostMapping("/publish")
     @ApiOperation("发布任务")
     public R publishTask(Long taskId){
-        taskService.publishTask(ReqUtils.curMemberId(), taskId);
+        taskService.publishTask(taskId);
         return R.ok();
     }
 
