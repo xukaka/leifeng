@@ -25,10 +25,12 @@ import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
 import io.renren.modules.app.service.*;
 import io.renren.modules.app.utils.WXPayConstants;
+import io.renren.modules.app.utils.WXPayUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -64,6 +66,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     private RabbitMqHelper rabbitMqHelper;
     @Resource
     private RedisUtils redisUtils;
+
+    @Autowired
+    private WXPayService wxPayService;
 
     private static final long EXPIRE = 60 * 10;//10分钟
 
@@ -263,8 +268,20 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (CollectionUtils.isEmpty(members)) {
             return new PageUtils<>();
         }
+
+        setChooseStatus(taskId, members);
+
         int total = baseMapper.receiverCount(taskId);
         return new PageUtils<>(members, total, page.getPageSize(), page.getCurrPage());
+    }
+
+    //是否可指派
+    private void setChooseStatus(Long taskId, List<MemberDto> members) {
+        TaskEntity task = this.selectById(taskId);
+        boolean isChoosed = (task.getStatus() != TaskStatusEnum.published);
+        for (MemberDto dto :members){
+            dto.setChoosed(isChoosed);
+        }
     }
 
     /**
@@ -365,8 +382,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
             });
         }
-
-
     }
 
 
@@ -389,6 +404,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         }
         updateTaskStatus(taskId, TaskStatusEnum.cancelled);
         updateReceiverTaskStatus(taskId);
+        refund(taskId);
+
 
 
         ThreadPoolUtils.execute(() -> {
@@ -402,23 +419,46 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 //                    ImMessageUtils.sendTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已取消", "26", taskReceive.getReceiverId().toString(), "SystemTaskStatus");
                 }
             }
-            /*Member receiver = task.getReceiver();
-            if (receiver != null) {
-                //推送消息给任务领取人
-                MemberDto creator = memberService.getMember(publisherId);
-                JSONObject extras = new JSONObject();
-                extras.put("businessCode", "7");//发布人取消任务
-                extras.put("taskId", task.getId());
-                extras.put("taskTitle", task.getTitle());
-                extras.put("taskReceiverId", receiver.getId());
-                extras.put("taskCreatorAvatar",creator.getAvatar());
-                extras.put("taskCreatorNickName", creator.getNickName());
-                extras.put("taskCreatorId", creator.getId());
-                logger.info("推送消息给任务领取人，extras=" + extras.toJSONString());
-                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_NAME, extras.toJSONString());
-            }
-*/
         });
+
+    }
+
+    //退款
+    private void refund(Long taskId) {
+        TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
+        if (torder == null) {
+            throw new RRException("任务订单未生成");
+
+        }
+
+        if (!WXPayConstants.SUCCESS.equals(torder.getTradeState())) {
+            throw new RRException("任务订单状态异常：TradeState="+torder.getTradeState());
+        }
+
+        try {
+            String refundData = wxPayService.refundRequest(torder.getTransactionId(), taskId, String.valueOf(torder.getTotalFee()));
+            logger.info("退款接口微信返回结果：{}", refundData);
+
+            Map<String, String> map = WXPayUtil.xmlToMap(refundData);
+            if (WXPayConstants.SUCCESS.equals(map.get("return_code"))) {
+                if (WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
+                    torder.setTradeState(WXPayConstants.REFUND);
+                    taskOrderService.updateById(torder);
+
+               /* return R.ok().put("refundId", map.get("refund_id"))
+                        .put("refundFee", map.get("refund_fee"));*/
+                } else {
+                    logger.info(map.get("err_code") + ":" + map.get("err_code_des"));
+//                return R.error(map.get("err_code") + ":" + map.get("err_code_des"));
+                }
+            } else {
+                logger.info(map.get("return_msg"));
+//            return R.error(map.get("return_msg"));
+            }
+        }catch (Exception e){
+            throw new RRException(e.toString());
+        }
+
 
     }
 

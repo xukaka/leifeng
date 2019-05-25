@@ -18,6 +18,9 @@ public class MemberDto extends Member {
     //用户技能标签
     private List<String> tags;
 
+    //是否可指派
+    private Boolean isChoosed;
+
 
     public Long getDistance() {
         return distance;
@@ -44,5 +47,13 @@ public class MemberDto extends Member {
 
     public void setFollowed(Boolean followed) {
         isFollowed = followed;
+    }
+
+    public Boolean getChoosed() {
+        return isChoosed;
+    }
+
+    public void setChoosed(Boolean choosed) {
+        isChoosed = choosed;
     }
 }

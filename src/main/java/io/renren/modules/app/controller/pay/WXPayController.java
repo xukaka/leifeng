@@ -1,10 +1,7 @@
 package io.renren.modules.app.controller.pay;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import io.renren.common.utils.JsonUtil;
-import io.renren.common.utils.OrderNoUtil;
-import io.renren.common.utils.PageUtils;
-import io.renren.common.utils.R;
+import io.renren.common.utils.*;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.MemberWalletDto;
 import io.renren.modules.app.dto.MemberWalletLogDto;
@@ -80,6 +77,7 @@ public class WXPayController {
             torder.setAttach(prodDesc);
             torder.setTaskId(taskId);
             torder.setTotalFee((long)(totalFee * 100));
+            torder.setCreateTime(DateUtils.now());
             taskOrderService.insert(torder);
         }else{
             outTradeNo= taskOrder.getOutTradeNo();
