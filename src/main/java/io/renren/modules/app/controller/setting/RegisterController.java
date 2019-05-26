@@ -89,21 +89,34 @@ public class RegisterController {
     @PostMapping("wxLogin")
     @ApiOperation("微信登录")
     @ApiImplicitParam(name = "code", value = "微信login方法返回的code", paramType = "query")
-    public R wxLogin(String code) {
+    public R wxLogin(String code,String phoneNum,String phoneCode) {
+        if (StringUtils.isEmpty(phoneNum)) {
+            throw new RRException("手机号不能空");
+        }
+        if (StringUtils.isEmpty(phoneCode)) {
+            throw new RRException("验证码不能空");
+        }
+        boolean success = memberService.validatePhoneCode(phoneNum, phoneCode);
+        if (!success) {
+            return R.error(HttpStatus.SC_FORBIDDEN, "验证码错误");
+        }
+
         //表单校验
         logger.info("RegisterController.wxLogin 参数code：{}" , code);
         if (StringUtils.isEmpty(code)) {
             throw new RRException("code is null");
         }
 
+
         WXSession wxSession = wxRequest.loginWXWithCode(code);
 
         if (!ObjectUtils.isEmpty(wxSession)) {
             logger.info("wxsession={}",JsonUtil.Java2Json(wxSession));
 
-
             MemberAuths auths = memberAuthsService.queryByTypeAndCredential(Constant.WX_TYPE, DigestUtils.sha256Hex(wxSession.getOpenid()));
+
             //通过openid查询不到则注册新用户
+            int loginType = 1;
             if (ObjectUtils.isEmpty(auths)) {
                 Member member = new Member();
                 member.setCreateTime(DateUtils.now());
@@ -117,11 +130,13 @@ public class RegisterController {
                 auths.setIdentityType(Constant.WX_TYPE);
                 auths.setIdentifier(Constant.WX_IDENTIFIER);
                 memberService.registerMemberWithAuth(member,wallet, auths);
+                loginType=0;
             }
 
             String token = jwtUtils.generateToken(auths.getMemberId());
             Member member = memberService.selectById(auths.getMemberId());
             Map<String, Object> map = new HashMap<>();
+            map.put("loginType", loginType);//0注册，1登录
             map.put("token", token);
             map.put("memberId", auths.getMemberId());
             map.put("openId",wxSession.getOpenid());

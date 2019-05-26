@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class WxUserInfoForm implements Serializable {
 
+    private String memberId;
+
     private String nickName;
 
     private Integer gender;
@@ -79,5 +81,13 @@ public class WxUserInfoForm implements Serializable {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 }
