@@ -79,4 +79,17 @@ public class MemberWalletEntity {
     public void setOpenId(String openId) {
         this.openId = openId;
     }
+
+    @Override
+    public String toString() {
+        return "MemberWalletEntity{" +
+                "memberId=" + memberId +
+                ", money=" + money +
+                ", salt='" + salt + '\'' +
+                ", payPassword='" + payPassword + '\'' +
+                ", realName='" + realName + '\'' +
+                ", idcard='" + idcard + '\'' +
+                ", openId='" + openId + '\'' +
+                '}';
+    }
 }

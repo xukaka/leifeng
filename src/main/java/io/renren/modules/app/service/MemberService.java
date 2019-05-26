@@ -6,6 +6,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberAuths;
+import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.form.*;
 
 import java.util.Map;
@@ -51,7 +52,7 @@ public interface MemberService extends IService<Member> {
     /**
      * 同时写入member表和member_auths表
      */
-    void registerMemberWithAuth(String openId,Member member, MemberAuths auths);
+    void registerMemberWithAuth(Member member, MemberWalletEntity wallet,MemberAuths auths);
 
     void updateLocationNumber(Long memberId,LocationForm locationForm);
 

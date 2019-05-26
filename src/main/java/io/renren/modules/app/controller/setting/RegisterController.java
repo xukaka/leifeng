@@ -8,6 +8,7 @@ import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dto.WXSession;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberAuths;
+import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.form.LoginForm;
 import io.renren.modules.app.form.RegisterForm;
 import io.renren.modules.app.form.WxUserInfoForm;
@@ -90,7 +91,7 @@ public class RegisterController {
     @ApiImplicitParam(name = "code", value = "微信login方法返回的code", paramType = "query")
     public R wxLogin(String code) {
         //表单校验
-        logger.info("RegisterController.wxLogin 参数code：" + code);
+        logger.info("RegisterController.wxLogin 参数code：{}" , code);
         if (StringUtils.isEmpty(code)) {
             throw new RRException("code is null");
         }
@@ -98,18 +99,24 @@ public class RegisterController {
         WXSession wxSession = wxRequest.loginWXWithCode(code);
 
         if (!ObjectUtils.isEmpty(wxSession)) {
-            logger.info("wxsession=",JsonUtil.Java2Json(wxSession));
+            logger.info("wxsession={}",JsonUtil.Java2Json(wxSession));
+
+
             MemberAuths auths = memberAuthsService.queryByTypeAndCredential(Constant.WX_TYPE, DigestUtils.sha256Hex(wxSession.getOpenid()));
             //通过openid查询不到则注册新用户
             if (ObjectUtils.isEmpty(auths)) {
                 Member member = new Member();
                 member.setCreateTime(DateUtils.now());
 
+                //创建用户钱包
+                MemberWalletEntity wallet = new MemberWalletEntity();
+                wallet.setOpenId(wxSession.getOpenid());
+
                 auths = new MemberAuths();
                 auths.setCredential(DigestUtils.sha256Hex(wxSession.getOpenid()));
                 auths.setIdentityType(Constant.WX_TYPE);
                 auths.setIdentifier(Constant.WX_IDENTIFIER);
-                memberService.registerMemberWithAuth(wxSession.getOpenid(),member, auths);
+                memberService.registerMemberWithAuth(member,wallet, auths);
             }
 
             String token = jwtUtils.generateToken(auths.getMemberId());

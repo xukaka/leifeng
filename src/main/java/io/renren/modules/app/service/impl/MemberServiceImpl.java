@@ -18,10 +18,7 @@ import io.renren.modules.app.entity.im.ImFollowNoticeStatus;
 import io.renren.modules.app.entity.member.*;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.form.*;
-import io.renren.modules.app.service.ImService;
-import io.renren.modules.app.service.MemberAuthsService;
-import io.renren.modules.app.service.MemberService;
-import io.renren.modules.app.service.MemberWalletService;
+import io.renren.modules.app.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,13 +188,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     @Override
     @Transactional
-    public void registerMemberWithAuth(String openId,Member member, MemberAuths auths) {
+    public void registerMemberWithAuth(Member member, MemberWalletEntity wallet, MemberAuths auths) {
         //插入用户基本信息
-        insert(member);
-        //创建用户钱包
-        MemberWalletEntity wallet = new MemberWalletEntity();
+        this.insert(member);
+
         wallet.setMemberId(member.getId());
-        wallet.setOpenId(openId);
+        logger.info("wallet info={}",wallet);
         memberWalletService.insert(wallet);
         auths.setMemberId(member.getId());
         memberAuthsService.insert(auths);
