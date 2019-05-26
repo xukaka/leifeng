@@ -8,12 +8,8 @@ import io.renren.modules.app.entity.BaseEntity;
  * 用户钱包交易记录
  */
 @TableName("t_member_wallet")
-public class MemberWalletEntity {
+public class MemberWalletEntity extends BaseEntity{
 
-    /**
-     * 主键ID
-     */
-    @TableId
     private Long memberId;//用户id
 
     private Long money=0L;//金额，单位为分

@@ -193,7 +193,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         this.insert(member);
 
         wallet.setMemberId(member.getId());
-        logger.info("wallet info={}",wallet);
         memberWalletService.insert(wallet);
         auths.setMemberId(member.getId());
         memberAuthsService.insert(auths);
