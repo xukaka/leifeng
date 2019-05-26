@@ -351,6 +351,7 @@
         count(1)
         FROM t_task t
         JOIN t_task_address a ON t.address_id = a.id
+        JOIN member m ON t.creator_id = m.id
         WHERE
         <if test="queryMap.tagIds != null and queryMap.tagIds.size() > 0">
             EXISTS (select 1 from t_tag tag,r_task_tag r
