@@ -182,6 +182,16 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             if (member.getSex() == null) {
                 member.setSex(userInfo.getGender());
             }
+            if (member.getLat() == null) {
+                member.setLat(userInfo.getLat());
+            }
+            if (member.getLng() == null) {
+                member.setLng(userInfo.getLng());
+            }
+            if (StringUtils.isEmpty(member.getAddress())) {
+                member.setAddress(userInfo.getAddress());
+            }
+
             this.updateById(member);
         }
     }

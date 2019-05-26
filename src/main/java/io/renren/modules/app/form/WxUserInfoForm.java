@@ -19,6 +19,21 @@ public class WxUserInfoForm implements Serializable {
 
     private String phone;
 
+    //维度
+    private Double lat;
+    //经度
+    private Double lng;
+    //地址
+    private String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public String getNickName() {
         return nickName;
     }
@@ -89,5 +104,21 @@ public class WxUserInfoForm implements Serializable {
 
     public void setMemberId(String memberId) {
         this.memberId = memberId;
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
     }
 }
