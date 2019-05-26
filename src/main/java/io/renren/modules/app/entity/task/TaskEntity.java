@@ -26,7 +26,7 @@ public class TaskEntity extends BaseEntity {
     /**
      * 任务开始时间
      */
-//    private Long startTime;N
+//    private Long startTime;
     /**
      * 任务过期时间
      */

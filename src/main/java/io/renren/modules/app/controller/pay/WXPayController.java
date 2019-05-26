@@ -62,7 +62,7 @@ public class WXPayController {
     @Login
     @PostMapping("/prePay")
     @ApiOperation("微信预下订单接口")
-    public R prePay( float totalFee, Long taskId) throws Exception {
+    public R prePay( Long totalFee, Long taskId) throws Exception {
         MemberWalletEntity wallet= memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>()
                 .eq("member_id", ReqUtils.curMemberId()));
 
@@ -76,13 +76,13 @@ public class WXPayController {
             torder.setOutTradeNo(outTradeNo);
             torder.setAttach(prodDesc);
             torder.setTaskId(taskId);
-            torder.setTotalFee((long)(totalFee * 100));
+            torder.setTotalFee(totalFee);
             torder.setCreateTime(DateUtils.now());
             taskOrderService.insert(torder);
         }else{
             outTradeNo= taskOrder.getOutTradeNo();
         }
-        String totalFeeStr = String.valueOf((long)(totalFee * 100));//交易的金额，单位为分
+        String totalFeeStr = String.valueOf(totalFee);//交易的金额，单位为分
         Map<String, String> reqData = wxPayService.fillRequestData(prodDesc, outTradeNo, totalFeeStr, ReqUtils.getRemoteAddr(), wallet.getOpenId());
         logger.info("微信预下订单请求参数：{}", JsonUtil.Java2Json(reqData));
         String wxResponse = wxPayService.prePayRequest(WXPayUtil.mapToXml(reqData));
