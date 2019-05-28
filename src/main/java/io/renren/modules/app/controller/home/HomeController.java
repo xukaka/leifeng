@@ -57,7 +57,7 @@ public class HomeController {
     public R createSignature(@RequestParam String url) {
         LOGGER.info("RestFul of createSignature parameters url:{}", url);
         try {
-            Map<String,String> rs = wechatService.createSignature(url);
+            Map<String,Object> rs = wechatService.createSignature(url);
             LOGGER.info("RestFul of signature is successful.", rs);
             return R.ok().put("result", rs);
         } catch (Exception e) {

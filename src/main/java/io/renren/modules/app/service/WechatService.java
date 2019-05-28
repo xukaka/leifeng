@@ -31,10 +31,10 @@ public class WechatService {
      * timestamp 当前时间戳
      * @param url 当前页面url
      */
-    public Map<String,String> createSignature(String url) {
+    public Map<String,Object> createSignature(String url) {
         String myUrl = "https://pet.fangzheng.fun/";
         String nonceStr = create_nonce_str();
-        String timestamp = create_timestamp();
+        long timestamp = create_timestamp();
 
         StringBuilder sb  = new StringBuilder();
         sb.append("jsapi_ticket=") .append(jsSdkUtils.getJsapiTicket())
@@ -52,7 +52,7 @@ public class WechatService {
             LOGGER.error("Signature for SHA-1 is error:{}",e);
         }
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("timestamp", timestamp);
         map.put("nonceStr", nonceStr);
         map.put("signature", signature);
@@ -71,11 +71,11 @@ public class WechatService {
     }
 
     private static String create_nonce_str() {
-        return UUID.randomUUID().toString();
+        return UUID.randomUUID().toString().replaceAll("-","");
     }
 
-    private static String create_timestamp() {
-        return Long.toString(System.currentTimeMillis() / 1000);
+    private static long create_timestamp() {
+        return System.currentTimeMillis() / 1000;
     }
 
 
