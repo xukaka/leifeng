@@ -70,7 +70,7 @@ public class WechatService {
     }
 
     private static String create_nonce_str() {
-        return UUID.randomUUID().toString();
+        return UUID.randomUUID().toString().replaceAll("-","");
     }
 
     private static String create_timestamp() {
