@@ -24,8 +24,8 @@ public class WechatService {
     @Resource
     private  JsSdkUtils jsSdkUtils;
 
-    @Value("${wx.app_id}")
-    private String WX_APPID;
+    @Value("${wechat.official.account.app_id}")
+    private String WX_APPID;//公众号appid
     /**
      * 根据jsapi_ticket等参数进行SHA1加密
      * nonceStr 随机字符串
@@ -34,12 +34,6 @@ public class WechatService {
      */
     public Map<String,Object> createSignature(String url) {
         String myUrl = "https://pet.fangzheng.fun/";
-        try {
-
-            myUrl  = URLEncoder.encode(myUrl,"utf-8");
-        }catch (Exception e){
-
-        }
         String nonceStr = create_nonce_str();
         long timestamp = create_timestamp();
 

@@ -91,6 +91,7 @@ renren:
     expire: 2592000
     header: token
 
+#微信小程序
 wx:
   #app_id: wx337c1f56812473d2
   #app_secret: f874d3460c7fdd56ba6880805259e16e
@@ -106,6 +107,16 @@ wx:
   transferUrl: https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers
   refund: https://api.mch.weixin.qq.com/secapi/pay/refund
   cert: wx_apiclient_cert.p12
+
+#微信公众号
+wechat :
+  official:
+    account:
+      app_id: wxcd08099dac26f5bf
+      app_secret: 908f9e2108d8c54970cc132ff8f45364
+
+
+
 
 sms:
   appid: 1400198286

@@ -23,10 +23,10 @@ public class JsSdkUtils {
 
     @Resource
     private RedisUtils redisUtils;
-    @Value("${wx.app_id}")
+    @Value("${wechat.official.account.app_id}")
     private String WX_APPID;
 
-    @Value("${wx.app_secret}")
+    @Value("${wechat.official.account.app_secret}")
     private String WX_APPSECRET;
     /**
      * 微信全局票据 ---->>>> access_token
