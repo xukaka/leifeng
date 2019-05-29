@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -32,7 +33,13 @@ public class WechatService {
      * @param url 当前页面url
      */
     public Map<String,Object> createSignature(String url) {
-        String myUrl = "https://pet.fangzheng.fun";
+        String myUrl = "https://pet.fangzheng.fun/";
+        try {
+
+            myUrl  = URLEncoder.encode(myUrl,"utf-8");
+        }catch (Exception e){
+
+        }
         String nonceStr = create_nonce_str();
         long timestamp = create_timestamp();
 
