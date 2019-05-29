@@ -8,10 +8,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dao.pay.MemberWalletLogDao;
 import io.renren.modules.app.dto.MemberWalletLogDto;
 import io.renren.modules.app.dto.MoneyCheckDto;
-import io.renren.modules.app.entity.CircleAuditStatusEnum;
-import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
-import io.renren.modules.app.entity.task.TaskCircleAuditEntity;
 import io.renren.modules.app.entity.task.TaskOrderEntity;
 import io.renren.modules.app.entity.task.WithdrawalOrderEntity;
 import io.renren.modules.app.form.PageWrapper;
@@ -22,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;

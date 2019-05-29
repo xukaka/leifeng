@@ -32,7 +32,7 @@ public class WechatService {
      * @param url 当前页面url
      */
     public Map<String,Object> createSignature(String url) {
-        String myUrl = "https://pet.fangzheng.fun/";
+        String myUrl = "https://pet.fangzheng.fun";
         String nonceStr = create_nonce_str();
         long timestamp = create_timestamp();
 
