@@ -4,6 +4,7 @@ public class WXSession {
 
     private String openid;
     private String sessionKey;
+    private String unionid;
 
     public String getOpenid() {
         return openid;
@@ -19,5 +20,13 @@ public class WXSession {
 
     public void setSessionKey(String sessionKey) {
         this.sessionKey = sessionKey;
+    }
+
+    public String getUnionid() {
+        return unionid;
+    }
+
+    public void setUnionid(String unionid) {
+        this.unionid = unionid;
     }
 }

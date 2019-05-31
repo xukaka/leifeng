@@ -23,14 +23,17 @@ public class WXRequest {
 
     private final static Logger logger = LoggerFactory.getLogger(WXRequest.class);
 
-    @Value("${wx.app_secret}")
+    @Value("${wx.app_secret}")//小程序
     public String appSecret="";
 
-    @Value("${wx.app_id}")
+    @Value("${wx.app_id}")//小程序
     public String appId="";
 
     @Value("${wx.code_session_url}")
     public String wxLoginUrl = "";
+
+    @Value("${wx.aouth2_url}")
+    public String aouth2Url = "";
 
     public WXSession loginWXWithCode(String code){
         //创建httpclient
@@ -58,6 +61,7 @@ public class WXRequest {
                         wxSession = new WXSession();
                         wxSession.setOpenid(wxobject.getString("openid"));
                         wxSession.setSessionKey(wxobject.getString("session_key"));
+                        wxSession.setUnionid(wxobject.getString("unionid"));
                     }else{
                         throw new RRException(wxobject.getString("errmsg"));
                     }
@@ -78,4 +82,7 @@ public class WXRequest {
         }
         return wxSession;
     }
+
+
+
 }

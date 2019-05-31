@@ -97,6 +97,7 @@ wx:
   #app_secret: f874d3460c7fdd56ba6880805259e16e
   app_id: wxf303172e683e60d0
   app_secret: f874d3460c7fdd56ba6880805259e16e
+
   code_session_url: https://api.weixin.qq.com/sns/jscode2session
   mch_id: 1517937991
   trade_type: JSAPI
@@ -114,6 +115,8 @@ wechat :
     account:
       app_id: wxcd08099dac26f5bf
       app_secret: 908f9e2108d8c54970cc132ff8f45364
+      aouth2_url: https://api.weixin.qq.com/sns/oauth2/access_token
+      userinfo_url: https://api.weixin.qq.com/sns/userinfo
 
 
 

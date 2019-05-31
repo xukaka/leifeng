@@ -14,6 +14,7 @@ import io.renren.modules.app.form.RegisterForm;
 import io.renren.modules.app.form.WxUserInfoForm;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
+import io.renren.modules.app.service.WechatService;
 import io.renren.modules.app.service.impl.WXRequest;
 import io.renren.modules.app.utils.JwtUtils;
 import io.swagger.annotations.Api;
@@ -63,6 +64,9 @@ public class RegisterController {
     @Autowired
     private WXRequest wxRequest;
 
+    @Autowired
+    private WechatService wechatService;
+
     /* @PostMapping("register")
     @ApiOperation("注册")
    public R wxRegister(@RequestBody RegisterForm form) {
@@ -89,7 +93,7 @@ public class RegisterController {
     @PostMapping("wxLogin")
     @ApiOperation("微信登录")
     @ApiImplicitParam(name = "code", value = "微信login方法返回的code", paramType = "query")
-    public R wxLogin(String code,String phoneNum,String phoneCode) {
+    public R wxLogin(String code, String phoneNum, String phoneCode) {
         if (StringUtils.isEmpty(phoneNum)) {
             throw new RRException("手机号不能空");
         }
@@ -102,7 +106,7 @@ public class RegisterController {
         }
 
         //表单校验
-        logger.info("RegisterController.wxLogin 参数code：{}" , code);
+        logger.info("RegisterController.wxLogin 参数code：{}", code);
         if (StringUtils.isEmpty(code)) {
             throw new RRException("code is null");
         }
@@ -111,9 +115,9 @@ public class RegisterController {
         WXSession wxSession = wxRequest.loginWXWithCode(code);
 
         if (!ObjectUtils.isEmpty(wxSession)) {
-            logger.info("wxsession={}",JsonUtil.Java2Json(wxSession));
+            logger.info("wxsession={}", JsonUtil.Java2Json(wxSession));
 
-            MemberAuths auths = memberAuthsService.queryByTypeAndCredential(Constant.WX_TYPE, DigestUtils.sha256Hex(wxSession.getOpenid()));
+            MemberAuths auths = memberAuthsService.queryByTypeAndCredential(Constant.WX_TYPE, DigestUtils.sha256Hex(wxSession.getUnionid()));
 
             //通过openid查询不到则注册新用户
             int loginType = 1;
@@ -126,11 +130,11 @@ public class RegisterController {
                 wallet.setOpenId(wxSession.getOpenid());
 
                 auths = new MemberAuths();
-                auths.setCredential(DigestUtils.sha256Hex(wxSession.getOpenid()));
+                auths.setCredential(DigestUtils.sha256Hex(wxSession.getUnionid()));
                 auths.setIdentityType(Constant.WX_TYPE);
                 auths.setIdentifier(Constant.WX_IDENTIFIER);
-                memberService.registerMemberWithAuth(member,wallet, auths);
-                loginType=0;
+                memberService.registerMemberWithAuth(member, wallet, auths);
+                loginType = 0;
             }
 
             String token = jwtUtils.generateToken(auths.getMemberId());
@@ -139,10 +143,11 @@ public class RegisterController {
             map.put("loginType", loginType);//0注册，1登录
             map.put("token", token);
             map.put("memberId", auths.getMemberId());
-            map.put("openId",wxSession.getOpenid());
-            map.put("avatar",member.getAvatar());
-            map.put("nickName",member.getNickName());
-            map.put("sex",member.getSex());
+            map.put("openId", wxSession.getOpenid());
+            map.put("unionId", wxSession.getUnionid());
+            map.put("avatar", member.getAvatar());
+            map.put("nickName", member.getNickName());
+            map.put("sex", member.getSex());
             return R.ok(map);
 
         } else {
@@ -224,6 +229,18 @@ public class RegisterController {
             return R.ok();
         }
         return R.error(HttpStatus.SC_FORBIDDEN, "没有查询到用户");
+    }
+
+    @PostMapping("getUnionid")
+    @ApiOperation("获取微信公众号Unionid")
+    public R getUnionid(String code) {
+        //表单校验
+        logger.info("RegisterController.getUnionid 参数code：{}", code);
+        if (StringUtils.isEmpty(code)) {
+            throw new RRException("code is null");
+        }
+        String unionid = wechatService.getUnionid(code);
+        return R.ok(unionid);
     }
 
 }
