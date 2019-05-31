@@ -240,7 +240,7 @@ public class RegisterController {
             throw new RRException("code is null");
         }
         String unionid = wechatService.getUnionid(code);
-        return R.ok(unionid);
+        return R.ok().put("result",unionid);
     }
 
 }

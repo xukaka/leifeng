@@ -32,8 +32,6 @@ public class WXRequest {
     @Value("${wx.code_session_url}")
     public String wxLoginUrl = "";
 
-    @Value("${wx.aouth2_url}")
-    public String aouth2Url = "";
 
     public WXSession loginWXWithCode(String code){
         //创建httpclient
