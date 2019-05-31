@@ -33,7 +33,7 @@ public class WechatService {
      * @param url 当前页面url
      */
     public Map<String,Object> createSignature(String url) {
-        String myUrl = "https://pet.fangzheng.fun/";
+//        String myUrl = "https://pet.fangzheng.fun/";
         String nonceStr = create_nonce_str();
         long timestamp = create_timestamp();
 
@@ -41,7 +41,7 @@ public class WechatService {
         sb.append("jsapi_ticket=") .append(jsSdkUtils.getJsapiTicket())
                 .append("&noncestr=").append(nonceStr)
                 .append("&timestamp=").append(timestamp)
-                .append("&url=").append(myUrl);
+                .append("&url=").append(url);
         String signature = null;
         try {
             MessageDigest crypt = MessageDigest.getInstance("SHA-1");

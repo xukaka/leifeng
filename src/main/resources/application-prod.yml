@@ -4,7 +4,7 @@ spring:
         driverClassName: com.mysql.jdbc.Driver
         druid:
             first:
-                url: jdbc:mysql://101.132.129.204:3306/leifeng?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+                url: jdbc:mysql://101.132.129.204:3306/lfonline?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
                 username: root
                 password: lf123456
                 initial-size: 10
