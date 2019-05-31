@@ -28,10 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -231,7 +228,7 @@ public class RegisterController {
         return R.error(HttpStatus.SC_FORBIDDEN, "没有查询到用户");
     }
 
-    @PostMapping("getUnionid")
+    @GetMapping("getUnionid")
     @ApiOperation("获取微信公众号Unionid")
     public R getUnionid(String code) {
         //表单校验
