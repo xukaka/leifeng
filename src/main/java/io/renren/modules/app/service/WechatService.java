@@ -159,7 +159,7 @@ public class WechatService {
         try {
             URIBuilder builder = new URIBuilder(userinfoUrl);
             LOGGER.info("getUnionid map={}",map);
-            builder.addParameter("openid",map.get("openid"));
+            builder.addParameter("openid",map.get("openId"));
             builder.addParameter("access_token",map.get("accessToken"));
             builder.addParameter("lang","zh_CN" );
 
