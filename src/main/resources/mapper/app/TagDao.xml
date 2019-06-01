@@ -8,7 +8,7 @@
         SELECT
           t.*
         FROM t_tag t
-        JOIN r_task_tag r
-        WHERE r.id = #{taskId}
+        JOIN r_task_tag r ON t.id = r.tag_id
+        WHERE r.task_id = #{taskId}
     </select>
 </mapper>

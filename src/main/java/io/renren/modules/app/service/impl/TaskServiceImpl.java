@@ -550,6 +550,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
         if (result != null && result > 0) {
             ThreadPoolUtils.execute(() -> {
+                //任务完成数+1
+                memberService.incTaskCompleteCount(receiverId,1);
                 rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK_STATUS, ImMessageUtils.getTaskStatusMessage(taskId, "任务已被确认完成", receiverId.toString(), "SystemTaskStatus"));
                 //给领取人添加标签
                 addTag2Member(receiverId, taskId);
@@ -575,15 +577,16 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 memberTagRelationService.updateBatchById(relations);
             }
             if (!CollectionUtils.isEmpty(tagIds)) {
-                List<MemberTagRelationEntity> batchRantions = new ArrayList<>();
+                List<MemberTagRelationEntity> batchRelations = new ArrayList<>();
                 for (Long tagId : tagIds) {
                     MemberTagRelationEntity relation = new MemberTagRelationEntity();
                     relation.setTagId(tagId);
                     relation.setMemberId(receiverId);
                     relation.setUsageCount(1);
-                    batchRantions.add(relation);
+                    relation.setCreateTime(DateUtils.now());
+                    batchRelations.add(relation);
                 }
-                memberTagRelationService.insertBatch(batchRantions);
+                memberTagRelationService.insertBatch(batchRelations);
             }
         }
     }

@@ -10,6 +10,9 @@ import io.renren.common.utils.RedisUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.MemberDto;
+import io.renren.modules.app.dto.MemberScoreDto;
+import io.renren.modules.app.dto.ScoreBoardDto;
+import io.renren.modules.app.dto.SkillRadarChartDto;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberFeedback;
 import io.renren.modules.app.form.*;
@@ -173,6 +176,17 @@ public class MemberController {
         return R.ok();
     }
 
+    @GetMapping("/score/list")
+    @ApiOperation("分页获取用户评分列表")
+    public R getMemberScores(Long memberId,Integer curPage, Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<MemberScoreDto> scores= memberService.getMemberScores(memberId,page);
+        return R.ok().put("result",scores);
+    }
+
     @GetMapping("/avatar/phone")
     @ApiOperation("根据手机号获取用户头像")
     public R getAvatarByPhone(String phone) {
@@ -214,5 +228,23 @@ public class MemberController {
                 .put("page", page.getCurrPage())
                 .put("size", page.getPageSize());
     }
+
+    @PostMapping("/skillRadarChart")
+    @ApiOperation("用户技能雷达图")
+    public R skillRadarChart(Long memberId) {
+        List<SkillRadarChartDto> chart= memberService.getSkillRadarChart(memberId);
+        return R.ok().put("result", chart);
+
+    }
+
+    @PostMapping("/scoreBoard")
+    @ApiOperation("用户评分面板")
+    public R getScoreBoard(Long memberId) {
+        ScoreBoardDto board = memberService.getScoreBoard(memberId);
+        return R.ok().put("result", board);
+
+    }
+
+
 
 }

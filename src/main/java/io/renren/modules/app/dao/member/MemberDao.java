@@ -2,6 +2,7 @@ package io.renren.modules.app.dao.member;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import io.renren.modules.app.dto.MemberDto;
+import io.renren.modules.app.dto.SkillRadarChartDto;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.form.LocationForm;
 import io.renren.modules.app.form.PageWrapper;
@@ -36,4 +37,10 @@ public interface MemberDao extends BaseMapper<Member> {
 
     //增加用户经验值
     void incMemberExperience(@Param("memberId")Long memberId, @Param("experience")Integer experience);
+
+    //获取用户技能雷达图书数据
+    List<SkillRadarChartDto> getSkillRadarChart(@Param("memberId")Long memberId);
+
+    //任务完成数+inc
+    void incTaskCompleteCount(@Param("memberId")Long memberId,@Param("inc") Integer inc);
 }

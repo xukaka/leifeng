@@ -14,6 +14,9 @@ import io.renren.modules.app.dao.member.MemberDao;
 import io.renren.modules.app.dao.member.MemberFollowDao;
 import io.renren.modules.app.dao.member.MemberScoreDao;
 import io.renren.modules.app.dto.MemberDto;
+import io.renren.modules.app.dto.MemberScoreDto;
+import io.renren.modules.app.dto.ScoreBoardDto;
+import io.renren.modules.app.dto.SkillRadarChartDto;
 import io.renren.modules.app.entity.im.ImFollowNoticeStatus;
 import io.renren.modules.app.entity.member.*;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
@@ -29,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 
 //import com.github.qcloudsms.SmsSingleSender;
@@ -121,16 +125,16 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             //是否关注
             boolean isFollowed = this.isFollowed(curMemberId, memberId);
             dto.setFollowed(isFollowed);
-            List<Map<String,Object>> followNotice = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
-            if(!followNotice.isEmpty()){
+            List<Map<String, Object>> followNotice = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
+            if (!followNotice.isEmpty()) {
                 MessageTypeForm messageTypeForm = new MessageTypeForm();
                 messageTypeForm.setStatus(0);
                 messageTypeForm.setType(1);
                 messageTypeForm.setToId(member.getId());
                 imService.setMessageType(messageTypeForm);
             }
-            List<Map<String,Object>> taskNotice = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
-            if(!taskNotice.isEmpty()){
+            List<Map<String, Object>> taskNotice = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
+            if (!taskNotice.isEmpty()) {
                 MessageTypeForm messageTypeForm = new MessageTypeForm();
                 messageTypeForm.setStatus(0);
                 messageTypeForm.setType(2);
@@ -209,8 +213,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public void updateLocationNumber(Long memberId,LocationForm locationForm) {
-        baseMapper.updateLocationNumber(memberId,locationForm);
+    public void updateLocationNumber(Long memberId, LocationForm locationForm) {
+        baseMapper.updateLocationNumber(memberId, locationForm);
     }
 
     @Override
@@ -272,6 +276,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         //TODO 发送消息给被评分人
     }
 
+    @Override
+    public PageUtils<MemberScoreDto> getMemberScores(Long memberId, PageWrapper page) {
+        List<MemberScoreDto> scores = memberScoreDao.getMemberScores(memberId, page);
+        if (CollectionUtils.isEmpty(scores)) {
+            return new PageUtils<>();
+        }
+        int total = memberScoreDao.count(memberId);
+        return new PageUtils<>(scores, total, page.getPageSize(), page.getCurrPage());
+    }
+
+
     private void sendFlowers(Long judgerId, MemberScoreForm form) {
         Integer giveFlowerCount = form.getFlowerCount();
         if (giveFlowerCount == null) {
@@ -314,31 +329,70 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
      */
     @Override
     @Transactional
-    public Map<String,Object> checkIn(Long memberId, Integer experience) {
-        Map<String,Object> result = new HashMap<>();
+    public Map<String, Object> checkIn(Long memberId, Integer experience) {
+        Map<String, Object> result = new HashMap<>();
         String checkedIn = redisUtils.get(RedisKeys.CHECK_IN + memberId);
         if (StringUtils.isEmpty(checkedIn) || !Boolean.valueOf(checkedIn)) {
             redisUtils.set(RedisKeys.CHECK_IN + memberId, true, DateUtils.secondsLeftToday());
-            MemberCheckInEntity checkIn = new MemberCheckInEntity(DateUtils.now(),memberId,experience);
+            MemberCheckInEntity checkIn = new MemberCheckInEntity(DateUtils.now(), memberId, experience);
             memberCheckInDao.insert(checkIn);
-            ThreadPoolUtils.execute(()->{
+            ThreadPoolUtils.execute(() -> {
                 //增加用户的经验值
                 incMemberExperience(memberId, experience);
             });
 
-            result.put("checkInStatus",0);
-            result.put("experience",experience);
-            result.put("msg","签到成功");
-        }else {
-            result.put("checkInStatus",1);
-            result.put("experience",0);
-            result.put("msg","已签到");
+            result.put("checkInStatus", 0);
+            result.put("experience", experience);
+            result.put("msg", "签到成功");
+        } else {
+            result.put("checkInStatus", 1);
+            result.put("experience", 0);
+            result.put("msg", "已签到");
         }
         return result;
     }
+
 
     //增加用户经验值
     private void incMemberExperience(Long memberId, Integer experience) {
         baseMapper.incMemberExperience(memberId, experience);
     }
+
+    @Override
+    public void incTaskCompleteCount(Long memberId, Integer inc) {
+        baseMapper.incTaskCompleteCount(memberId, inc);
+    }
+
+    @Override
+    public ScoreBoardDto getScoreBoard(Long memberId) {
+        ScoreBoardDto board = memberScoreDao.getScoreBoard(memberId);
+        if (board.getScoreTotalNum() == 0){
+            return board;
+        }
+        //计算综合评分
+        double scoreAverage = (board.getFiveStarNum() * 5.0
+                + board.getFourStarNum() * 4.0
+                + board.getThreeStarNum() * 3.0
+                + board.getTwoStarNum() * 2.0
+                + board.getOneStarNum() * 1.0)  / board.getScoreTotalNum();
+
+        //保留小数点后一位
+        double scoreFormat = new BigDecimal(scoreAverage).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+        board.setScoreAverage(scoreFormat);
+        return board;
+    }
+
+    @Override
+    public List<SkillRadarChartDto> getSkillRadarChart(Long memberId) {
+
+        List<SkillRadarChartDto> chart = baseMapper.getSkillRadarChart(memberId);
+        if (CollectionUtils.isEmpty(chart)) {
+            return new ArrayList<>();
+        }
+        return chart;
+    }
+
+
+
+
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.member.MemberScoreDao">
+
+
+    <select id="getScoreBoard" resultType="io.renren.modules.app.dto.ScoreBoardDto">
+        SELECT
+        count(1) as scoreTotalNum,
+        COUNT( CASE WHEN  s.score  = 1 then 1 else 0 end ) as oneStarNum,
+        COUNT( CASE WHEN  s.score  = 2 then 1 else 0 end ) as twoStarNum,
+        COUNT( CASE WHEN  s.score  = 3 then 1 else 0 end ) as threeStarNum,
+        COUNT( CASE WHEN  s.score  = 4 then 1 else 0 end ) as fourStarNum,
+        COUNT( CASE WHEN  s.score  = 5 then 1 else 0 end ) as fiveStarNum
+        FROM t_member_score s
+        WHERE s.member_id = #{memberId}
+    </select>
+
+    <select id="getMemberScores" resultType="io.renren.modules.app.dto.MemberScoreDto">
+        select
+        s.id,
+        s.score,
+        s.content,
+        m.id as judgerId,
+        m.nice_name as judgerNiceName,
+        m.avatar as judgerAvatar,
+        m.sex as judgerSex,
+        t.id as taskId
+        t.title as taskTitle
+        from t_member_score s
+        join member m on s.judger_id = m.id
+        join t_task t on s.task_id=t.id
+        where s.member_id = #{memberId}
+        ORDER BY s.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+
+    </select>
+
+
+    <select id="count" resultType="int">
+        select
+        count(1)
+        from t_member_score s
+        join member m on s.judger_id = m.id
+        join t_task t on s.task_id=t.id
+        where s.member_id = #{memberId}
+    </select>
+</mapper>

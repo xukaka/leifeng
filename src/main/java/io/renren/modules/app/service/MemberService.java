@@ -4,11 +4,15 @@ package io.renren.modules.app.service;
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.MemberDto;
+import io.renren.modules.app.dto.MemberScoreDto;
+import io.renren.modules.app.dto.ScoreBoardDto;
+import io.renren.modules.app.dto.SkillRadarChartDto;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberAuths;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.form.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -104,6 +108,9 @@ public interface MemberService extends IService<Member> {
      */
     void score(Long judgerId, MemberScoreForm form);
 
+    //获取用户评分列表
+    PageUtils<MemberScoreDto> getMemberScores(Long memberId, PageWrapper page);
+
     void sendPhoneCode(String phoneNum) throws Exception;
 
     boolean validatePhoneCode(String phoneNum, String code);
@@ -113,4 +120,18 @@ public interface MemberService extends IService<Member> {
      * @param memberId
      */
     Map<String,Object> checkIn(Long memberId, Integer experience);
+
+
+    /**
+     *获取用户技能雷达图数据
+     * @return
+     */
+    List<SkillRadarChartDto> getSkillRadarChart(Long memberId);
+
+
+    //任务完成数+inc
+    void incTaskCompleteCount(Long memberId, Integer inc);
+
+    //获取用户评分面板
+    ScoreBoardDto getScoreBoard(Long memberId);
 }

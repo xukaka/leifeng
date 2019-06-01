@@ -45,6 +45,8 @@ public class Member implements Serializable {
     private Integer flowerCount = 0;
     //奖状数
     private Integer certificateCount = 0;
+    //任务完成数
+    private Integer taskCompleteCoun=0;
     //经验值
     private Integer experience = 0;
     //虚拟币
@@ -180,6 +182,13 @@ public class Member implements Serializable {
         this.level = level;
     }
 
+    public Integer getTaskCompleteCoun() {
+        return taskCompleteCoun;
+    }
+
+    public void setTaskCompleteCoun(Integer taskCompleteCoun) {
+        this.taskCompleteCoun = taskCompleteCoun;
+    }
 
     public Integer getExperience() {
         return experience;

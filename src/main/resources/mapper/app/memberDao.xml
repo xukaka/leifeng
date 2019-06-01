@@ -52,5 +52,23 @@
         update member m set m.experience = m.experience + #{experience} where m.id = #{memberId}
     </update>
 
+    <update id="incTaskCompleteCount">
+        update member m set m.task_complete_count = m.task_complete_count + #{inc} where m.id = #{memberId}
+    </update>
 
+
+    <select id="getSkillRadarChart" resultType="io.renren.modules.app.dto.SkillRadarChartDto">
+        select
+        r.member_id as memberId,
+        r.tag_id as tagId,
+        r.usage_count as usageCount,
+        t.name as tagName
+        from
+        r_member_tag r
+        join t_tag t on r.tag_id = t.id
+        where r.member_id=#{memberId}
+        order by r.usage_count
+        limit 0,5
+
+        </select>
 </mapper>
