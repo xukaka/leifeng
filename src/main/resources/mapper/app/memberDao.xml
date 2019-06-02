@@ -67,7 +67,7 @@
         r_member_tag r
         join t_tag t on r.tag_id = t.id
         where r.member_id=#{memberId}
-        order by r.usage_count
+        order by r.usage_count desc
         limit 0,5
 
         </select>
