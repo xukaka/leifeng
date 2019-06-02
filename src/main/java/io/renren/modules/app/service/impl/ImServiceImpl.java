@@ -3,10 +3,12 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.RedisKeys;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.dao.im.ImDao;
 import io.renren.modules.app.dao.im.ImTaskStatusDao;
 import io.renren.modules.app.dto.ImTaskStatusNoticeDto;
+import io.renren.modules.app.dto.RedDotDto;
 import io.renren.modules.app.entity.im.ImGroupNotice;
 import io.renren.modules.app.entity.im.ImTaskStatusNotice;
 import io.renren.modules.app.form.MessageTypeForm;
@@ -28,6 +30,8 @@ public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements 
     private RedisUtils redisUtils;
     @Resource
     private ImTaskStatusDao imTaskStatusDao;
+
+    private static final long THIRTY_DAYS = 60 * 60 * 24 * 30;//30天
 
     @Override
     public PageUtils<ImGroupNotice> getGroupNotices(Long memberId, PageWrapper page) {
@@ -89,4 +93,54 @@ public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements 
         int total = imTaskStatusDao.getTaskStatusNoticeCount(to);
         return new PageUtils<>(notices, total, page.getPageSize(), page.getCurrPage());
     }
+
+    @Override
+    public void setRedDot(Long memnberId, Integer redDotType) {
+        switch (redDotType){
+            case 0:
+                redisUtils.set(RedisKeys.RED_DOT_CHAT+memnberId,Boolean.TRUE.toString(),THIRTY_DAYS);
+                break;
+            case 1:
+                redisUtils.set(RedisKeys.RED_DOT_TASK+memnberId,Boolean.TRUE.toString(),THIRTY_DAYS);
+                break;
+            case 2:
+                redisUtils.set(RedisKeys.RED_DOT_DYNAMIC+memnberId,Boolean.TRUE.toString(),THIRTY_DAYS);
+                break;
+        }
+    }
+
+    @Override
+    public void cancelRedDot(Long memnberId, Integer redDotType) {
+        switch (redDotType){
+            case 0:
+                redisUtils.delete(RedisKeys.RED_DOT_CHAT+memnberId);
+                break;
+            case 1:
+                redisUtils.delete(RedisKeys.RED_DOT_TASK+memnberId);
+                break;
+            case 2:
+                redisUtils.delete(RedisKeys.RED_DOT_DYNAMIC+memnberId);
+                break;
+        }
+    }
+
+    @Override
+    public RedDotDto getRedDot(Long memberId) {
+        RedDotDto redDot=new RedDotDto();
+        redDot.setMemberId(memberId);
+        String chatRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_CHAT);
+        String taskRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_TASK);
+        String dynamicRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_DYNAMIC);
+        if ("true".equals(chatRedDotStatus)){
+            redDot.setChatRedDotStatus(true);
+        }
+        if ("true".equals(taskRedDotStatus)){
+            redDot.setTaskRedDotStatus(true);
+        }
+        if ("true".equals(dynamicRedDotStatus)){
+            redDot.setDynamicRedDotStatus(true);
+        }
+        return redDot;
+    }
+
 }

@@ -78,6 +78,13 @@ public final class ImMessageUtils{
         groupMsg.put("groupId", groupId);
         return groupMsg.toJSONString();
     }
+    //红点消息
+    public static String getRedDotMsg(Long  memberId,Integer redDotType) {
+        JSONObject redDotMsg = new JSONObject();
+        redDotMsg.put("memberId", memberId);
+        redDotMsg.put("redDotType", redDotType);
+        return redDotMsg.toJSONString();
+    }
 
 
     //推送单个消息

@@ -1,15 +1,19 @@
 package io.renren.modules.app.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.common.utils.DateUtils;
-import io.renren.common.utils.PageUtils;
-import io.renren.common.utils.ThreadPoolUtils;
+import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.dao.diary.DiaryContentDao;
 import io.renren.modules.app.dao.diary.DiaryDao;
+import io.renren.modules.app.dao.member.MemberFollowDao;
 import io.renren.modules.app.dto.DiaryDto;
 import io.renren.modules.app.entity.LikeTypeEnum;
 import io.renren.modules.app.entity.ParagraphTypeEnum;
+import io.renren.modules.app.entity.member.Member;
+import io.renren.modules.app.entity.member.MemberFollowEntity;
 import io.renren.modules.app.entity.story.DiaryContentEntity;
 import io.renren.modules.app.entity.story.DiaryEntity;
 import io.renren.modules.app.form.DiaryContentForm;
@@ -17,6 +21,7 @@ import io.renren.modules.app.form.DiaryForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.DiaryService;
 import io.renren.modules.app.service.LikeService;
+import io.renren.modules.app.service.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -37,6 +42,15 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
     @Resource
     private LikeService likeService;
 
+    @Resource
+    private MemberService memberService;
+    @Resource
+    private RabbitMqHelper rabbitMqHelper;
+
+    @Resource
+    private MemberFollowDao memberFollowDao;
+
+
     @Override
     @Transactional
     public void createDiary(Long memberId,DiaryForm form) {
@@ -49,6 +63,20 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
         this.insert(diary);
         addDiaryContent(diary.getId(),form.getContents());
 
+        ThreadPoolUtils.execute(() -> {
+            //推送消息给关注我的所有人
+            Member creator = memberService.getMember(memberId);
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_GROUP, ImMessageUtils.getGroupMsg(memberId.toString(), "diary", diary.getId(), creator.getNickName() + " 发布新日记[" + diary.getTitle() + "]", "SystemGroup"));
+            //设置红点
+            Wrapper<MemberFollowEntity> wrapper = new EntityWrapper<>();
+            wrapper.eq("to_member_id", memberId);
+            List<MemberFollowEntity> fans = memberFollowDao.selectList(wrapper);
+            if (!CollectionUtils.isEmpty(fans)){
+                for (MemberFollowEntity fan: fans){
+                    rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_RED_DOT, ImMessageUtils.getRedDotMsg(fan.getFromMemberId(),2));
+                }
+            }
+        });
     }
 
 

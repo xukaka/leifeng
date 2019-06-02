@@ -4,6 +4,7 @@ package io.renren.modules.app.service;
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.ImTaskStatusNoticeDto;
+import io.renren.modules.app.dto.RedDotDto;
 import io.renren.modules.app.entity.im.ImGroupNotice;
 import io.renren.modules.app.entity.im.ImTaskStatusNotice;
 import io.renren.modules.app.form.MessageTypeForm;
@@ -34,6 +35,30 @@ public interface ImService extends IService<ImGroupNotice> {
 
     //分页获取任务状态通知列表
     PageUtils<ImTaskStatusNoticeDto> getTaskStatusNotices(String to, PageWrapper page);
+
+
+    /**
+     * 设置红点
+     *
+     * redDotType:0聊天，1任务，2动态
+     */
+    void setRedDot(Long memnberId,Integer redDotType);
+    /**
+     * 取消红点
+     * redDotType:0聊天，1任务，2动态
+     */
+    void cancelRedDot(Long memnberId,Integer redDotType);
+
+    /**
+     * 获取红点
+     * @param memberId
+     * @return
+     */
+    RedDotDto getRedDot(Long memberId);
+
+
+
+
 
 
 }
