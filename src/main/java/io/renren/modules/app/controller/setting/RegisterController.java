@@ -114,7 +114,7 @@ public class RegisterController {
         if (!ObjectUtils.isEmpty(wxSession)) {
             logger.info("wxsession={}", JsonUtil.Java2Json(wxSession));
 
-            MemberAuths auths = memberAuthsService.queryByTypeAndCredential(Constant.WX_TYPE, DigestUtils.sha256Hex(wxSession.getUnionid()));
+            MemberAuths auths = memberAuthsService.queryByTypeAndCredential(Constant.WX_TYPE, DigestUtils.sha256Hex(wxSession.getOpenid()));
 
             //通过openid查询不到则注册新用户
             int loginType = 1;
@@ -127,7 +127,7 @@ public class RegisterController {
                 wallet.setOpenId(wxSession.getOpenid());
 
                 auths = new MemberAuths();
-                auths.setCredential(DigestUtils.sha256Hex(wxSession.getUnionid()));
+                auths.setCredential(DigestUtils.sha256Hex(wxSession.getOpenid()));
                 auths.setIdentityType(Constant.WX_TYPE);
                 auths.setIdentifier(Constant.WX_IDENTIFIER);
                 memberService.registerMemberWithAuth(member, wallet, auths);
@@ -141,7 +141,6 @@ public class RegisterController {
             map.put("token", token);
             map.put("memberId", auths.getMemberId());
             map.put("openId", wxSession.getOpenid());
-            map.put("unionId", wxSession.getUnionid());
             map.put("avatar", member.getAvatar());
             map.put("nickName", member.getNickName());
             map.put("sex", member.getSex());

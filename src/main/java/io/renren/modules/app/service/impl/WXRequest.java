@@ -59,7 +59,6 @@ public class WXRequest {
                         wxSession = new WXSession();
                         wxSession.setOpenid(wxobject.getString("openid"));
                         wxSession.setSessionKey(wxobject.getString("session_key"));
-                        wxSession.setUnionid(wxobject.getString("unionid"));
                     }else{
                         throw new RRException(wxobject.getString("errmsg"));
                     }
