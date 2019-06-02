@@ -229,7 +229,7 @@ public class MemberController {
                 .put("size", page.getPageSize());
     }
 
-    @PostMapping("/skillRadarChart")
+    @GetMapping("/skillRadarChart")
     @ApiOperation("用户技能雷达图")
     public R skillRadarChart(Long memberId) {
         List<SkillRadarChartDto> chart= memberService.getSkillRadarChart(memberId);
