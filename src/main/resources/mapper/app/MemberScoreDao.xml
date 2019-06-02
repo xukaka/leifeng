@@ -7,11 +7,11 @@
     <select id="getScoreBoard" resultType="io.renren.modules.app.dto.ScoreBoardDto">
         SELECT
         count(1) as scoreTotalNum,
-        COUNT( CASE WHEN  s.score  = 1 then 1 else 0 end ) as oneStarNum,
-        COUNT( CASE WHEN  s.score  = 2 then 1 else 0 end ) as twoStarNum,
-        COUNT( CASE WHEN  s.score  = 3 then 1 else 0 end ) as threeStarNum,
-        COUNT( CASE WHEN  s.score  = 4 then 1 else 0 end ) as fourStarNum,
-        COUNT( CASE WHEN  s.score  = 5 then 1 else 0 end ) as fiveStarNum
+        sum( CASE WHEN  s.score  = 1 then 1 else 0 end ) as oneStarNum,
+        sum( CASE WHEN  s.score  = 2 then 1 else 0 end ) as twoStarNum,
+        sum( CASE WHEN  s.score  = 3 then 1 else 0 end ) as threeStarNum,
+        sum( CASE WHEN  s.score  = 4 then 1 else 0 end ) as fourStarNum,
+        sum( CASE WHEN  s.score  = 5 then 1 else 0 end ) as fiveStarNum
         FROM t_member_score s
         WHERE s.member_id = #{memberId}
     </select>
