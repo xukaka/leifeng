@@ -237,7 +237,7 @@ public class MemberController {
 
     }
 
-    @PostMapping("/scoreBoard")
+    @GetMapping("/scoreBoard")
     @ApiOperation("用户评分面板")
     public R getScoreBoard(Long memberId) {
         ScoreBoardDto board = memberService.getScoreBoard(memberId);
