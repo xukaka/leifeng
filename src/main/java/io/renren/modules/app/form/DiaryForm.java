@@ -24,16 +24,15 @@ public class DiaryForm {
     private List<DiaryContentForm> contents;
 
     @NotNull
-    @ApiModelProperty("日记是否公开")
-    private Boolean isOpen;
+    @ApiModelProperty("日记是否私密")
+    private Boolean isPrivate;
 
-
-    public Boolean getOpen() {
-        return isOpen;
+    public Boolean getPrivate() {
+        return isPrivate;
     }
 
-    public void setOpen(Boolean open) {
-        isOpen = open;
+    public void setPrivate(Boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 
     public String getTitle() {
@@ -52,12 +51,4 @@ public class DiaryForm {
         this.contents = contents;
     }
 
-    @Override
-    public String toString() {
-        return "DiaryForm{" +
-                "title='" + title + '\'' +
-                ", contents=" + contents +
-                ", isOpen=" + isOpen +
-                '}';
-    }
 }

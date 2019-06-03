@@ -16,7 +16,8 @@ public class DiaryEntity extends BaseEntity {
     private String title;
 
 
-    private Boolean isOpen;
+    //是否私密
+    private Boolean isPrivate;
 
     //    浏览数
     private Integer viewCount = 0;
@@ -43,12 +44,12 @@ public class DiaryEntity extends BaseEntity {
         this.title = title;
     }
 
-    public Boolean getOpen() {
-        return isOpen;
+    public Boolean getPrivate() {
+        return isPrivate;
     }
 
-    public void setOpen(Boolean open) {
-        isOpen = open;
+    public void setPrivate(Boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 
     public Integer getViewCount() {

@@ -5,7 +5,7 @@
     <resultMap type="io.renren.modules.app.dto.DiaryDto" id="diaryMap">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
-        <result property="isOpen" column="is_open"/>
+        <result property="isPrivate" column="is_private"/>
         <result property="createTime" column="create_time"/>
         <result property="viewCount" column="view_count"/>
         <result property="likeCount" column="like_count"/>
@@ -66,7 +66,7 @@
                 m.sex AS creator_sex
             from t_diary d
             join member m on d.creator_id = m.id
-            where d.is_open = 1 AND d.deleted = 0
+            where d.is_private = 0 AND d.deleted = 0
             ORDER BY d.create_time DESC
             LIMIT #{page.offset},#{page.limit}
         ) AS diary
@@ -80,7 +80,7 @@
         select
             count(1)
         from t_diary d
-        where d.is_open = 1 AND d.deleted = 0
+        where d.is_private = 0 AND d.deleted = 0
     </select>
 
 
@@ -103,7 +103,7 @@
         m.sex AS creator_sex
         from t_diary d
         join member m on d.creator_id = m.id
-        where d.creator_id = #{creatorId} AND d.is_open = 1 AND d.deleted = 0
+        where d.creator_id = #{creatorId}  AND d.deleted = 0
         ORDER BY d.create_time DESC
         LIMIT #{page.offset},#{page.limit}
         ) AS diary
@@ -117,7 +117,7 @@
         select
         count(1)
         from t_diary d
-        where d.creator_id = #{creatorId}  AND d.is_open = 1 AND d.deleted = 0
+        where d.creator_id = #{creatorId} AND d.deleted = 0
     </select>
 
 
