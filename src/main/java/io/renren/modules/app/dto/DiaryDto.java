@@ -25,8 +25,8 @@ public class DiaryDto implements Serializable {
 
     //日记内容
     private List<DiaryContentEntity> contents;
-    //是否公开
-    private Boolean isOpen;
+    //是否私密
+    private Boolean isPrivate;
     //浏览数
     private Integer viewCount;
     //评论数
@@ -98,12 +98,12 @@ public class DiaryDto implements Serializable {
         this.contents = contents;
     }
 
-    public Boolean getOpen() {
-        return isOpen;
+    public Boolean getPrivate() {
+        return isPrivate;
     }
 
-    public void setOpen(Boolean open) {
-        isOpen = open;
+    public void setPrivate(Boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 
     public Integer getViewCount() {
