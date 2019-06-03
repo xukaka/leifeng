@@ -21,6 +21,7 @@
         s.id,
         s.score,
         s.content,
+        s.create_time as createTime,
         m.id as judgerId,
         m.nick_name as judgerNickName,
         m.avatar as judgerAvatar,

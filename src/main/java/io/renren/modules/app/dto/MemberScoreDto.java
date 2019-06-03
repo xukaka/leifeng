@@ -34,6 +34,10 @@ public class MemberScoreDto implements Serializable {
      */
     private String content;
 
+
+    //创建时间
+    private Long createTime;
+
     public Long getJudgerId() {
         return judgerId;
     }
@@ -105,5 +109,13 @@ public class MemberScoreDto implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
     }
 }
