@@ -22,10 +22,10 @@
         s.score,
         s.content,
         m.id as judgerId,
-        m.nice_name as judgerNiceName,
+        m.nick_name as judgerNickName,
         m.avatar as judgerAvatar,
         m.sex as judgerSex,
-        t.id as taskId
+        t.id as taskId,
         t.title as taskTitle
         from t_member_score s
         join member m on s.judger_id = m.id

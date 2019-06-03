@@ -12,7 +12,7 @@ public class MemberScoreDto implements Serializable {
      * 评分人id
      */
     private Long judgerId;
-    private String judgerNiceName;//评分人昵称
+    private String judgerNickName;//评分人昵称
     private String judgerAvatar;//评分人头像
     private Integer judgerSex;//评分人性别
 
@@ -42,12 +42,13 @@ public class MemberScoreDto implements Serializable {
         this.judgerId = judgerId;
     }
 
-    public String getJudgerNiceName() {
-        return judgerNiceName;
+
+    public String getJudgerNickName() {
+        return judgerNickName;
     }
 
-    public void setJudgerNiceName(String judgerNiceName) {
-        this.judgerNiceName = judgerNiceName;
+    public void setJudgerNickName(String judgerNickName) {
+        this.judgerNickName = judgerNickName;
     }
 
     public String getJudgerAvatar() {
