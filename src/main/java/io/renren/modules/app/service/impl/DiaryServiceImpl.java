@@ -65,17 +65,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
 
         ThreadPoolUtils.execute(() -> {
             //推送消息给关注我的所有人
-            Member creator = memberService.getMember(memberId);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_GROUP, ImMessageUtils.getGroupMsg(memberId.toString(), "diary", diary.getId(), creator.getNickName() + " 发布新日记[" + diary.getTitle() + "]", "SystemGroup"));
-            //设置红点
-            Wrapper<MemberFollowEntity> wrapper = new EntityWrapper<>();
-            wrapper.eq("to_member_id", memberId);
-            List<MemberFollowEntity> fans = memberFollowDao.selectList(wrapper);
-            if (!CollectionUtils.isEmpty(fans)){
-                for (MemberFollowEntity fan: fans){
-                    rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_RED_DOT, ImMessageUtils.getRedDotMsg(fan.getFromMemberId(),2));
-                }
-            }
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_DYNAMIC, ImMessageUtils.getDynamicMsg(memberId, "diary", diary.getId()));
         });
     }
 

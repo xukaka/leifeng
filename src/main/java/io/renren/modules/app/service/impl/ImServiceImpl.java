@@ -5,12 +5,17 @@ import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.RedisKeys;
 import io.renren.common.utils.RedisUtils;
+import io.renren.modules.app.dao.diary.DiaryDao;
 import io.renren.modules.app.dao.im.ImDao;
 import io.renren.modules.app.dao.im.ImTaskStatusDao;
+import io.renren.modules.app.dao.task.TaskDao;
+import io.renren.modules.app.dto.ImDynamicNoticeDto;
 import io.renren.modules.app.dto.ImTaskStatusNoticeDto;
 import io.renren.modules.app.dto.RedDotDto;
-import io.renren.modules.app.entity.im.ImGroupNotice;
+import io.renren.modules.app.entity.im.ImDynamicNotice;
 import io.renren.modules.app.entity.im.ImTaskStatusNotice;
+import io.renren.modules.app.entity.story.DiaryEntity;
+import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.MessageTypeForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.ImService;
@@ -24,33 +29,52 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements ImService {
+public class ImServiceImpl extends ServiceImpl<ImDao, ImDynamicNotice> implements ImService {
     private final static Logger LOG = LoggerFactory.getLogger(ImServiceImpl.class);
     @Autowired
     private RedisUtils redisUtils;
     @Resource
     private ImTaskStatusDao imTaskStatusDao;
+    @Resource
+    private TaskDao taskDao;
+    @Resource
+    private DiaryDao diaryDao;
+
 
     private static final long THIRTY_DAYS = 60 * 60 * 24 * 30;//30天
 
     @Override
-    public PageUtils<ImGroupNotice> getGroupNotices(Long memberId, PageWrapper page) {
-        List<ImGroupNotice> notices = baseMapper.getGroupNotices(memberId, page);
+    public PageUtils<ImDynamicNoticeDto> getDynamicNotices(Long memberId, PageWrapper page) {
+        List<ImDynamicNoticeDto> notices = baseMapper.getDynamicNotices(memberId, page);
         if (CollectionUtils.isEmpty(notices)) {
             return new PageUtils<>();
         }
-        int total = baseMapper.groupNoticeCount(memberId);
+        for (ImDynamicNoticeDto notice : notices) {
+            switch (notice.getBusinessType()) {
+                case "task":
+                    TaskEntity task = taskDao.selectById(notice.getBusinessId());
+                    if (task != null) {
+                        notice.setBusinessTitle(task.getTitle());
+                    }
+                    break;
+                case "diary":
+                    DiaryEntity diary = diaryDao.selectById(notice.getBusinessId());
+                    if (diary != null) {
+                        notice.setBusinessTitle(diary.getTitle());
+                    }
+                    break;
+            }
+        }
+        int total = baseMapper.getDynamicNoticeCount(memberId);
         return new PageUtils<>(notices, total, page.getPageSize(), page.getCurrPage());
     }
 
     @Override
-    public void addGroupNotice(String groupId, String from, String businessType, Long businessId, String content) {
-        ImGroupNotice notice = new ImGroupNotice();
-        notice.setGroupId(groupId);
-        notice.setFrom(from);
+    public void addDynamicNotice(Long memberId, String businessType, Long businessId) {
+        ImDynamicNotice notice = new ImDynamicNotice();
+        notice.setMemberId(memberId);
         notice.setBusinessId(businessId);
         notice.setBusinessType(businessType);
-        notice.setContent(content);
         notice.setCreateTime(DateUtils.now());
         this.insert(notice);
     }
@@ -96,48 +120,48 @@ public class ImServiceImpl extends ServiceImpl<ImDao, ImGroupNotice> implements 
 
     @Override
     public void setRedDot(Long memnberId, Integer redDotType) {
-        switch (redDotType){
+        switch (redDotType) {
             case 0:
-                redisUtils.set(RedisKeys.RED_DOT_CHAT+memnberId,Boolean.TRUE.toString(),THIRTY_DAYS);
+                redisUtils.set(RedisKeys.RED_DOT_CHAT + memnberId, Boolean.TRUE.toString(), THIRTY_DAYS);
                 break;
             case 1:
-                redisUtils.set(RedisKeys.RED_DOT_TASK+memnberId,Boolean.TRUE.toString(),THIRTY_DAYS);
+                redisUtils.set(RedisKeys.RED_DOT_TASK + memnberId, Boolean.TRUE.toString(), THIRTY_DAYS);
                 break;
             case 2:
-                redisUtils.set(RedisKeys.RED_DOT_DYNAMIC+memnberId,Boolean.TRUE.toString(),THIRTY_DAYS);
+                redisUtils.set(RedisKeys.RED_DOT_DYNAMIC + memnberId, Boolean.TRUE.toString(), THIRTY_DAYS);
                 break;
         }
     }
 
     @Override
     public void cancelRedDot(Long memnberId, Integer redDotType) {
-        switch (redDotType){
+        switch (redDotType) {
             case 0:
-                redisUtils.delete(RedisKeys.RED_DOT_CHAT+memnberId);
+                redisUtils.delete(RedisKeys.RED_DOT_CHAT + memnberId);
                 break;
             case 1:
-                redisUtils.delete(RedisKeys.RED_DOT_TASK+memnberId);
+                redisUtils.delete(RedisKeys.RED_DOT_TASK + memnberId);
                 break;
             case 2:
-                redisUtils.delete(RedisKeys.RED_DOT_DYNAMIC+memnberId);
+                redisUtils.delete(RedisKeys.RED_DOT_DYNAMIC + memnberId);
                 break;
         }
     }
 
     @Override
     public RedDotDto getRedDot(Long memberId) {
-        RedDotDto redDot=new RedDotDto();
+        RedDotDto redDot = new RedDotDto();
         redDot.setMemberId(memberId);
         String chatRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_CHAT);
         String taskRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_TASK);
         String dynamicRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_DYNAMIC);
-        if ("true".equals(chatRedDotStatus)){
+        if ("true".equals(chatRedDotStatus)) {
             redDot.setChatRedDotStatus(true);
         }
-        if ("true".equals(taskRedDotStatus)){
+        if ("true".equals(taskRedDotStatus)) {
             redDot.setTaskRedDotStatus(true);
         }
-        if ("true".equals(dynamicRedDotStatus)){
+        if ("true".equals(dynamicRedDotStatus)) {
             redDot.setDynamicRedDotStatus(true);
         }
         return redDot;

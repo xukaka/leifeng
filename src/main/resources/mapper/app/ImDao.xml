@@ -3,24 +3,29 @@
 
 <mapper namespace="io.renren.modules.app.dao.im.ImDao">
 
-    <select id="getGroupNotices" resultType="io.renren.modules.app.entity.im.ImGroupNotice">
-        select n.*
-        from t_im_group_notice n
-        join t_member_follow f on n.group_id=f.to_member_id
+    <select id="getDynamicNotices" resultType="io.renren.modules.app.dto.ImDynamicNoticeDto">
+        select
+        n.business_id as businessId,
+        n.business_type as businessType,
+        m.nick_name as memberNickName,
+        m.id as memberId,
+        m.sex as memberSex,
+        m.avatar as memberAvatar
+        from t_im_dynamic_notice n
+        join t_member_follow f on n.member_id=f.to_member_id
+        join member m on m.id = n.member_id
         where n.deleted=0 and f.from_member_id = #{memberId}
         ORDER BY n.create_time DESC
         LIMIT #{page.offset},#{page.limit}
     </select>
 
-    <select id="groupNoticeCount" resultType="int">
-
+    <select id="getDynamicNoticeCount" resultType="int">
         select count(1)
-        from t_im_group_notice n
-        join t_member_follow f on n.group_id=f.to_member_id
+        from t_im_dynamic_notice n
+        join t_member_follow f on n.member_id=f.to_member_id
+        join member m on m.id = n.member_id
         where n.deleted=0 and f.from_member_id = #{memberId}
     </select>
-
-
 
 
 </mapper>

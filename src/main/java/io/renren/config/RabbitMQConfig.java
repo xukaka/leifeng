@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
     public final static String QUEUE_NAME = "queue-name-online";
     public final static String IM_QUEUE_RED_DOT = "queue-name-reddot";
-    public final static String IM_QUEUE_GROUP = "queue-name-im-group";
+    public final static String IM_QUEUE_DYNAMIC = "queue-name-im-dynamic";
     public final static String IM_QUEUE_TASK_STATUS = "queue-name-task-status";
     public final static String IM_QUEUE_CIRCLE = "queue-name-im-circle";
     @Bean
@@ -30,8 +30,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue queueGroup() {
-        return new Queue(IM_QUEUE_GROUP);
+    public Queue queueDynamic() {
+        return new Queue(IM_QUEUE_DYNAMIC);
     }
 
     @Bean

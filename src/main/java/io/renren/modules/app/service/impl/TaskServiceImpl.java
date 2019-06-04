@@ -239,17 +239,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 //todo 推送给圈内所有人
             } else {
                 //推送消息给关注我的所有人
-                Member creator = memberService.getMember(task.getCreatorId());
-                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_GROUP, ImMessageUtils.getGroupMsg(task.getCreatorId().toString(), "task", task.getId(), creator.getNickName() + " 发布新任务[" + task.getTitle() + "]", "SystemGroup"));
-                //
-                Wrapper<MemberFollowEntity> wrapper = new EntityWrapper<>();
-                wrapper.eq("to_member_id", task.getCreatorId());
-                List<MemberFollowEntity> fans = memberFollowDao.selectList(wrapper);
-                if (!CollectionUtils.isEmpty(fans)){
-                    for (MemberFollowEntity fan: fans){
-                        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_RED_DOT, ImMessageUtils.getRedDotMsg(fan.getFromMemberId(),2));
-                    }
-                }
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_DYNAMIC, ImMessageUtils.getDynamicMsg(task.getCreatorId(), "task", task.getId()));
             }
         });
     }

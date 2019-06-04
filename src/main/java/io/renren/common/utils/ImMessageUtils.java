@@ -68,15 +68,13 @@ public final class ImMessageUtils{
         return msg.toJSONString();
     }
 
-    //群组消息
-    public static String getGroupMsg(String groupId, String businessType, Long businessId, String content, String from) {
-        JSONObject groupMsg = new JSONObject();
-        groupMsg.put("businessType", businessType);//类型为任务|笔记
-        groupMsg.put("businessId", businessId);//任务/笔记id
-        groupMsg.put("content", content);
-        groupMsg.put("from", from);
-        groupMsg.put("groupId", groupId);
-        return groupMsg.toJSONString();
+    //最新动态消息
+    public static String getDynamicMsg(Long memberId, String businessType, Long businessId) {
+        JSONObject dynamicMsg = new JSONObject();
+        dynamicMsg.put("memberId", memberId);//发送方id
+        dynamicMsg.put("businessType", businessType);//类型为任务|笔记
+        dynamicMsg.put("businessId", businessId);//任务/笔记id
+        return dynamicMsg.toJSONString();
     }
     //红点消息
     public static String getRedDotMsg(Long  memberId,Integer redDotType) {

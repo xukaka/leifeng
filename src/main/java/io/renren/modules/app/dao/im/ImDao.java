@@ -1,15 +1,11 @@
 package io.renren.modules.app.dao.im;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import io.renren.modules.app.dto.HotSearchDto;
-import io.renren.modules.app.entity.im.ImGroupNotice;
-import io.renren.modules.app.entity.im.ImTaskStatusNotice;
-import io.renren.modules.app.entity.search.SearchHistoryEntity;
-import io.renren.modules.app.entity.search.SearchLogEntity;
+import io.renren.modules.app.dto.ImDynamicNoticeDto;
+import io.renren.modules.app.entity.im.ImDynamicNotice;
 import io.renren.modules.app.form.PageWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.omg.CORBA.LongLongSeqHelper;
 
 import java.util.List;
 
@@ -17,17 +13,17 @@ import java.util.List;
  * IM
  */
 @Mapper
-public interface ImDao extends BaseMapper<ImGroupNotice> {
+public interface ImDao extends BaseMapper<ImDynamicNotice> {
     /**
-     * 分页获取群组通知列表
+     * 分页获取最新动态通知列表
      */
-    List<ImGroupNotice> getGroupNotices(@Param("memberId") Long memberId, @Param("page") PageWrapper page);
+    List<ImDynamicNoticeDto> getDynamicNotices(@Param("memberId") Long memberId, @Param("page") PageWrapper page);
 
     /**
-     * 群组通知总数
+     * 最新动态通知总数
      * @param memberId
      * @return
      */
-    int groupNoticeCount(Long memberId);
+    int getDynamicNoticeCount(Long memberId);
 
 }

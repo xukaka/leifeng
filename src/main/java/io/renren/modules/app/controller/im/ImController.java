@@ -4,11 +4,11 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.ImDynamicNoticeDto;
 import io.renren.modules.app.dto.ImTaskStatusNoticeDto;
 import io.renren.modules.app.entity.im.ImFollowNoticeStatus;
-import io.renren.modules.app.entity.im.ImGroupNotice;
+import io.renren.modules.app.entity.im.ImDynamicNotice;
 import io.renren.modules.app.entity.im.ImHistoryMember;
-import io.renren.modules.app.entity.im.ImTaskStatusNotice;
 import io.renren.modules.app.form.MessageTypeForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.ImService;
@@ -112,14 +112,14 @@ public class ImController {
     }
 
     @Login
-    @GetMapping(value = "/groupNotice/list")
-    @ApiOperation("分页获取群组通知列表")
-    public R getGroupNotices(Integer curPage, Integer pageSize) {
+    @GetMapping(value = "/dynamicNotice/list")
+    @ApiOperation("分页获取最新动态通知列表")
+    public R getDynamicNotices(Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<ImGroupNotice> notices = imService.getGroupNotices(ReqUtils.curMemberId(), page);
+        PageUtils<ImDynamicNoticeDto> notices = imService.getDynamicNotices(ReqUtils.curMemberId(), page);
         return R.ok().put("result", notices);
     }
 
