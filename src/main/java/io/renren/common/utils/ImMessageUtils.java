@@ -59,13 +59,12 @@ public final class ImMessageUtils{
     }
 
     //任务状态消息
-    public static String getTaskStatusMessage(Long taskId,String content,String to,String from){
-        JSONObject msg = new JSONObject();
-        msg.put("taskId", taskId);
-        msg.put("content", content);
-        msg.put("to", to);
-        msg.put("from", from);
-        return msg.toJSONString();
+    public static String getTaskMsg(Long memberId,Long taskId,String operate){
+        JSONObject taskMsg = new JSONObject();
+        taskMsg.put("taskId", taskId);
+        taskMsg.put("memberId", memberId);
+        taskMsg.put("operate", operate);
+        return taskMsg.toJSONString();
     }
 
     //最新动态消息
@@ -75,13 +74,6 @@ public final class ImMessageUtils{
         dynamicMsg.put("businessType", businessType);//类型为任务|笔记
         dynamicMsg.put("businessId", businessId);//任务/笔记id
         return dynamicMsg.toJSONString();
-    }
-    //红点消息
-    public static String getRedDotMsg(Long  memberId,Integer redDotType) {
-        JSONObject redDotMsg = new JSONObject();
-        redDotMsg.put("memberId", memberId);
-        redDotMsg.put("redDotType", redDotType);
-        return redDotMsg.toJSONString();
     }
 
 

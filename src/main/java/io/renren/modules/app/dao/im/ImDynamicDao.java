@@ -13,7 +13,7 @@ import java.util.List;
  * IM
  */
 @Mapper
-public interface ImDao extends BaseMapper<ImDynamicNotice> {
+public interface ImDynamicDao extends BaseMapper<ImDynamicNotice> {
     /**
      * 分页获取最新动态通知列表
      */

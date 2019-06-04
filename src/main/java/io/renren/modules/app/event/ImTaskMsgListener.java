@@ -3,6 +3,7 @@ package io.renren.modules.app.event;
 
 import com.alibaba.fastjson.JSONObject;
 import io.renren.common.utils.ImMessageUtils;
+import io.renren.common.utils.RabbitMqHelper;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.service.ImService;
 import org.slf4j.Logger;
@@ -14,20 +15,24 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 @Component
-@RabbitListener(queues = RabbitMQConfig.IM_QUEUE_RED_DOT)
-public class ImRedDotMsgListener {
-    private static Logger logger = LoggerFactory.getLogger(ImRedDotMsgListener.class);
-
+@RabbitListener(queues = RabbitMQConfig.IM_QUEUE_TASK)
+public class ImTaskMsgListener {
+    private static Logger logger = LoggerFactory.getLogger(ImTaskMsgListener.class);
     @Resource
     private ImService imService;
 
     @RabbitHandler
     public void handleMessage(String message) {
-        logger.info("rabbitMQ handle red dot status message ===>>> " + message);
+        logger.info("rabbitMQ handle task message ===>>> " + message);
         JSONObject msg = JSONObject.parseObject(message);
-        long memberId = msg.getLongValue("memberId");
-        int redDotType = msg.getIntValue("redDotType");
-        imService.setRedDot(memberId,redDotType);
+        Long memberId = msg.getLong("memberId");
+        String operate = msg.getString("operate");
+        Long taskId = msg.getLong("taskId");
+        imService.addTaskNotice(memberId,operate,taskId);
+
+        //设置红点
+        imService.setRedDot(memberId,1);
+
     }
 
 

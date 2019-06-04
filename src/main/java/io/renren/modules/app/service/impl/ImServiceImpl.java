@@ -6,14 +6,14 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.RedisKeys;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.dao.diary.DiaryDao;
-import io.renren.modules.app.dao.im.ImDao;
-import io.renren.modules.app.dao.im.ImTaskStatusDao;
+import io.renren.modules.app.dao.im.ImDynamicDao;
+import io.renren.modules.app.dao.im.ImTaskDao;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dto.ImDynamicNoticeDto;
-import io.renren.modules.app.dto.ImTaskStatusNoticeDto;
+import io.renren.modules.app.dto.ImTaskNoticeDto;
 import io.renren.modules.app.dto.RedDotDto;
 import io.renren.modules.app.entity.im.ImDynamicNotice;
-import io.renren.modules.app.entity.im.ImTaskStatusNotice;
+import io.renren.modules.app.entity.im.ImTaskNotice;
 import io.renren.modules.app.entity.story.DiaryEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.MessageTypeForm;
@@ -29,12 +29,12 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class ImServiceImpl extends ServiceImpl<ImDao, ImDynamicNotice> implements ImService {
+public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> implements ImService {
     private final static Logger LOG = LoggerFactory.getLogger(ImServiceImpl.class);
     @Autowired
     private RedisUtils redisUtils;
     @Resource
-    private ImTaskStatusDao imTaskStatusDao;
+    private ImTaskDao imTaskStatusDao;
     @Resource
     private TaskDao taskDao;
     @Resource
@@ -98,23 +98,22 @@ public class ImServiceImpl extends ServiceImpl<ImDao, ImDynamicNotice> implement
     }
 
     @Override
-    public void addTaskStatusNotice(String from, String to, String content, Long taskId) {
-        ImTaskStatusNotice notice = new ImTaskStatusNotice();
-        notice.setContent(content);
-        notice.setFrom(from);
+    public void addTaskNotice(Long memberId, String operate, Long taskId) {
+        ImTaskNotice notice = new ImTaskNotice();
+        notice.setOperate(operate);//操作
+        notice.setMemberId(memberId);//接收方id
         notice.setTaskId(taskId);
-        notice.setTo(to);
         notice.setCreateTime(DateUtils.now());
         imTaskStatusDao.insert(notice);
     }
 
     @Override
-    public PageUtils<ImTaskStatusNoticeDto> getTaskStatusNotices(String to, PageWrapper page) {
-        List<ImTaskStatusNoticeDto> notices = imTaskStatusDao.getTaskStatusNotices(to, page);
+    public PageUtils<ImTaskNoticeDto> getTaskNotices(Long memberId, PageWrapper page) {
+        List<ImTaskNoticeDto> notices = imTaskStatusDao.getTaskNotices(memberId, page);
         if (CollectionUtils.isEmpty(notices)) {
             return new PageUtils<>();
         }
-        int total = imTaskStatusDao.getTaskStatusNoticeCount(to);
+        int total = imTaskStatusDao.getTaskNoticeCount(memberId);
         return new PageUtils<>(notices, total, page.getPageSize(), page.getCurrPage());
     }
 

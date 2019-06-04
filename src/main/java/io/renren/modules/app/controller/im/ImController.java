@@ -5,9 +5,9 @@ import io.renren.common.utils.R;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.ImDynamicNoticeDto;
-import io.renren.modules.app.dto.ImTaskStatusNoticeDto;
+import io.renren.modules.app.dto.ImTaskNoticeDto;
+import io.renren.modules.app.dto.RedDotDto;
 import io.renren.modules.app.entity.im.ImFollowNoticeStatus;
-import io.renren.modules.app.entity.im.ImDynamicNotice;
 import io.renren.modules.app.entity.im.ImHistoryMember;
 import io.renren.modules.app.form.MessageTypeForm;
 import io.renren.modules.app.form.PageWrapper;
@@ -124,15 +124,31 @@ public class ImController {
     }
 
     @Login
-    @GetMapping(value = "/taskStatusNotice/list")
-    @ApiOperation("分页获取任务状态通知列表")
-    public R getTaskStatusNotices(Integer curPage, Integer pageSize) {
+    @GetMapping(value = "/taskNotice/list")
+    @ApiOperation("分页获取任务通知列表")
+    public R getTaskNotices(Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<ImTaskStatusNoticeDto> notices = imService.getTaskStatusNotices(ReqUtils.curMemberId().toString(), page);
+        PageUtils<ImTaskNoticeDto> notices = imService.getTaskNotices(ReqUtils.curMemberId(), page);
         return R.ok().put("result", notices);
+    }
+
+    @Login
+    @GetMapping(value = "/getRedDot")
+    @ApiOperation("获取红点")
+    public R getRedDot() {
+        RedDotDto redDot = imService.getRedDot(ReqUtils.curMemberId());
+        return R.ok().put("result",redDot);
+    }
+
+    @Login
+    @GetMapping(value = "/cancelRedDot")
+    @ApiOperation("取消红点")
+    public R cancelRedDot(Integer redDotType) {
+      imService.cancelRedDot(ReqUtils.curMemberId(), redDotType);
+        return R.ok();
     }
 
 }

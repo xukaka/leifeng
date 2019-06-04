@@ -3,16 +3,27 @@ package io.renren.modules.app.dto;
 import java.io.Serializable;
 
 
-public class ImDynamicNoticeDto implements Serializable {
+public class ImTaskNoticeDto implements Serializable {
+
     private Long id;
-    private String businessType;//业务类型：task任务、diary日记
-    private Long businessId; //业务id
-    private String businessTitle;//业务标题
-    private Long memberId;//发布方id
-    private String memberNickName;//发布方昵称
+    //接收方id
+    private Long memberId;
+    private String memberNickName;//昵称
     private String memberSex;//性别
     private String memberAvatar;//头像
-    private Long createTime;//创建时间
+    /**
+     * 任务id
+     */
+    private Long taskId;
+    //任务标题
+    private String taskTitle;
+    /**
+     * 操作
+     */
+    private String operate;
+
+    //创建时间
+    private Long createTime;
 
     public Long getId() {
         return id;
@@ -20,30 +31,6 @@ public class ImDynamicNoticeDto implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getBusinessType() {
-        return businessType;
-    }
-
-    public void setBusinessType(String businessType) {
-        this.businessType = businessType;
-    }
-
-    public Long getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
-
-    public String getBusinessTitle() {
-        return businessTitle;
-    }
-
-    public void setBusinessTitle(String businessTitle) {
-        this.businessTitle = businessTitle;
     }
 
     public Long getMemberId() {
@@ -76,6 +63,30 @@ public class ImDynamicNoticeDto implements Serializable {
 
     public void setMemberAvatar(String memberAvatar) {
         this.memberAvatar = memberAvatar;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getTaskTitle() {
+        return taskTitle;
+    }
+
+    public void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
+    }
+
+    public String getOperate() {
+        return operate;
+    }
+
+    public void setOperate(String operate) {
+        this.operate = operate;
     }
 
     public Long getCreateTime() {

@@ -4,7 +4,7 @@ package io.renren.modules.app.service;
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.ImDynamicNoticeDto;
-import io.renren.modules.app.dto.ImTaskStatusNoticeDto;
+import io.renren.modules.app.dto.ImTaskNoticeDto;
 import io.renren.modules.app.dto.RedDotDto;
 import io.renren.modules.app.entity.im.ImDynamicNotice;
 import io.renren.modules.app.form.MessageTypeForm;
@@ -30,11 +30,11 @@ public interface ImService extends IService<ImDynamicNotice> {
     void setMessageType(MessageTypeForm messageTypeForm);
 
 
-    //添加任务状态通知
-    void addTaskStatusNotice(String from, String to, String content, Long taskId);
+    //添加任务通知
+    void addTaskNotice(Long memberId, String operate, Long taskId);
 
-    //分页获取任务状态通知列表
-    PageUtils<ImTaskStatusNoticeDto> getTaskStatusNotices(String to, PageWrapper page);
+    //分页获取任务通知列表
+    PageUtils<ImTaskNoticeDto> getTaskNotices(Long memberId, PageWrapper page);
 
 
     /**
