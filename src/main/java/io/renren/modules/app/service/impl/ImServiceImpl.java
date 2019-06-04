@@ -1,18 +1,17 @@
 package io.renren.modules.app.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.common.utils.DateUtils;
-import io.renren.common.utils.PageUtils;
-import io.renren.common.utils.RedisKeys;
-import io.renren.common.utils.RedisUtils;
+import io.renren.common.utils.*;
 import io.renren.modules.app.dao.diary.DiaryDao;
 import io.renren.modules.app.dao.im.ImDynamicDao;
 import io.renren.modules.app.dao.im.ImTaskDao;
 import io.renren.modules.app.dao.task.TaskDao;
+import io.renren.modules.app.dto.ChatRedDot;
 import io.renren.modules.app.dto.ImDynamicNoticeDto;
 import io.renren.modules.app.dto.ImTaskNoticeDto;
 import io.renren.modules.app.dto.RedDotDto;
 import io.renren.modules.app.entity.im.ImDynamicNotice;
+import io.renren.modules.app.entity.im.ImHistoryMember;
 import io.renren.modules.app.entity.im.ImTaskNotice;
 import io.renren.modules.app.entity.story.DiaryEntity;
 import io.renren.modules.app.entity.task.TaskEntity;
@@ -26,7 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> implements ImService {
@@ -120,9 +121,9 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
     @Override
     public void setRedDot(Long memnberId, Integer redDotType) {
         switch (redDotType) {
-            case 0:
+           /* case 0:
                 redisUtils.set(RedisKeys.RED_DOT_CHAT + memnberId, Boolean.TRUE.toString(), THIRTY_DAYS);
-                break;
+                break;*/
             case 1:
                 redisUtils.set(RedisKeys.RED_DOT_TASK + memnberId, Boolean.TRUE.toString(), THIRTY_DAYS);
                 break;
@@ -133,10 +134,13 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
     }
 
     @Override
-    public void cancelRedDot(Long memnberId, Integer redDotType) {
+    public void cancelRedDot(Long memnberId, Integer redDotType,Long toId) {
         switch (redDotType) {
             case 0:
-                redisUtils.delete(RedisKeys.RED_DOT_CHAT + memnberId);
+//                redisUtils.delete(RedisKeys.RED_DOT_CHAT + memnberId);
+                if (toId!=null){
+                    redisUtils.zAdd("unread:" + toId, memnberId,1);//设置已读
+                }
                 break;
             case 1:
                 redisUtils.delete(RedisKeys.RED_DOT_TASK + memnberId);
@@ -149,14 +153,17 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
 
     @Override
     public RedDotDto getRedDot(Long memberId) {
+
         RedDotDto redDot = new RedDotDto();
-        redDot.setMemberId(memberId);
-        String chatRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_CHAT);
+//        redDot.setMemberId(memberId);
+//        String chatRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_CHAT);
         String taskRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_TASK);
         String dynamicRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_DYNAMIC);
-        if ("true".equals(chatRedDotStatus)) {
+        List<ChatRedDot> chatRedDots = getChatRedDots(memberId);
+        redDot.setChatRedDotList(chatRedDots);
+       /* if ("true".equals(chatRedDotStatus)) {
             redDot.setChatRedDotStatus(true);
-        }
+        }*/
         if ("true".equals(taskRedDotStatus)) {
             redDot.setTaskRedDotStatus(true);
         }
@@ -164,6 +171,27 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
             redDot.setDynamicRedDotStatus(true);
         }
         return redDot;
+    }
+
+    //获取用户的红点状态列表
+    private List<ChatRedDot>  getChatRedDots(Long memberId) {
+        List<ChatRedDot> chatRedDots = new ArrayList<>();
+        List<Map<String, Object>> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
+        if (!CollectionUtils.isEmpty(list)) {
+            for (Map<String, Object> map : list) {
+                ChatRedDot chatRedDot = new ChatRedDot();
+                Double score = (Double) map.get("score");
+                if (score.intValue()==0){//未读
+                    chatRedDot.setStatus(true);
+                }
+
+                if (map.get("value") != null) {
+                    chatRedDot.setMemberId(Long.parseLong(map.get("value").toString()));
+                }
+                chatRedDots.add(chatRedDot);
+            }
+        }
+        return chatRedDots;
     }
 
 }

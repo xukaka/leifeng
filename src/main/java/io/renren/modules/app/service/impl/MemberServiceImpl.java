@@ -125,7 +125,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             //是否关注
             boolean isFollowed = this.isFollowed(curMemberId, memberId);
             dto.setFollowed(isFollowed);
-            List<Map<String, Object>> followNotice = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
+            /*List<Map<String, Object>> followNotice = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
             if (!followNotice.isEmpty()) {
                 MessageTypeForm messageTypeForm = new MessageTypeForm();
                 messageTypeForm.setStatus(0);
@@ -140,7 +140,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
                 messageTypeForm.setType(2);
                 messageTypeForm.setToId(member.getId());
                 imService.setMessageType(messageTypeForm);
-            }
+            }*/
             return dto;
         }
         return null;

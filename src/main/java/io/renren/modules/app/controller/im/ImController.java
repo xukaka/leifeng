@@ -47,9 +47,9 @@ public class ImController {
 
     @GetMapping("/historyMember")
     @ApiOperation("获取联系人历史列表")
-    public R getHistoryMember(Long memberId, int type) {
+    public R getHistoryMember(Long memberId) {
         logger.info("[ImController.info] 请求参数id={}", memberId);
-        if (type == 0) {
+//        if (type == 0) {
             List<ImHistoryMember> members = new ArrayList<>();
             List<Map<String, Object>> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
             System.out.println(list.isEmpty());
@@ -68,7 +68,7 @@ public class ImController {
                 return R.ok().put("result", "没有未读联系人");
 
             }
-        } else if (type == 1) {
+        /*} else if (type == 1) {
             List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
             List<Map<String, Object>> list = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
 
@@ -94,7 +94,7 @@ public class ImController {
         } else {
             return R.ok().put("result", "空的，出现了异常");
 
-        }
+        }*/
     }
 
     @PostMapping(value = "/setMessageType")
@@ -146,8 +146,8 @@ public class ImController {
     @Login
     @GetMapping(value = "/cancelRedDot")
     @ApiOperation("取消红点")
-    public R cancelRedDot(Integer redDotType) {
-      imService.cancelRedDot(ReqUtils.curMemberId(), redDotType);
+    public R cancelRedDot(Integer redDotType,Long toId) {
+      imService.cancelRedDot(ReqUtils.curMemberId(), redDotType,toId);
         return R.ok();
     }
 

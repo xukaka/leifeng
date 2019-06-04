@@ -1,11 +1,12 @@
 package io.renren.modules.app.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 public class RedDotDto implements Serializable {
    private Long memberId;
-   private boolean chatRedDotStatus;
+   private List<ChatRedDot> chatRedDotList;
 
    private boolean taskRedDotStatus;
 
@@ -19,12 +20,12 @@ public class RedDotDto implements Serializable {
         this.memberId = memberId;
     }
 
-    public boolean isChatRedDotStatus() {
-        return chatRedDotStatus;
+    public List<ChatRedDot> getChatRedDotList() {
+        return chatRedDotList;
     }
 
-    public void setChatRedDotStatus(boolean chatRedDotStatus) {
-        this.chatRedDotStatus = chatRedDotStatus;
+    public void setChatRedDotList(List<ChatRedDot> chatRedDotList) {
+        this.chatRedDotList = chatRedDotList;
     }
 
     public boolean isTaskRedDotStatus() {

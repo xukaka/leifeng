@@ -47,7 +47,7 @@ public interface ImService extends IService<ImDynamicNotice> {
      * 取消红点
      * redDotType:0聊天，1任务，2动态
      */
-    void cancelRedDot(Long memnberId,Integer redDotType);
+    void cancelRedDot(Long memnberId,Integer redDotType,Long toId);
 
     /**
      * 获取红点
