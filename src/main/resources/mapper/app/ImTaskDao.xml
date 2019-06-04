@@ -11,9 +11,9 @@
         n.create_time as createTime,
         t.title as taskTitle,
         m.id as memberId,
-        m.nice_name as memberNickName,
-        m.nice_name as memberSex,
-        m.nice_name as memberAvatar
+        m.nick_name as memberNickName,
+        m.sex as memberSex,
+        m.avatar as memberAvatar
         from t_im_task_notice n
         join t_task t on t.id = n.task_id
         join member m  on n.member_id=m.id
