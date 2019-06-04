@@ -5,7 +5,7 @@
 
     <select id="getDynamicNotices" resultType="io.renren.modules.app.dto.ImDynamicNoticeDto">
         select
-        n.id
+        n.id,
         n.business_id as businessId,
         n.business_type as businessType,
         n.create_time as createTime,
