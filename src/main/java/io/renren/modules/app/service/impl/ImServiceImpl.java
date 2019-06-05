@@ -157,8 +157,8 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
         RedDotDto redDot = new RedDotDto();
 //        redDot.setMemberId(memberId);
 //        String chatRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_CHAT);
-        String taskRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_TASK);
-        String dynamicRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_DYNAMIC);
+        String taskRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_TASK+memberId);
+        String dynamicRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_DYNAMIC+memberId);
         List<ChatRedDot> chatRedDots = getChatRedDots(memberId);
         redDot.setChatRedDotList(chatRedDots);
        /* if ("true".equals(chatRedDotStatus)) {
