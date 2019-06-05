@@ -119,34 +119,34 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
     }
 
     @Override
-    public void setRedDot(Long memnberId, Integer redDotType) {
+    public void setRedDot(Long memberId, Integer redDotType) {
         switch (redDotType) {
            /* case 0:
                 redisUtils.set(RedisKeys.RED_DOT_CHAT + memnberId, Boolean.TRUE.toString(), THIRTY_DAYS);
                 break;*/
             case 1:
-                redisUtils.set(RedisKeys.RED_DOT_TASK + memnberId, Boolean.TRUE.toString(), THIRTY_DAYS);
+                redisUtils.set(RedisKeys.RED_DOT_TASK + memberId, Boolean.TRUE.toString(), THIRTY_DAYS);
                 break;
             case 2:
-                redisUtils.set(RedisKeys.RED_DOT_DYNAMIC + memnberId, Boolean.TRUE.toString(), THIRTY_DAYS);
+                redisUtils.set(RedisKeys.RED_DOT_DYNAMIC + memberId, Boolean.TRUE.toString(), THIRTY_DAYS);
                 break;
         }
     }
 
     @Override
-    public void cancelRedDot(Long memnberId, Integer redDotType,Long toId) {
+    public void cancelRedDot(Long memberId, Integer redDotType,Long toId) {
         switch (redDotType) {
             case 0:
 //                redisUtils.delete(RedisKeys.RED_DOT_CHAT + memnberId);
                 if (toId!=null){
-                    redisUtils.zAdd("unread:" + toId, memnberId,1);//设置已读
+                    redisUtils.zAdd("unread:" + memberId, toId,1);//设置已读
                 }
                 break;
             case 1:
-                redisUtils.delete(RedisKeys.RED_DOT_TASK + memnberId);
+                redisUtils.delete(RedisKeys.RED_DOT_TASK + memberId);
                 break;
             case 2:
-                redisUtils.delete(RedisKeys.RED_DOT_DYNAMIC + memnberId);
+                redisUtils.delete(RedisKeys.RED_DOT_DYNAMIC + memberId);
                 break;
         }
     }

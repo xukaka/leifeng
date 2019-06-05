@@ -20,7 +20,7 @@ public class MessageTypeForm {
     private  Long toId;
     @ApiModelProperty(value = "类型", example = "")
     @NotNull
-    private int type;
+    private int type;//0未读，1已读
     @ApiModelProperty(value = "状态", example = "")
     @NotNull
     private int status;

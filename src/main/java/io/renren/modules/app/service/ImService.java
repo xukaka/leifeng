@@ -42,12 +42,12 @@ public interface ImService extends IService<ImDynamicNotice> {
      *
      * redDotType:0聊天，1任务，2动态
      */
-    void setRedDot(Long memnberId,Integer redDotType);
+    void setRedDot(Long memberId,Integer redDotType);
     /**
      * 取消红点
      * redDotType:0聊天，1任务，2动态
      */
-    void cancelRedDot(Long memnberId,Integer redDotType,Long toId);
+    void cancelRedDot(Long memberId,Integer redDotType,Long toId);
 
     /**
      * 获取红点
