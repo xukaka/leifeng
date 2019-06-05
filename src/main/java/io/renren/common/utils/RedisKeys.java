@@ -19,6 +19,7 @@ public class RedisKeys {
     public static String RED_DOT_CHAT = "redis:im:reddot:chat:";//聊天红点
     public static String RED_DOT_TASK = "redis:im:reddot:task:";//任务红点
     public static String RED_DOT_DYNAMIC = "redis:im:reddot:dynamic:";//动态红点
+    public static String RED_DOT_CIRCLE = "redis:im:reddot:circle:";//圈红点
 
 
     public static String getSysConfigKey(String key){

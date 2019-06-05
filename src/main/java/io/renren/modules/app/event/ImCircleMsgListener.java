@@ -17,11 +17,26 @@ import org.springframework.stereotype.Component;
 public class ImCircleMsgListener {
     private static Logger logger = LoggerFactory.getLogger(ImCircleMsgListener.class);
 
+    @Autowired
+    private ImService imService;
+
     @RabbitHandler
     public void handleMessage(String message) {
         logger.info("rabbitMQ handle circle message ===>>> " + message);
         JSONObject circleMsg = JSONObject.parseObject(message);
-        ImMessageUtils.sendSingleMessage(circleMsg);
+        Long circleId = circleMsg.getLong("circleId");
+        Long auditId = circleMsg.getLong("auditId");
+        Long fromMemberId = circleMsg.getLong("fromMemberId");
+        Long toMemberId = circleMsg.getLong("toMemberId");
+        String type = circleMsg.getString("type");
+
+        imService.addCircleNotice(circleId,auditId,fromMemberId,toMemberId,type);
+        //设置红点
+        imService.setRedDot(toMemberId,3);
+
+
+
+//        ImMessageUtils.sendSingleMessage(circleMsg);
     }
 }
 

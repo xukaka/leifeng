@@ -8,9 +8,10 @@ public class RedDotDto implements Serializable {
    private Long memberId;
    private List<ChatRedDot> chatRedDotList;
 
-   private boolean taskRedDotStatus;
+   private boolean taskRedDotStatus;//任务通知红点状态
 
-   private boolean dynamicRedDotStatus;
+   private boolean dynamicRedDotStatus;//最新动态红点状态
+   private boolean circleRedDotStatus;//雷锋圈红点状态
 
     public Long getMemberId() {
         return memberId;
@@ -42,5 +43,13 @@ public class RedDotDto implements Serializable {
 
     public void setDynamicRedDotStatus(boolean dynamicRedDotStatus) {
         this.dynamicRedDotStatus = dynamicRedDotStatus;
+    }
+
+    public boolean isCircleRedDotStatus() {
+        return circleRedDotStatus;
+    }
+
+    public void setCircleRedDotStatus(boolean circleRedDotStatus) {
+        this.circleRedDotStatus = circleRedDotStatus;
     }
 }

@@ -172,10 +172,10 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
             taskCircleAuditDao.insert(audit);
             result.put("status", 1);
             result.put("msg", "已申请加入圈，待圈主审核");
-            //TODO 推消息给圈主审核
-            MemberDto applicant = memberService.getMember(memberId);
-//            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_CIRCLE, ImMessageUtils.getCircleJoinMessage(circleId.toString(), audit.getId().toString(),applicant.getNickName()+" 申请加入[" + circle.getName() + "]", "30",circle.getCreatorId().toString(), applicant.toString()));
-
+            ThreadPoolUtils.execute(()->{
+                //推消息给圈主审核
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_CIRCLE, ImMessageUtils.getCircleMsg(circleId, audit.getId(),memberId,circle.getCreatorId(),"join"));
+            });
             return result;
         } else {
             addCircleMember(circleId,memberId);
@@ -204,16 +204,16 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
     public void audit(Long auditId, CircleAuditStatusEnum status) {
         TaskCircleAuditEntity audit = taskCircleAuditDao.selectById(auditId);
         updateAuditStatus(auditId,status);
-        String auditResult="拒绝入圈";
         if (status == CircleAuditStatusEnum.AGREED){
             addCircleMember(audit.getCircleId(),audit.getApplicantId());
             //圈人数+1
             baseMapper.incCircleMemberCount(audit.getCircleId(),1);
-            auditResult = "审核通过";
         }
-        //TODO 推送消息给申请人 审核结果：同意/拒绝
-        TaskCircleDto circle = getCircle(audit.getCircleId());
-//        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_CIRCLE, ImMessageUtils.getCircleAuditMessage(audit.getId().toString(),"加入[" + circle.getName() + "]"+auditResult, "31",audit.getAuditorId().toString(), audit.getApplicantId().toString()));
+
+        ThreadPoolUtils.execute(()->{
+            //推送消息给申请人 审核结果：同意/拒绝
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_CIRCLE, ImMessageUtils.getCircleMsg(audit.getCircleId(),audit.getId(),audit.getAuditorId(),audit.getApplicantId(),"audit"));
+        });
 
     }
 

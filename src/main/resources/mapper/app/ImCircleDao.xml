@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.im.ImCircleDao">
+
+    <select id="getCircleNotices" resultType="io.renren.modules.app.dto.ImCircleNoticeDto">
+        select
+        n.id,
+        n.circle_id as circleId,
+        n.audit_id as aduitId,
+        n.type,
+        n.create_time as createTime,
+        c.name as circleName,
+        a.status as aduitStatus,
+        m.id as memberId,
+        m.nick_name as memberNickName,
+        m.sex as memberSex,
+        m.avatar as memberAvatar,
+
+        from t_im_circle_notice n
+        join t_task_circle c on c.id = n.circle_id
+        join t_task_circle_audit a on a.id = n.audit_id
+        join member m  on n.from_member_id=m.id
+
+        where n.deleted=0 and n.to_member_id = #{toMemberId}
+        ORDER BY n.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+    </select>
+
+    <select id="getCircleNoticeCount" resultType="int">
+        select
+            count(1)
+        from t_im_circle_notice n
+        join t_task_circle c on c.id = n.circle_id
+        join t_task_circle_audit a on a.id = n.audit_id
+        join member m  on n.from_member_id=m.id
+        where n.deleted=0 and n.to_member_id = #{toMemberId}
+    </select>
+</mapper>

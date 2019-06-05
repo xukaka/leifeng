@@ -4,7 +4,6 @@ package io.renren.modules.app.event;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
-import io.renren.common.utils.ImMessageUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.dao.member.MemberFollowDao;
 import io.renren.modules.app.entity.member.MemberFollowEntity;
@@ -17,13 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 @Component
 @RabbitListener(queues = RabbitMQConfig.IM_QUEUE_DYNAMIC)
-public class ImMsgListener {
-    private static Logger LOG = LoggerFactory.getLogger(ImMsgListener.class);
+public class ImDynamicMsgListener {
+    private static Logger LOG = LoggerFactory.getLogger(ImDynamicMsgListener.class);
 
     @Autowired
     private ImService imService;

@@ -31,22 +31,19 @@ public final class ImMessageUtils{
     private final static Logger logger = LoggerFactory.getLogger(ImMessageUtils.class);
     private final static String IM_MESSAGE_URL = "https://pet.fangzheng.fun:11805/api/message/send";
 
-    //圈申请加入消息
-    public static String getCircleJoinMessage(String circleId,String auditId,String content,String businessCode,String toId,String fromId){
+    //圈消息
+    public static String getCircleMsg(Long circleId,Long auditId,Long fromMemberId,Long toMemberId,String type){
         JSONObject msg = new JSONObject();
-        JSONObject extras = new JSONObject();
-        extras.put("businessCode", businessCode);
-        extras.put("circleId", circleId);
-        extras.put("auditId", auditId);
-        extras.put("content", content);
-        msg.put("toId", toId);
-        msg.put("fromId", fromId);
-        msg.put("extras",extras);
+        msg.put("circleId", circleId);
+        msg.put("auditId", auditId);
+        msg.put("fromMemberId",fromMemberId);
+        msg.put("toMemberId",toMemberId);
+        msg.put("type",type);
         return msg.toJSONString();
     }
 
     //圈审核结果消息
-    public static String getCircleAuditMessage(String auditId,String content,String businessCode,String toId,String fromId){
+/*    public static String getCircleAuditMessage(String auditId,String content,String businessCode,String toId,String fromId){
         JSONObject msg = new JSONObject();
         JSONObject extras = new JSONObject();
         extras.put("businessCode", businessCode);
@@ -56,7 +53,7 @@ public final class ImMessageUtils{
         msg.put("fromId", fromId);
         msg.put("extras",extras);
         return msg.toJSONString();
-    }
+    }*/
 
     //任务状态消息
     public static String getTaskMsg(Long memberId,Long taskId,String operate){

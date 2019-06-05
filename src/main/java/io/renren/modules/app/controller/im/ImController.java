@@ -4,6 +4,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.dto.ImCircleNoticeDto;
 import io.renren.modules.app.dto.ImDynamicNoticeDto;
 import io.renren.modules.app.dto.ImTaskNoticeDto;
 import io.renren.modules.app.dto.RedDotDto;
@@ -132,6 +133,17 @@ public class ImController {
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<ImTaskNoticeDto> notices = imService.getTaskNotices(ReqUtils.curMemberId(), page);
+        return R.ok().put("result", notices);
+    }
+    @Login
+    @GetMapping(value = "/circleNotice/list")
+    @ApiOperation("分页获取圈通知列表")
+    public R getCircleNotices(Integer curPage, Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<ImCircleNoticeDto> notices = imService.getCircleNotices(ReqUtils.curMemberId(), page);
         return R.ok().put("result", notices);
     }
 

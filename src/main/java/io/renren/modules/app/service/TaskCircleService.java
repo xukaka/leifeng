@@ -63,7 +63,7 @@ public interface TaskCircleService extends IService<TaskCircleEntity> {
 
 
     /**
-     * 审核
+     * 圈主审核
      * @param auditId
      * @param status
      */

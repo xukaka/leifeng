@@ -1,19 +1,18 @@
 package io.renren.modules.app.service;
 
 
-import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
+import io.renren.modules.app.dto.ImCircleNoticeDto;
 import io.renren.modules.app.dto.ImDynamicNoticeDto;
 import io.renren.modules.app.dto.ImTaskNoticeDto;
 import io.renren.modules.app.dto.RedDotDto;
-import io.renren.modules.app.entity.im.ImDynamicNotice;
 import io.renren.modules.app.form.MessageTypeForm;
 import io.renren.modules.app.form.PageWrapper;
 
 /**
  * IM
  */
-public interface ImService extends IService<ImDynamicNotice> {
+public interface ImService {
     /**
      * 分页获取最新动态通知列表
      */
@@ -36,6 +35,12 @@ public interface ImService extends IService<ImDynamicNotice> {
     //分页获取任务通知列表
     PageUtils<ImTaskNoticeDto> getTaskNotices(Long memberId, PageWrapper page);
 
+
+    //添加圈通知
+    void addCircleNotice(Long circleId, Long auditId ,Long fromMemberId,Long toMemberId, String type);
+
+    //分页获取圈通知列表
+    PageUtils<ImCircleNoticeDto> getCircleNotices(Long toMemberId, PageWrapper page);
 
     /**
      * 设置红点

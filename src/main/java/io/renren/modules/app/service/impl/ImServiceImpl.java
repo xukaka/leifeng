@@ -1,15 +1,16 @@
 package io.renren.modules.app.service.impl;
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.common.utils.*;
+import io.renren.common.utils.DateUtils;
+import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.RedisKeys;
+import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.dao.diary.DiaryDao;
+import io.renren.modules.app.dao.im.ImCircleDao;
 import io.renren.modules.app.dao.im.ImDynamicDao;
 import io.renren.modules.app.dao.im.ImTaskDao;
 import io.renren.modules.app.dao.task.TaskDao;
-import io.renren.modules.app.dto.ChatRedDot;
-import io.renren.modules.app.dto.ImDynamicNoticeDto;
-import io.renren.modules.app.dto.ImTaskNoticeDto;
-import io.renren.modules.app.dto.RedDotDto;
+import io.renren.modules.app.dto.*;
+import io.renren.modules.app.entity.im.ImCircleNotice;
 import io.renren.modules.app.entity.im.ImDynamicNotice;
 import io.renren.modules.app.entity.im.ImHistoryMember;
 import io.renren.modules.app.entity.im.ImTaskNotice;
@@ -30,12 +31,17 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> implements ImService {
+public class ImServiceImpl implements ImService {
     private final static Logger LOG = LoggerFactory.getLogger(ImServiceImpl.class);
     @Autowired
     private RedisUtils redisUtils;
     @Resource
-    private ImTaskDao imTaskStatusDao;
+    private ImTaskDao imTaskDao;
+
+    @Resource
+    private ImCircleDao imCircleDao;
+    @Resource
+    private ImDynamicDao imDynamicDao;
     @Resource
     private TaskDao taskDao;
     @Resource
@@ -46,7 +52,7 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
 
     @Override
     public PageUtils<ImDynamicNoticeDto> getDynamicNotices(Long memberId, PageWrapper page) {
-        List<ImDynamicNoticeDto> notices = baseMapper.getDynamicNotices(memberId, page);
+        List<ImDynamicNoticeDto> notices = imDynamicDao.getDynamicNotices(memberId, page);
         if (CollectionUtils.isEmpty(notices)) {
             return new PageUtils<>();
         }
@@ -66,7 +72,7 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
                     break;
             }
         }
-        int total = baseMapper.getDynamicNoticeCount(memberId);
+        int total = imDynamicDao.getDynamicNoticeCount(memberId);
         return new PageUtils<>(notices, total, page.getPageSize(), page.getCurrPage());
     }
 
@@ -77,7 +83,7 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
         notice.setBusinessId(businessId);
         notice.setBusinessType(businessType);
         notice.setCreateTime(DateUtils.now());
-        this.insert(notice);
+        imDynamicDao.insert(notice);
     }
 
 
@@ -105,16 +111,38 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
         notice.setMemberId(memberId);//接收方id
         notice.setTaskId(taskId);
         notice.setCreateTime(DateUtils.now());
-        imTaskStatusDao.insert(notice);
+        imTaskDao.insert(notice);
     }
 
     @Override
     public PageUtils<ImTaskNoticeDto> getTaskNotices(Long memberId, PageWrapper page) {
-        List<ImTaskNoticeDto> notices = imTaskStatusDao.getTaskNotices(memberId, page);
+        List<ImTaskNoticeDto> notices = imTaskDao.getTaskNotices(memberId, page);
         if (CollectionUtils.isEmpty(notices)) {
             return new PageUtils<>();
         }
-        int total = imTaskStatusDao.getTaskNoticeCount(memberId);
+        int total = imTaskDao.getTaskNoticeCount(memberId);
+        return new PageUtils<>(notices, total, page.getPageSize(), page.getCurrPage());
+    }
+
+    @Override
+    public void addCircleNotice(Long circleId, Long auditId, Long fromMemberId, Long toMemberId, String type) {
+        ImCircleNotice notice = new ImCircleNotice();
+        notice.setCircleId(circleId);
+        notice.setAuditId(auditId);
+        notice.setFromMemberId(fromMemberId);
+        notice.setToMemberId(toMemberId);
+        notice.setType(type);
+        notice.setCreateTime(DateUtils.now());
+        imCircleDao.insert(notice);
+    }
+
+    @Override
+    public PageUtils<ImCircleNoticeDto> getCircleNotices(Long toMemberId, PageWrapper page) {
+        List<ImCircleNoticeDto> notices = imCircleDao.getCircleNotices(toMemberId, page);
+        if (CollectionUtils.isEmpty(notices)) {
+            return new PageUtils<>();
+        }
+        int total = imCircleDao.getCircleNoticeCount(toMemberId);
         return new PageUtils<>(notices, total, page.getPageSize(), page.getCurrPage());
     }
 
@@ -130,16 +158,19 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
             case 2:
                 redisUtils.set(RedisKeys.RED_DOT_DYNAMIC + memberId, Boolean.TRUE.toString(), THIRTY_DAYS);
                 break;
+            case 3:
+                redisUtils.set(RedisKeys.RED_DOT_CIRCLE + memberId, Boolean.TRUE.toString(), THIRTY_DAYS);
+                break;
         }
     }
 
     @Override
-    public void cancelRedDot(Long memberId, Integer redDotType,Long toId) {
+    public void cancelRedDot(Long memberId, Integer redDotType, Long toId) {
         switch (redDotType) {
             case 0:
 //                redisUtils.delete(RedisKeys.RED_DOT_CHAT + memnberId);
-                if (toId!=null){
-                    redisUtils.zAdd("unread:" + memberId, toId,1);//设置已读
+                if (toId != null) {
+                    redisUtils.zAdd("unread:" + memberId, toId, 1);//设置已读
                 }
                 break;
             case 1:
@@ -147,6 +178,9 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
                 break;
             case 2:
                 redisUtils.delete(RedisKeys.RED_DOT_DYNAMIC + memberId);
+                break;
+            case 3:
+                redisUtils.delete(RedisKeys.RED_DOT_CIRCLE + memberId);
                 break;
         }
     }
@@ -157,8 +191,9 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
         RedDotDto redDot = new RedDotDto();
 //        redDot.setMemberId(memberId);
 //        String chatRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_CHAT);
-        String taskRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_TASK+memberId);
-        String dynamicRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_DYNAMIC+memberId);
+        String taskRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_TASK + memberId);
+        String dynamicRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_DYNAMIC + memberId);
+        String circleRedDotStatus = redisUtils.get(RedisKeys.RED_DOT_CIRCLE + memberId);
         List<ChatRedDot> chatRedDots = getChatRedDots(memberId);
         redDot.setChatRedDotList(chatRedDots);
        /* if ("true".equals(chatRedDotStatus)) {
@@ -170,18 +205,21 @@ public class ImServiceImpl extends ServiceImpl<ImDynamicDao, ImDynamicNotice> im
         if ("true".equals(dynamicRedDotStatus)) {
             redDot.setDynamicRedDotStatus(true);
         }
+        if ("true".equals(circleRedDotStatus)) {
+            redDot.setCircleRedDotStatus(true);
+        }
         return redDot;
     }
 
     //获取用户的红点状态列表
-    private List<ChatRedDot>  getChatRedDots(Long memberId) {
+    private List<ChatRedDot> getChatRedDots(Long memberId) {
         List<ChatRedDot> chatRedDots = new ArrayList<>();
         List<Map<String, Object>> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
         if (!CollectionUtils.isEmpty(list)) {
             for (Map<String, Object> map : list) {
                 ChatRedDot chatRedDot = new ChatRedDot();
                 Double score = (Double) map.get("score");
-                if (score.intValue()==0){//未读
+                if (score.intValue() == 0) {//未读
                     chatRedDot.setStatus(true);
                 }
 
