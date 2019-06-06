@@ -221,8 +221,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     public void followMember(Long fromMemberId, Long toMemberId) {
         MemberFollowEntity follow = new MemberFollowEntity(DateUtils.now(), fromMemberId, toMemberId);
         memberFollowDao.insert(follow);
-        redisUtils.addList("follow:" + toMemberId, fromMemberId);
-        redisUtils.addList("follow-currentUser:" + fromMemberId, toMemberId);
+//        redisUtils.addList("follow:" + toMemberId, fromMemberId);
+//        redisUtils.addList("follow-currentUser:" + fromMemberId, toMemberId);
     }
 
     @Override
@@ -231,8 +231,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         wrapper.eq("from_member_id", fromMemberId)
                 .eq("to_member_id", toMemberId);
         memberFollowDao.delete(wrapper);
-        redisUtils.delListKey("follow-currentUser:" + fromMemberId, toMemberId);
-        redisUtils.delListKey("follow:" + toMemberId, fromMemberId);
+//        redisUtils.delListKey("follow-currentUser:" + fromMemberId, toMemberId);
+//        redisUtils.delListKey("follow:" + toMemberId, fromMemberId);
     }
 
     @Override

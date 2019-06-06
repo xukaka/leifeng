@@ -58,6 +58,7 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
         TaskCircleEntity circle = new TaskCircleEntity();
         BeanUtils.copyProperties(form, circle);
         circle.setCreatorId(creatorId);
+        circle.setMemberCount(1);
         circle.setCreateTime(DateUtils.now());
         this.insert(circle);
         //插入圈标签

@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -51,24 +52,21 @@ public class ImController {
     public R getHistoryMember(Long memberId) {
         logger.info("[ImController.info] 请求参数id={}", memberId);
 //        if (type == 0) {
-            List<ImHistoryMember> members = new ArrayList<>();
-            List<Map<String, Object>> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
-            System.out.println(list.isEmpty());
-            if (!list.isEmpty()) {
-                for (Map<String, Object> map : list) {
-                    ImHistoryMember imHistoryMember = new ImHistoryMember();
-                    Double score = (Double) map.get("score");
-                    imHistoryMember.setStatus(score.intValue());
-                    if (map.get("value") != null) {
-                        imHistoryMember.setMember(memberService.getMember(Long.parseLong(map.get("value").toString())));
-                    }
-                    members.add(imHistoryMember);
+        List<ImHistoryMember> members = new ArrayList<>();
+        List<Map<String, Object>> list = redisUtils.rangeByScore("unread:" + memberId, ImHistoryMember.class);
+//            System.out.println(list.isEmpty());
+        if (!CollectionUtils.isEmpty(list)) {
+            for (Map<String, Object> map : list) {
+                ImHistoryMember imHistoryMember = new ImHistoryMember();
+                Double score = (Double) map.get("score");
+                imHistoryMember.setStatus(score.intValue());
+                if (map.get("value") != null) {
+                    imHistoryMember.setMember(memberService.getMember(Long.parseLong(map.get("value").toString())));
                 }
-                return R.ok().put("result", members);
-            } else {
-                return R.ok().put("result", "没有未读联系人");
-
+                members.add(imHistoryMember);
             }
+        }
+        return R.ok().put("result", members);
         /*} else if (type == 1) {
             List<ImFollowNoticeStatus> followStatus = new ArrayList<>();
             List<Map<String, Object>> list = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
@@ -135,7 +133,8 @@ public class ImController {
         PageUtils<ImTaskNoticeDto> notices = imService.getTaskNotices(ReqUtils.curMemberId(), page);
         return R.ok().put("result", notices);
     }
-    @Login
+
+    //    @Login
     @GetMapping(value = "/circleNotice/list")
     @ApiOperation("分页获取圈通知列表")
     public R getCircleNotices(Integer curPage, Integer pageSize) {
@@ -143,7 +142,7 @@ public class ImController {
         pageMap.put("page", curPage);
         pageMap.put("size", pageSize);
         PageWrapper page = new PageWrapper(pageMap);
-        PageUtils<ImCircleNoticeDto> notices = imService.getCircleNotices(ReqUtils.curMemberId(), page);
+        PageUtils<ImCircleNoticeDto> notices = imService.getCircleNotices(45L, page);
         return R.ok().put("result", notices);
     }
 
@@ -152,14 +151,14 @@ public class ImController {
     @ApiOperation("获取红点")
     public R getRedDot() {
         RedDotDto redDot = imService.getRedDot(ReqUtils.curMemberId());
-        return R.ok().put("result",redDot);
+        return R.ok().put("result", redDot);
     }
 
     @Login
     @GetMapping(value = "/cancelRedDot")
     @ApiOperation("取消红点")
-    public R cancelRedDot(Integer redDotType,Long toId) {
-      imService.cancelRedDot(ReqUtils.curMemberId(), redDotType,toId);
+    public R cancelRedDot(Integer redDotType, Long toId) {
+        imService.cancelRedDot(ReqUtils.curMemberId(), redDotType, toId);
         return R.ok();
     }
 
