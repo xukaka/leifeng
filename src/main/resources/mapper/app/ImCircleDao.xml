@@ -15,7 +15,7 @@
         m.id as memberId,
         m.nick_name as memberNickName,
         m.sex as memberSex,
-        m.avatar as memberAvatar,
+        m.avatar as memberAvatar
 
         from t_im_circle_notice n
         join t_task_circle c on c.id = n.circle_id
