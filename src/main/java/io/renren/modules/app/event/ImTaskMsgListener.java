@@ -25,13 +25,14 @@ public class ImTaskMsgListener {
     public void handleMessage(String message) {
         logger.info("rabbitMQ handle task message ===>>> " + message);
         JSONObject msg = JSONObject.parseObject(message);
-        Long memberId = msg.getLong("memberId");
+        Long fromMemberId = msg.getLong("fromMemberId");
+        Long toMemberId = msg.getLong("toMemberId");
         String operate = msg.getString("operate");
         Long taskId = msg.getLong("taskId");
-        imService.addTaskNotice(memberId,operate,taskId);
+        imService.addTaskNotice(fromMemberId,toMemberId,operate,taskId);
 
         //设置红点
-        imService.setRedDot(memberId,1);
+        imService.setRedDot(toMemberId,1);
 
     }
 

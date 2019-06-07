@@ -97,7 +97,7 @@ public class TaskController {
     @GetMapping("/receiver/choose")
     @ApiOperation("选择任务领取人")
     public R chooseTaskReceiver(Long taskId, Long receiverId) {
-        taskService.chooseTaskReceiver(taskId, receiverId);
+        taskService.chooseTaskReceiver(taskId,ReqUtils.curMemberId(), receiverId);
         return R.ok();
     }
 

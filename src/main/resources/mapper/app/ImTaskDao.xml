@@ -16,8 +16,8 @@
         m.avatar as memberAvatar
         from t_im_task_notice n
         join t_task t on t.id = n.task_id
-        join member m  on n.member_id=m.id
-        where n.deleted=0 and n.member_id = #{memberId}
+        join member m  on n.from_member_id=m.id
+        where n.deleted=0 and n.to_member_id = #{memberId}
         ORDER BY n.create_time DESC
         LIMIT #{page.offset},#{page.limit}
     </select>
@@ -26,7 +26,7 @@
        select count(1)
         from t_im_task_notice n
         join t_task t on t.id = n.task_id
-        join member m  on n.member_id=m.id
-        where n.deleted=0 and n.member_id = #{memberId}
+        join member m  on n.from_member_id=m.id
+        where n.deleted=0 and n.to_member_id = #{memberId}
     </select>
 </mapper>

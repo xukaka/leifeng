@@ -10,9 +10,10 @@ import io.renren.modules.app.entity.BaseEntity;
 public class ImTaskNotice extends BaseEntity {
 
     /**
-     * 接收方id
+     * 发送方id
      */
-    private Long memberId;
+    private Long fromMemberId;
+    private Long toMemberId;//接收方id
 
     /**
      * 任务id
@@ -24,12 +25,20 @@ public class ImTaskNotice extends BaseEntity {
      */
     private String operate;
 
-    public Long getMemberId() {
-        return memberId;
+    public Long getFromMemberId() {
+        return fromMemberId;
     }
 
-    public void setMemberId(Long memberId) {
-        this.memberId = memberId;
+    public void setFromMemberId(Long fromMemberId) {
+        this.fromMemberId = fromMemberId;
+    }
+
+    public Long getToMemberId() {
+        return toMemberId;
+    }
+
+    public void setToMemberId(Long toMemberId) {
+        this.toMemberId = toMemberId;
     }
 
     public Long getTaskId() {

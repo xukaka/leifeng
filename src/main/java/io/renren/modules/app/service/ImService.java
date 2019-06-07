@@ -31,7 +31,7 @@ public interface ImService {
 
 
     //添加任务通知
-    void addTaskNotice(Long memberId, String operate, Long taskId);
+    void addTaskNotice(Long fromMemberId,Long toMemberId, String operate, Long taskId);
 
     //分页获取任务通知列表
     PageUtils<ImTaskNoticeDto> getTaskNotices(Long memberId, PageWrapper page);

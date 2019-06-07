@@ -306,14 +306,14 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         ThreadPoolUtils.execute(() -> {
             TaskEntity task = this.selectById(taskId);
             //推送消息给任务发布人
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(task.getCreatorId(), taskId, "领取"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId,task.getCreatorId(), taskId, "领取"));
         });
     }
 
 
     @Override
     @Transactional
-    public void chooseTaskReceiver(Long taskId, Long receiverId) {
+    public void chooseTaskReceiver(Long taskId, Long memberId,Long receiverId) {
 //        TaskEntity task = baseMapper.selectById(taskId);
         boolean isChooseable = isChooseableReceiver(taskId, receiverId);
         if (!isChooseable) {
@@ -328,7 +328,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.received);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId, taskId, "指派"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(memberId,receiverId, taskId, "指派"));
 
         }
 
@@ -356,7 +356,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.executing);
             TaskEntity task = selectById(taskId);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(task.getCreatorId(), taskId, "执行"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId,task.getCreatorId(), taskId, "执行"));
         }
     }
 
@@ -381,7 +381,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             updateTaskStatus(taskId, TaskStatusEnum.published);
         }
         ThreadPoolUtils.execute(() -> {
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(task.getCreator().getId(),taskId, "取消"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId,task.getCreator().getId(),taskId, "取消"));
         });
     }
 
@@ -413,7 +413,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             List<TaskReceiveEntity> taskReceives = taskReceiveDao.selectList(wrapper);
             if (!CollectionUtils.isEmpty(taskReceives)) {
                 for (TaskReceiveEntity taskReceive : taskReceives) {
-                    rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(taskReceive.getReceiverId(),taskId, "取消"));
+                    rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(publisherId,taskReceive.getReceiverId(),taskId, "取消"));
 //                    ImMessageUtils.sendTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已取消", "26", taskReceive.getReceiverId().toString(), "SystemTaskStatus");
                 }
             }
@@ -505,7 +505,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.submitted);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(task.getCreatorId(),taskId, "提交"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId,task.getCreatorId(),taskId, "提交"));
         }
     }
 
@@ -551,7 +551,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             ThreadPoolUtils.execute(() -> {
                 //任务完成数+1
                 memberService.incTaskCompleteCount(receiverId, 1);
-                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId,taskId, "确认完成"));
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId,receiverId,taskId, "确认完成"));
                 //给领取人添加标签
                 addTag2Member(receiverId, taskId);
             });

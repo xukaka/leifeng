@@ -56,10 +56,11 @@ public final class ImMessageUtils{
     }*/
 
     //任务状态消息
-    public static String getTaskMsg(Long memberId,Long taskId,String operate){
+    public static String getTaskMsg(Long fromMemberId,Long toMemberId,Long taskId,String operate){
         JSONObject taskMsg = new JSONObject();
         taskMsg.put("taskId", taskId);
-        taskMsg.put("memberId", memberId);
+        taskMsg.put("fromMemberId", fromMemberId);
+        taskMsg.put("toMemberId", toMemberId);
         taskMsg.put("operate", operate);
         return taskMsg.toJSONString();
     }

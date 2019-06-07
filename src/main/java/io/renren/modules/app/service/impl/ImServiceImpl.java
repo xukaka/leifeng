@@ -119,10 +119,11 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public void addTaskNotice(Long memberId, String operate, Long taskId) {
+    public void addTaskNotice(Long fromMemberId,Long toMemberId, String operate, Long taskId) {
         ImTaskNotice notice = new ImTaskNotice();
         notice.setOperate(operate);//操作
-        notice.setMemberId(memberId);//接收方id
+        notice.setFromMemberId(fromMemberId);//发送方id
+        notice.setToMemberId(toMemberId);//接收方id
         notice.setTaskId(taskId);
         notice.setCreateTime(DateUtils.now());
         imTaskDao.insert(notice);
