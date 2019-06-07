@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import sun.rmi.runtime.Log;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -106,12 +107,14 @@ public class ImServiceImpl implements ImService {
 
     @Override
     public void setMessageType(Long fromId,Long toId) {
+        LOG.info("setMessageType method:fromId={},toId={}",fromId,toId);
         String onlineStatus = redisUtils.get("user:"+toId+":terminal:ws");//目标用户是否在线
+
+        redisUtils.zAdd("unread:" + fromId, toId, 0);
         if ("online".equals(onlineStatus)){
-            redisUtils.zAdd("unread:" + toId, fromId,0);
-            redisUtils.zAdd("unread:" + fromId, toId, 0);
+            redisUtils.zAdd("unread:" + toId, fromId,0);//已读
         }else{
-            redisUtils.zAdd("unread:" + toId, fromId, 1);
+            redisUtils.zAdd("unread:" + toId, fromId, 1);//未读
         }
     }
 
