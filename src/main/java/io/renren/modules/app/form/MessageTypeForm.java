@@ -9,6 +9,10 @@ import javax.validation.constraints.NotNull;
  * @auther: Easy
  * @date: 19-4-20 17:42
  * @description:
+ * * memberId:代表发送人，当前用户ID即可
+ *      * toId：代表接受人，也就是不在线的用户Id
+ *      * type:0代表私聊，1代表关注，2代表任务通知
+ *      * status:0代表没有未读，1代表有未读
  */
 @ApiModel(value = "设置未读消息状态表单")
 public class MessageTypeForm {
@@ -20,7 +24,7 @@ public class MessageTypeForm {
     private  Long toId;
     @ApiModelProperty(value = "类型", example = "")
     @NotNull
-    private int type;//0未读，1已读
+    private int type;
     @ApiModelProperty(value = "状态", example = "")
     @NotNull
     private int status;

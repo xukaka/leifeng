@@ -10,7 +10,7 @@ public class ImDynamicNoticeDto implements Serializable {
     private String businessTitle;//业务标题
     private Long memberId;//发布方id
     private String memberNickName;//发布方昵称
-    private String memberSex;//性别
+    private Integer memberSex;//性别
     private String memberAvatar;//头像
     private Long createTime;//创建时间
 
@@ -62,11 +62,11 @@ public class ImDynamicNoticeDto implements Serializable {
         this.memberNickName = memberNickName;
     }
 
-    public String getMemberSex() {
+    public Integer getMemberSex() {
         return memberSex;
     }
 
-    public void setMemberSex(String memberSex) {
+    public void setMemberSex(Integer memberSex) {
         this.memberSex = memberSex;
     }
 

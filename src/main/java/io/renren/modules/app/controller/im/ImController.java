@@ -96,6 +96,8 @@ public class ImController {
         }*/
     }
 
+
+    @Login
     @PostMapping(value = "/setMessageType")
     @ApiOperation("设置未读消息状态")
     /**
@@ -104,9 +106,13 @@ public class ImController {
      * type:0代表私聊，1代表关注，2代表任务通知
      * status:0代表没有未读，1代表有未读
      */
-    public R setMessageType(@RequestBody MessageTypeForm messageTypeForm) {
+   /* public R setMessageType(@RequestBody MessageTypeForm messageTypeForm) {
         logger.info("[ImController.info] 请求参数id={}", messageTypeForm.getFromId(), messageTypeForm.getToId());
         imService.setMessageType(messageTypeForm);
+        return R.ok();
+    }*/
+    public R setMessageType(Long toId) {
+        imService.setMessageType(ReqUtils.curMemberId(),toId);
         return R.ok();
     }
 

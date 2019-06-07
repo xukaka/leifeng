@@ -86,11 +86,11 @@ public class ImServiceImpl implements ImService {
         imDynamicDao.insert(notice);
     }
 
-
+/*
     @Override
     public void setMessageType(MessageTypeForm messageTypeForm) {
         LOG.info("[Im.setMessageType] 请求参数messageTypeForm={}", messageTypeForm);
-        if (messageTypeForm.getStatus() == 1 && messageTypeForm.getType() == 0) {
+        if (messageTypeForm.getStatus() == 1) {//未读
             redisUtils.zAdd("unread:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
         } else {
             redisUtils.zAdd("unread:" + messageTypeForm.getToId(), messageTypeForm.getFromId(), messageTypeForm.getStatus());
@@ -101,6 +101,17 @@ public class ImServiceImpl implements ImService {
         }
         if (messageTypeForm.getType() == 2) {
             redisUtils.zAdd("task:" + messageTypeForm.getToId(), "SystemTaskStatus", messageTypeForm.getStatus());
+        }
+    }  */
+
+    @Override
+    public void setMessageType(Long fromId,Long toId) {
+        String onlineStatus = redisUtils.get("user:"+toId+":terminal:ws");//目标用户是否在线
+        if ("online".equals(onlineStatus)){
+            redisUtils.zAdd("unread:" + toId, fromId,0);
+            redisUtils.zAdd("unread:" + fromId, toId, 0);
+        }else{
+            redisUtils.zAdd("unread:" + toId, fromId, 1);
         }
     }
 

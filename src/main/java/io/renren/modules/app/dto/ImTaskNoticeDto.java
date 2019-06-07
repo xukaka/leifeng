@@ -9,7 +9,7 @@ public class ImTaskNoticeDto implements Serializable {
     //接收方id
     private Long memberId;
     private String memberNickName;//昵称
-    private String memberSex;//性别
+    private Integer memberSex;//性别
     private String memberAvatar;//头像
     /**
      * 任务id
@@ -49,11 +49,11 @@ public class ImTaskNoticeDto implements Serializable {
         this.memberNickName = memberNickName;
     }
 
-    public String getMemberSex() {
+    public Integer getMemberSex() {
         return memberSex;
     }
 
-    public void setMemberSex(String memberSex) {
+    public void setMemberSex(Integer memberSex) {
         this.memberSex = memberSex;
     }
 

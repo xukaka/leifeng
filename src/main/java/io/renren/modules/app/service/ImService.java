@@ -26,7 +26,8 @@ public interface ImService {
     /**
      * 设置消息类型
      */
-    void setMessageType(MessageTypeForm messageTypeForm);
+//    void setMessageType(MessageTypeForm messageTypeForm);
+    void setMessageType(Long fromId,Long toId);
 
 
     //添加任务通知
