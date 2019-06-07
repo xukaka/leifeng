@@ -181,7 +181,7 @@ public class ImServiceImpl implements ImService {
             case 0:
 //                redisUtils.delete(RedisKeys.RED_DOT_CHAT + memnberId);
                 if (toId != null) {
-                    redisUtils.zAdd("unread:" + memberId, toId, 1);//设置已读
+                    redisUtils.zAdd("unread:" + memberId, toId, 0);//设置已读
                 }
                 break;
             case 1:
@@ -230,7 +230,7 @@ public class ImServiceImpl implements ImService {
             for (Map<String, Object> map : list) {
                 ChatRedDot chatRedDot = new ChatRedDot();
                 Double score = (Double) map.get("score");
-                if (score.intValue() == 0) {//未读
+                if (score.intValue() == 1) {//未读
                     chatRedDot.setStatus(true);
                 }
 

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * * memberId:代表发送人，当前用户ID即可
  *      * toId：代表接受人，也就是不在线的用户Id
  *      * type:0代表私聊，1代表关注，2代表任务通知
- *      * status:0代表没有未读，1代表有未读
+ *      * status:0代表已读，1代表未读
  */
 @ApiModel(value = "设置未读消息状态表单")
 public class MessageTypeForm {
