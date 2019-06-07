@@ -98,7 +98,7 @@ public class ImController {
 
 
     @Login
-    @PostMapping(value = "/setMessageType")
+    @GetMapping(value = "/setMessageType")
     @ApiOperation("设置未读消息状态")
     /**
      * memberId:代表发送人，当前用户ID即可
