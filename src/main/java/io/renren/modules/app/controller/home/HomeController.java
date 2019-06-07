@@ -1,28 +1,19 @@
 package io.renren.modules.app.controller.home;
 
-import com.alibaba.fastjson.JSON;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.service.WechatService;
-import io.renren.modules.app.service.impl.DiaryServiceImpl;
-import io.renren.modules.app.utils.JsSdkUtils;
 import io.renren.modules.app.utils.ReqUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.util.Formatter;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 
 @RestController
