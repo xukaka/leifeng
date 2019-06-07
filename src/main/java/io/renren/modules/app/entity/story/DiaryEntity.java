@@ -17,7 +17,7 @@ public class DiaryEntity extends BaseEntity {
 
 
     //是否私密
-    private Boolean isPrivate;
+    private Boolean isPrivate = false;
 
     //    浏览数
     private Integer viewCount = 0;

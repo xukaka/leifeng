@@ -204,16 +204,11 @@ public class MemberController {
     @Login
     @PostMapping("/feedback/save")
     @ApiOperation("保存用户反馈")
-    public R savefeedback(Long memberId, String content) {
-        if (memberId == null || memberId <= 0) {
-            return R.error(HttpStatus.SC_BAD_REQUEST, "memberId不为空");
-        }
-        if (StringUtils.isEmpty(content)) {
-            return R.error(HttpStatus.SC_BAD_REQUEST, "content不为空");
-        }
+    public R savefeedback(String content) {
+
         MemberFeedback feedback = new MemberFeedback();
         feedback.setContent(content);
-        feedback.setMemberId(memberId);
+        feedback.setMemberId(ReqUtils.curMemberId());
         feedback.setCreateTime(System.currentTimeMillis());
         memberFeedbackService.insert(feedback);
         return R.ok();

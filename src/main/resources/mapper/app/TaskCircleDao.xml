@@ -87,11 +87,12 @@
         m.sex AS member_sex,
         tg.name AS tag_name
         FROM t_task_circle tc
-        JOIN t_task_circle_member m ON tc.id = m.circle_id
+        JOIN t_task_circle_member cm ON tc.id = cm.circle_id
         JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
         JOIN t_tag tg ON rg.tag_id=tg.id
-        WHERE m.member_id = #{memberId} AND tc.deleted = 0
-        ORDER BY m.create_time DESC
+        JOIN member m ON cm.member_id = m.id
+        WHERE cm.member_id = #{memberId} AND tc.deleted = 0
+        ORDER BY cm.create_time DESC
         LIMIT #{page.offset},#{page.limit}
     </select>
 
@@ -109,10 +110,12 @@
     <!--获取我加入的圈总数-->
     <select id="myJoinedCount" resultType="int">
         SELECT
-        count(1)
+            count(1)
         FROM t_task_circle tc
-        JOIN t_task_circle_member m ON tc.id = m.circle_id
-        WHERE m.member_id = #{memberId} AND tc.deleted = 0
+        JOIN t_task_circle_member cm ON tc.id = cm.circle_id
+        JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
+        JOIN t_tag tg ON rg.tag_id=tg.id
+        JOIN member m ON cm.member_id = m.id
     </select>
 
     <!--圈成员数+inc-->

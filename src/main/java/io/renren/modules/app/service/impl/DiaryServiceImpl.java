@@ -62,11 +62,14 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
         diary.setCreateTime(DateUtils.now());
         this.insert(diary);
         addDiaryContent(diary.getId(),form.getContents());
+        //非私密日记
+        if (!diary.getPrivate()){
+            ThreadPoolUtils.execute(() -> {
+                //推送消息给关注我的所有人
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_DYNAMIC, ImMessageUtils.getDynamicMsg(memberId, "diary", diary.getId()));
+            });
+        }
 
-        ThreadPoolUtils.execute(() -> {
-            //推送消息给关注我的所有人
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_DYNAMIC, ImMessageUtils.getDynamicMsg(memberId, "diary", diary.getId()));
-        });
     }
 
 
