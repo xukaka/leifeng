@@ -12,6 +12,8 @@ import io.renren.modules.app.entity.banner.BannerEntity;
 import io.renren.modules.app.entity.banner.SofttextEntity;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.SofttextService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -21,7 +23,7 @@ import java.util.List;
 
 @Service
 public class SofttexttImpl extends ServiceImpl<SofttextDao, SofttextEntity> implements SofttextService {
-
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public PageUtils<SofttextDto> getSofttexts(PageWrapper page) {
@@ -35,7 +37,9 @@ public class SofttexttImpl extends ServiceImpl<SofttextDao, SofttextEntity> impl
 
     @Override
     public void createSofttext( SofttextForm form) {
+
         ValidatorUtils.validateEntity(form);
+        logger.info("createSofttext method:from={}",form);
         SofttextEntity softtext = new SofttextEntity();
         BeanUtils.copyProperties(form, softtext);
         softtext.setCreateTime(DateUtils.now());

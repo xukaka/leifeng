@@ -57,4 +57,14 @@ public class SofttextForm {
     public void setHtmlContent(String htmlContent) {
         this.htmlContent = htmlContent;
     }
+
+    @Override
+    public String toString() {
+        return "SofttextForm{" +
+                "title='" + title + '\'' +
+                ", source='" + source + '\'' +
+                ", linkUrl='" + linkUrl + '\'' +
+                ", htmlContent='" + htmlContent + '\'' +
+                '}';
+    }
 }
