@@ -1,6 +1,5 @@
 package io.renren.modules.app.form;
 
-import io.renren.modules.app.entity.BannerTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -24,7 +23,7 @@ public class SofttextForm {
 
     @NotNull
     @ApiModelProperty("html内容")
-    private String htmlContext;
+    private String htmlContent;
 
 
     public String getTitle() {
@@ -51,11 +50,11 @@ public class SofttextForm {
         this.linkUrl = linkUrl;
     }
 
-    public String getHtmlContext() {
-        return htmlContext;
+    public String getHtmlContent() {
+        return htmlContent;
     }
 
-    public void setHtmlContext(String htmlContext) {
-        this.htmlContext = htmlContext;
+    public void setHtmlContent(String htmlContent) {
+        this.htmlContent = htmlContent;
     }
 }

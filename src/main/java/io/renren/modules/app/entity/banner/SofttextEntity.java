@@ -13,7 +13,7 @@ public class SofttextEntity extends BaseEntity {
     private String title;
 
     //来源方
-    private String srouce;
+    private String source;
 
     //html富文本内容
     private String htmlContent;
@@ -46,11 +46,11 @@ public class SofttextEntity extends BaseEntity {
         this.linkUrl = linkUrl;
     }
 
-    public String getSrouce() {
-        return srouce;
+    public String getSource() {
+        return source;
     }
 
-    public void setSrouce(String srouce) {
-        this.srouce = srouce;
+    public void setSource(String source) {
+        this.source = source;
     }
 }
