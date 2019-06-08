@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.renren.modules.app.dao.banner.SofttextDao">
+
+
+    <!--获取软文详情-->
+    <select id="getSofttext" resultType="io.renren.modules.app.dto.SofttextDto">
+        select
+        b.*
+        from t_softtext b
+        where b.id = #{id}
+    </select>
+
+    <!--分页获取软文列表-->
+    <select id="getSofttexts" resultType="io.renren.modules.app.dto.SofttextDto">
+        select
+        b.*
+        from t_softtext b
+        where b.deleted = 0
+        ORDER BY b.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+
+    </select>
+
+    <!--获取软文总数-->
+    <select id="count" resultType="int">
+        select
+        count(1)
+        from t_softtext b
+        where b.deleted = 0
+
+    </select>
+</mapper>

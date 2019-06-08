@@ -15,7 +15,7 @@ import io.renren.modules.app.form.TaskCircleForm;
 import java.util.List;
 
 /**
- * 首页
+ * banner
  */
 public interface BannerService {
 
