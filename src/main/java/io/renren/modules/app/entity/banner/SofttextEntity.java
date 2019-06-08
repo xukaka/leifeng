@@ -18,6 +18,9 @@ public class SofttextEntity extends BaseEntity {
     //html富文本内容
     private String htmlContent;
 
+    //浏览数
+    private Integer viewCount=0;
+
     //url
     private String linkUrl;
 
@@ -52,5 +55,13 @@ public class SofttextEntity extends BaseEntity {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
     }
 }

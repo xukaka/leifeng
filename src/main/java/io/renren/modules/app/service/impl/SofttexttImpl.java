@@ -1,6 +1,7 @@
 package io.renren.modules.app.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import io.renren.common.utils.BeanUtil;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.validator.ValidatorUtils;
@@ -27,12 +28,12 @@ public class SofttexttImpl extends ServiceImpl<SofttextDao, SofttextEntity> impl
 
     @Override
     public PageUtils<SofttextDto> getSofttexts(PageWrapper page) {
-        List<SofttextDto> softtexts = baseMapper.getSofttexts( page);
+        List<SofttextDto> softtexts = baseMapper.getSofttexts(page);
         if (CollectionUtils.isEmpty(softtexts)) {
             return new PageUtils<>();
         }
-        for (SofttextDto softtext:softtexts){
-            softtext.setLinkUrl(softtext.getLinkUrl()+softtext.getId());
+        for (SofttextDto softtext : softtexts) {
+            softtext.setLinkUrl(softtext.getLinkUrl() + softtext.getId());
         }
 
         int total = baseMapper.count();
@@ -40,10 +41,10 @@ public class SofttexttImpl extends ServiceImpl<SofttextDao, SofttextEntity> impl
     }
 
     @Override
-    public void createSofttext( SofttextForm form) {
+    public void createSofttext(SofttextForm form) {
 
         ValidatorUtils.validateEntity(form);
-        logger.info("createSofttext method:from={}",form);
+        logger.info("createSofttext method:from={}", form);
         SofttextEntity softtext = new SofttextEntity();
         BeanUtils.copyProperties(form, softtext);
         softtext.setCreateTime(DateUtils.now());
@@ -53,7 +54,13 @@ public class SofttexttImpl extends ServiceImpl<SofttextDao, SofttextEntity> impl
 
     @Override
     public SofttextDto getSofttext(Long id) {
-       return baseMapper.getSofttext(id);
+        SofttextEntity softtext = baseMapper.selectById(id);
+        if (softtext != null) {
+            softtext.setViewCount(softtext.getViewCount() + 1);
+            baseMapper.updateById(softtext);
+            return BeanUtil.copy(softtext, SofttextDto.class);
+        }
+        return null;
     }
 
     @Override

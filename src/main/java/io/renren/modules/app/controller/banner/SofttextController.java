@@ -36,7 +36,7 @@ public class SofttextController {
         return R.ok().put("result", softtexts);
     }
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create"/*,produces="text/html;charset=UTF-8"*/)
     @ApiOperation("创建软文")
     public R createSofttext(@RequestBody SofttextForm form) {
         softtextService.createSofttext( form);

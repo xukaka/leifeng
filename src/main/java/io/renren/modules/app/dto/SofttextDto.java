@@ -1,12 +1,10 @@
 package io.renren.modules.app.dto;
 
-import io.renren.modules.app.entity.BannerTypeEnum;
-
 import java.io.Serializable;
 
 
 public class SofttextDto implements Serializable {
-    //横幅id
+    //id
     private Long id;
 
 
@@ -21,6 +19,9 @@ public class SofttextDto implements Serializable {
     private String htmlContent;
     //来源方
     private String source ;
+
+    //阅读量
+    private Integer viewCount;
 
     //创建时间
     private Long createTime;
@@ -71,5 +72,13 @@ public class SofttextDto implements Serializable {
 
     public void setHtmlContent(String htmlContent) {
         this.htmlContent = htmlContent;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
     }
 }

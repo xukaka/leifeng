@@ -4,12 +4,12 @@
 
 
     <!--获取软文详情-->
-    <select id="getSofttext" resultType="io.renren.modules.app.dto.SofttextDto">
+<!--    <select id="getSofttext" resultType="io.renren.modules.app.dto.SofttextDto">
         select
         b.*
         from t_softtext b
         where b.id = #{id}
-    </select>
+    </select>-->
 
     <!--分页获取软文列表-->
     <select id="getSofttexts" resultType="io.renren.modules.app.dto.SofttextDto">
@@ -30,4 +30,10 @@
         where b.deleted = 0
 
     </select>
+
+    <!--浏览数+1-->
+    <update id="incViewCount">
+        update t_softtext b set b.view_count = b.view_count + #{inc}
+        where b.id = #{id}
+    </update>
 </mapper>

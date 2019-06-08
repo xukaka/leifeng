@@ -27,5 +27,8 @@ public interface SofttextDao extends BaseMapper<SofttextEntity> {
 
 
     //获取软文详情
-    SofttextDto getSofttext(@Param("id") Long id);
+//    SofttextDto getSofttext(@Param("id") Long id);
+
+    //浏览数+inc
+    void incViewCount(@Param("id") Long id,@Param("inc") Integer inc);
 }
