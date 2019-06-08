@@ -31,6 +31,10 @@ public class SofttexttImpl extends ServiceImpl<SofttextDao, SofttextEntity> impl
         if (CollectionUtils.isEmpty(softtexts)) {
             return new PageUtils<>();
         }
+        for (SofttextDto softtext:softtexts){
+            softtext.setLinkUrl(softtext.getLinkUrl()+softtext.getId());
+        }
+
         int total = baseMapper.count();
         return new PageUtils<>(softtexts, total, page.getPageSize(), page.getCurrPage());
     }
