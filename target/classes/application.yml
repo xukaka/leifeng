@@ -22,11 +22,12 @@ spring:
       max-request-size: 100MB
       enabled: true
   redis:
-    open: false  # 是否开启redis缓存  true开启   false关闭
+    open: true  # 是否开启redis缓存  true开启   false关闭
     database: 0
-    host: 119.23.229.161
+    host: 47.94.164.57
+    #host: 119.23.229.161
     port: 6379
-    password: Aa123456 # 密码（默认为空）
+    password:  # 密码（默认为空）
     timeout: 6000ms  # 连接超时时长（毫秒）
     jedis:
       pool:
@@ -39,6 +40,13 @@ spring:
     static-path-pattern: /static/**
   resources:
     add-mappings: false
+  #rabbitMQ
+  rabbitmq:
+    #host: 119.23.229.161
+    host: 47.94.164.57
+    port: 5672
+    username: guest
+    password: guest
 
 #mybatis
 mybatis-plus:
@@ -72,27 +80,49 @@ mybatis-plus:
 
 renren:
   redis:
-    open: false
+    open: true
   shiro:
     redis: false
   # APP模块，是通过jwt认证的，如果要使用APP模块，则需要修改【加密秘钥】
   jwt:
     # 加密秘钥
     secret: f4e2e52034348f86b67cde581c0f9eb5
-    # token有效时长，1小时，单位秒
-    expire: 3600
+    # token有效时长，30天，单位秒
+    expire: 2592000
     header: token
 
+#微信小程序
 wx:
   #app_id: wx337c1f56812473d2
-  #app_secret: fcbe3e0ae4025d2b1e0f3a2c7cc88620
-  app_id: wx337c1f56812473d2
-  app_secret: f9bac98bfb9277255ad094f478fbb2c4
+  #app_secret: f874d3460c7fdd56ba6880805259e16e
+  app_id: wxf303172e683e60d0
+  app_secret: f874d3460c7fdd56ba6880805259e16e
+
   code_session_url: https://api.weixin.qq.com/sns/jscode2session
+  mch_id: 1517937991
+  trade_type: JSAPI
+  key: huzhongchengwxd930ea5d5a258f4f03
+  WXPayDomain: https://api.mch.weixin.qq.com/pay/unifiedorder
+  notifyUrl: https://pet.fangzheng.fun/leifeng/app/wx/pay/notify
+  orderQuery: https://api.mch.weixin.qq.com/pay/orderquery
+  transferUrl: https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers
+  refund: https://api.mch.weixin.qq.com/secapi/pay/refund
+  cert: wx_apiclient_cert.p12
+
+#微信公众号
+wechat :
+  official:
+    account:
+      app_id: wxcd08099dac26f5bf
+      app_secret: 908f9e2108d8c54970cc132ff8f45364
+      aouth2_url: https://api.weixin.qq.com/sns/oauth2/access_token
+      userinfo_url: https://api.weixin.qq.com/sns/userinfo
+
+
+
 
 sms:
   appid: 1400198286
   appkey: 630640f20e56b175bbf232677815cc12
   templateId: 309771
   signName: 雷锋在线
-

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="io.renren.modules.app.dao.setting.MemberAuthsDao">
+<mapper namespace="io.renren.modules.app.dao.member.MemberAuthsDao">
 
-    <select id="queryByTypeAndIdentifier" resultType="io.renren.modules.app.entity.setting.MemberAuths">
+    <select id="queryByTypeAndIdentifier" resultType="io.renren.modules.app.entity.member.MemberAuths">
 		select * from member_auths where identity_type=#{identityType} and identifier = #{identifier}
 	</select>
 
-	<select id="queryByTypeAndCredential" resultType="io.renren.modules.app.entity.setting.MemberAuths">
+	<select id="queryByTypeAndCredential" resultType="io.renren.modules.app.entity.member.MemberAuths">
 		select * from member_auths where identity_type=#{identityType} and credential = #{credential}
 	</select>
 

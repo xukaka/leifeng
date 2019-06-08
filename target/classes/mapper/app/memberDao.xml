@@ -1,9 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="io.renren.modules.app.dao.setting.MemberDao">
+<mapper namespace="io.renren.modules.app.dao.member.MemberDao">
 
- <update id="updateLocationNumber">
-     update member set lat = #{location.lat},lnt=#{location.lnt} where id=#{location.id}
- </update>
+    <sql id="searchMemberCondition">
+        <if test="queryMap.keyword != null and queryMap.keyword!=''">
+            AND (m.id = #{queryMap.keyword} or m.mobile = #{queryMap.keyword} or m.nick_name like
+            concat('%',#{queryMap.keyword},'%'))
+        </if>
+        <if test="queryMap.minLat != null and queryMap.maxLat != null
+                 and queryMap.minLng!=null and queryMap.maxLng != null">
+            AND m.lat &gt;= #{queryMap.minLat} AND m.lat &lt;= #{queryMap.maxLat}
+            AND m.lng &gt;= #{queryMap.minLng} AND m.lng &lt;= #{queryMap.maxLng}
+        </if>
+    </sql>
+
+    <update id="updateLocationNumber">
+        update member set lat = #{location.lat},lng=#{location.lng},address=#{location.address}where id=#{memberId}
+    </update>
+
+
+    <select id="searchMembers" resultType="io.renren.modules.app.dto.MemberDto">
+        select m.* from member m
+        where m.status = 1
+        <include refid="searchMemberCondition"/>
+        ORDER BY m.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+    </select>
+
+    <select id="count" resultType="int">
+        select count(*) from member m
+        where m.status = 1
+        <include refid="searchMemberCondition"/>
+    </select>
+
+    <!--获取用户技能标签 top4-->
+    <select id="getMemberTags" resultType="string">
+        select tt.name from r_member_tag mt
+        join t_tag tt on tt.id = mt.tag_id
+        where mt.member_id = #{memberId}
+        order by mt.usage_count desc
+        limit 0,4
+    </select>
+
+    <update id="incFlowerCount">
+        update member m set m.flower_count = m.flower_count + #{inc} where m.id = #{memberId}
+    </update>
+
+
+    <update id="incMemberExperience">
+        update member m set m.experience = m.experience + #{experience} where m.id = #{memberId}
+    </update>
+
+    <update id="incTaskCompleteCount">
+        update member m set m.task_complete_count = m.task_complete_count + #{inc} where m.id = #{memberId}
+    </update>
+
+
+    <select id="getSkillRadarChart" resultType="io.renren.modules.app.dto.SkillRadarChartDto">
+        select
+        r.member_id as memberId,
+        r.tag_id as tagId,
+        r.usage_count as usageCount,
+        t.name as tagName
+        from
+        r_member_tag r
+        join t_tag t on r.tag_id = t.id
+        where r.member_id=#{memberId}
+        order by r.usage_count desc
+        limit 0,5
+
+        </select>
 </mapper>

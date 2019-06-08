@@ -54,8 +54,8 @@ public class SofttexttImpl extends ServiceImpl<SofttextDao, SofttextEntity> impl
         SofttextEntity softtext = this.selectById(form.getId());
         softtext.setTitle(form.getTitle());
         softtext.setLinkUrl(form.getLinkUrl());
-        softtext.setHtmlContent(form.getHtmlContext());
-        softtext.setSrouce(form.getSource());
+        softtext.setHtmlContent(form.getHtmlContent());
+        softtext.setSource(form.getSource());
         this.updateById(softtext);
     }
 
