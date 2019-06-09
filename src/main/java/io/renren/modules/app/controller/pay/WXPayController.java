@@ -143,11 +143,12 @@ public class WXPayController {
 
 
     //小程序调用接口回查任务订单支付结果
-    @PostMapping("/orderQuery")
+    @GetMapping("/orderQuery")
     @ApiOperation("程序调用接口回查任务订单支付结果")
-    public R orderQuery(Long taskId) throws Exception {
+    public R orderQuery(Long taskOrderId) throws Exception {
         logger.info("[WXPayController.orderQuery] 进入");
-        TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
+//        TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
+        TaskOrderEntity torder = taskOrderService.selectById(taskOrderId);
         logger.info("根据taskid查询到订单：{}", JsonUtil.Java2Json(torder));
         //从微信平台查询订单支付状态
         String xresdata = wxPayService.orderQueryRequest(torder.getOutTradeNo());
