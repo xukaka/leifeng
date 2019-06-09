@@ -155,7 +155,7 @@ public class WXPayController {
         if (WXPayConstants.SUCCESS.equals(map.get("return_code")) && WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
             return R.ok().put("result",map.get("trade_state"));
         }
-        return R.ok().put("result",map);
+        return R.error().put("result",map);
 
 
         /*if (WXPayConstants.SUCCESS.equals(torder.getTradeState())) {
