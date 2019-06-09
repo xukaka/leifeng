@@ -245,7 +245,7 @@ public class WXPayController {
 
 
     //企业提现功能接口
-    @PostMapping("/withdrawal")
+    @GetMapping("/withdrawal")
     @ApiOperation("提现功能接口")
     public R withdrawal(String outTradeNo) throws Exception {
         logger.info("[WXPayController.withdrawal] 进入");
