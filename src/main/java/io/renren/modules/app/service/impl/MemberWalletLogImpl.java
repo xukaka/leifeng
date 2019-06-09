@@ -54,7 +54,8 @@ public class MemberWalletLogImpl extends ServiceImpl<MemberWalletLogDao, MemberW
     public MoneyCheckDto checkTotalMoney(Long memberId) {
         MoneyCheckDto checkData = baseMapper.checkTotalMoney(memberId);
         if (checkData != null) {
-            if (checkData.getTotalBalance() == checkData.getTotalExpense() + checkData.getTotalIncome()) {
+            if (checkData.getTotalBalance() == checkData.getTotalExpense() + checkData.getTotalIncome()
+            && checkData.getTotalBalance().longValue() == checkData.getWalletMoney().longValue()) {
                 checkData.setCheckStatus("success");
             }else {
                 checkData.setCheckStatus("error");

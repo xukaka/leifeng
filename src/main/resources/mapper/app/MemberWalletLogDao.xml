@@ -37,10 +37,15 @@
    <select id="checkTotalMoney" resultType="io.renren.modules.app.dto.MoneyCheckDto">
       SELECT
       log.member_id AS memberId,
+      m.nick_name as memberNickName,
+      m.avatar as memberAvatar,
+      w.money as walletMoney,
       sum(log.change_money) AS totalBalance,
       sum( CASE WHEN log.change_money &gt; 0 THEN log.change_money  ELSE 0 END ) AS totalIncome,
       sum( CASE WHEN log.change_money &lt; 0 THEN log.change_money  ELSE 0 END ) AS totalExpense
       FROM   t_member_wallet_log log
+      join member m on m.id=log.member_id
+      join t_member_wallet w on w.member_id=log.member_id
       where log.member_id = #{memberId}
 
    </select>

@@ -12,6 +12,19 @@ public class MoneyCheckDto implements Serializable {
      */
     private Long memberId;
     /**
+     * 用户头像
+     */
+    private String memberAvatar;
+    /**
+     * 用户昵称
+     */
+    private String memberNickName;
+
+    /**
+     * 用户钱包余额
+     */
+    private Long walletMoney;
+    /**
      * 总支出
      */
     private Long totalExpense;
@@ -62,5 +75,29 @@ public class MoneyCheckDto implements Serializable {
 
     public void setCheckStatus(String checkStatus) {
         this.checkStatus = checkStatus;
+    }
+
+    public String getMemberAvatar() {
+        return memberAvatar;
+    }
+
+    public void setMemberAvatar(String memberAvatar) {
+        this.memberAvatar = memberAvatar;
+    }
+
+    public String getMemberNickName() {
+        return memberNickName;
+    }
+
+    public void setMemberNickName(String memberNickName) {
+        this.memberNickName = memberNickName;
+    }
+
+    public Long getWalletMoney() {
+        return walletMoney;
+    }
+
+    public void setWalletMoney(Long walletMoney) {
+        this.walletMoney = walletMoney;
     }
 }

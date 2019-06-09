@@ -3,10 +3,7 @@ package io.renren.modules.app.controller.pay;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.renren.common.utils.*;
 import io.renren.modules.app.annotation.Login;
-import io.renren.modules.app.dto.MemberWalletDto;
-import io.renren.modules.app.dto.MemberWalletLogDto;
-import io.renren.modules.app.dto.TaskOrderDto;
-import io.renren.modules.app.dto.WithdrawalOrderDto;
+import io.renren.modules.app.dto.*;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
@@ -257,7 +254,7 @@ public class WXPayController {
     }
 
     @GetMapping("/logs")
-    @ApiOperation("分页获取交易日志列表")
+    @ApiOperation("分页获取钱包交易日志列表")
     public R getLogs(Long memberId,Integer curPage, Integer pageSize) {
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("page", curPage);
@@ -265,6 +262,13 @@ public class WXPayController {
         PageWrapper page = new PageWrapper(pageMap);
         PageUtils<MemberWalletLogDto> logs = memberWalletLogService.getLogs(memberId,page);
         return R.ok().put("result", logs);
+    }
+
+    @GetMapping("/checkTotalMoney")
+    @ApiOperation("校验用户交易数据")
+    public R checkTotalMoney(Long memberId) {
+        MoneyCheckDto check = memberWalletLogService.checkTotalMoney(memberId);
+        return R.ok().put("result", check);
     }
 
     @GetMapping("/withdrawal/list")
