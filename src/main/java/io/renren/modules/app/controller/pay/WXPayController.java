@@ -149,7 +149,16 @@ public class WXPayController {
         logger.info("[WXPayController.orderQuery] 进入");
         TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
         logger.info("根据taskid查询到订单：{}", JsonUtil.Java2Json(torder));
-        if (WXPayConstants.SUCCESS.equals(torder.getTradeState())) {
+        //从微信平台查询订单支付状态
+        String xresdata = wxPayService.orderQueryRequest(torder.getOutTradeNo());
+        Map<String, String> map = WXPayUtil.xmlToMap(xresdata);
+        if (WXPayConstants.SUCCESS.equals(map.get("return_code")) && WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
+            return R.ok().put("result",map.get("trade_state"));
+        }
+        return R.ok().put("result",map);
+
+
+        /*if (WXPayConstants.SUCCESS.equals(torder.getTradeState())) {
             return R.ok(WXPayConstants.SUCCESS);
         } else {
             //从微信平台查询订单支付状态
@@ -161,7 +170,7 @@ public class WXPayController {
                 return R.ok(map.get("trade_state"));
             }
             return R.error();
-        }
+        }*/
     }
 
     //企业转账提现功能接口
