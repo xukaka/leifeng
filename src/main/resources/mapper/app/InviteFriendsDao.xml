@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.renren.modules.app.dao.member.InviteFriendsDao">
+    <select id="getInviteFriends" resultType="io.renren.modules.app.dto.InviteFriendsDto">
+
+        select
+        f.id,
+        f.create_time as createTime,
+        f.experience,
+        f.virtual_currency as virtualCurrency,
+        m.id as friendMemberId,
+        m.nick_name as friendMemberNickName,
+        m.avatar as friendMemberAvatar,
+        m.sex as friendMemberSex,
+        from t_invite_friends f
+        join member m on m.id = f.friend_memeber_id
+        where f.invite_member_id=#{inviteMemberId}
+        ORDER BY f.create_time DESC
+        LIMIT #{page.offset},#{page.limit}
+    </select>
+
+    <select id="count" resultType="int">
+        select
+        count(1)
+        from t_invite_friends f
+        join member m on m.id = f.friend_memeber_id
+        where f.invite_member_id=#{inviteMemberId}
+    </select>
+</mapper>

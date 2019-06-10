@@ -3,10 +3,7 @@ package io.renren.modules.app.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
-import io.renren.modules.app.dto.MemberDto;
-import io.renren.modules.app.dto.MemberScoreDto;
-import io.renren.modules.app.dto.ScoreBoardDto;
-import io.renren.modules.app.dto.SkillRadarChartDto;
+import io.renren.modules.app.dto.*;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberAuths;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
@@ -128,10 +125,19 @@ public interface MemberService extends IService<Member> {
      */
     List<SkillRadarChartDto> getSkillRadarChart(Long memberId);
 
+    //用户增加经验值和虚拟币
+    void incMemberExperienceAndVirtualCurrency(Long memberId, Integer experience,Integer virtualCurrency);
+
+    //分页获取邀请好友列表
+    PageUtils<InviteFriendsDto> getInviteFriends(Long inviteMemberId, PageWrapper page);
+
 
     //任务完成数+inc
     void incTaskCompleteCount(Long memberId, Integer inc);
 
     //获取用户评分面板
     ScoreBoardDto getScoreBoard(Long memberId);
+
+    //邀请好友
+    void addInviteFriends(Long inviteMemberId,Long friendMemberId,Integer experience,Integer virtualCurrency);
 }

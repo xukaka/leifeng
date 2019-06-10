@@ -9,10 +9,7 @@ import io.renren.common.utils.RabbitMqHelper;
 import io.renren.common.utils.RedisUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
-import io.renren.modules.app.dto.MemberDto;
-import io.renren.modules.app.dto.MemberScoreDto;
-import io.renren.modules.app.dto.ScoreBoardDto;
-import io.renren.modules.app.dto.SkillRadarChartDto;
+import io.renren.modules.app.dto.*;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberFeedback;
 import io.renren.modules.app.form.*;
@@ -238,6 +235,19 @@ public class MemberController {
         ScoreBoardDto board = memberService.getScoreBoard(memberId);
         return R.ok().put("result", board);
 
+    }
+
+
+    @Login
+    @GetMapping("/getInviteFriends")
+    @ApiOperation("分页获取邀请好友列表")
+    public R getInviteFriends(Integer curPage, Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        PageWrapper page = new PageWrapper(pageMap);
+        PageUtils<InviteFriendsDto> inviteFriends= memberService.getInviteFriends(ReqUtils.curMemberId(),page);
+        return R.ok().put("result",inviteFriends);
     }
 
 

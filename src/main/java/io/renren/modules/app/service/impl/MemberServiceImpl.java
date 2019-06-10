@@ -1,6 +1,7 @@
 package io.renren.modules.app.service.impl;
 
 
+import cn.hutool.db.Page;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -9,14 +10,8 @@ import com.github.qcloudsms.SmsSingleSenderResult;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
-import io.renren.modules.app.dao.member.MemberCheckInDao;
-import io.renren.modules.app.dao.member.MemberDao;
-import io.renren.modules.app.dao.member.MemberFollowDao;
-import io.renren.modules.app.dao.member.MemberScoreDao;
-import io.renren.modules.app.dto.MemberDto;
-import io.renren.modules.app.dto.MemberScoreDto;
-import io.renren.modules.app.dto.ScoreBoardDto;
-import io.renren.modules.app.dto.SkillRadarChartDto;
+import io.renren.modules.app.dao.member.*;
+import io.renren.modules.app.dto.*;
 import io.renren.modules.app.entity.im.ImFollowNoticeStatus;
 import io.renren.modules.app.entity.member.*;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
@@ -52,6 +47,9 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     private MemberScoreDao memberScoreDao;
     @Resource
     private MemberCheckInDao memberCheckInDao;
+
+    @Resource
+    private InviteFriendsDao inviteFriendsDao;
     @Resource
     private MemberWalletService memberWalletService;
     @Resource
@@ -338,7 +336,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             memberCheckInDao.insert(checkIn);
             ThreadPoolUtils.execute(() -> {
                 //增加用户的经验值
-                incMemberExperience(memberId, experience);
+                incMemberExperienceAndVirtualCurrency(memberId, experience,0);
             });
 
             result.put("checkInStatus", 0);
@@ -353,9 +351,10 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
 
-    //增加用户经验值
-    private void incMemberExperience(Long memberId, Integer experience) {
-        baseMapper.incMemberExperience(memberId, experience);
+    //增加用户经验值和虚拟币
+    @Override
+    public void incMemberExperienceAndVirtualCurrency(Long memberId, Integer experience,Integer virtualCurrency) {
+        baseMapper.incMemberExperienceAndVirtualCurrency(memberId, experience,virtualCurrency);
     }
 
     @Override
@@ -380,6 +379,27 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         double scoreFormat = new BigDecimal(scoreAverage).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
         board.setScoreAverage(scoreFormat);
         return board;
+    }
+
+    @Override
+    public void addInviteFriends(Long inviteMemberId, Long friendMemberId, Integer experience, Integer virtualCurrency) {
+        InviteFriendsEntity invite = new InviteFriendsEntity();
+        invite.setInviteMemberId(inviteMemberId);
+        invite.setFriendMemberId(friendMemberId);
+        invite.setExperience(experience);
+        invite.setVirtualCurrency(virtualCurrency);
+        invite.setCreateTime(DateUtils.now());
+        inviteFriendsDao.insert(invite);
+    }
+
+    @Override
+    public PageUtils<InviteFriendsDto> getInviteFriends(Long inviteMemberId, PageWrapper page) {
+        List<InviteFriendsDto> inviteFriends = inviteFriendsDao.getInviteFriends(inviteMemberId, page);
+        if (CollectionUtils.isEmpty(inviteFriends)) {
+            return new PageUtils<>();
+        }
+        int total = inviteFriendsDao.count(inviteMemberId);
+        return new PageUtils<>(inviteFriends, total, page.getPageSize(), page.getCurrPage());
     }
 
     @Override

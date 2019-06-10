@@ -35,8 +35,8 @@ public interface MemberDao extends BaseMapper<Member> {
      */
     void incFlowerCount(@Param("memberId")Long memberId,@Param("inc")int inc);
 
-    //增加用户经验值
-    void incMemberExperience(@Param("memberId")Long memberId, @Param("experience")Integer experience);
+    //增加用户经验值和虚拟币
+    void incMemberExperienceAndVirtualCurrency(@Param("memberId")Long memberId, @Param("experience")Integer experience, @Param("virtualCurrency")Integer virtualCurrency);
 
     //获取用户技能雷达图书数据
     List<SkillRadarChartDto> getSkillRadarChart(@Param("memberId")Long memberId);
