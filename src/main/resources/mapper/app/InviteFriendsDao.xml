@@ -11,9 +11,9 @@
         m.id as friendMemberId,
         m.nick_name as friendMemberNickName,
         m.avatar as friendMemberAvatar,
-        m.sex as friendMemberSex,
+        m.sex as friendMemberSex
         from t_invite_friends f
-        join member m on m.id = f.friend_memeber_id
+        join member m on m.id = f.friend_member_id
         where f.invite_member_id=#{inviteMemberId}
         ORDER BY f.create_time DESC
         LIMIT #{page.offset},#{page.limit}
