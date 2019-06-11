@@ -90,7 +90,7 @@ public class RegisterController {
     @PostMapping("wxLogin")
     @ApiOperation("微信登录")
     @ApiImplicitParam(name = "code", value = "微信login方法返回的code", paramType = "query")
-    public R wxLogin(String code, String phoneNum, String phoneCode,Long inviteMemberId) {
+    public R wxLogin(String code, String phoneNum, String phoneCode, Long inviteMemberId) {
         if (StringUtils.isEmpty(phoneNum)) {
             throw new RRException("手机号不能空");
         }
@@ -134,9 +134,9 @@ public class RegisterController {
                 loginType = 0;
 
                 //邀请好友
-                if (inviteMemberId!=null){
+                if (inviteMemberId != null && inviteMemberId > 0) {
                     //给邀请人增加经验值和雷锋币
-                    memberService.incMemberExperienceAndVirtualCurrency(inviteMemberId,5,2);
+                    memberService.incMemberExperienceAndVirtualCurrency(inviteMemberId, 5, 2);
                     //
                 }
             }
@@ -243,7 +243,7 @@ public class RegisterController {
             throw new RRException("code is null");
         }
         String unionid = wechatService.getUnionid(code);
-        return R.ok().put("result",unionid);
+        return R.ok().put("result", unionid);
     }
 
 }
