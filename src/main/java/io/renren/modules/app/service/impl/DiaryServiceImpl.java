@@ -124,8 +124,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
             List<DiaryContentEntity> contents = diary.getContents();
             if (!CollectionUtils.isEmpty(contents)){
                 //对日记内容列表排序
-                //            contents.sort((o1, o2)->o1.getParagraphSort()-o2.getParagraphSort());
-                contents.sort(Comparator.comparingInt(DiaryContentEntity::getParagraphSort));
+                 contents.sort(Comparator.comparingInt(DiaryContentEntity::getParagraphSort));
                 //设置描述
                 for (DiaryContentEntity content:contents ){
                     if (content.getType()==ParagraphTypeEnum.text){

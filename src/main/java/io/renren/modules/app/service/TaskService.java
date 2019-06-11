@@ -111,13 +111,6 @@ public interface TaskService extends IService<TaskEntity> {
     void cancelTaskByPublisher(Long curMemberId, Long taskId);
 
     /**
-     * 重新发布任务
-     *
-     * @param taskId
-     */
-//    void republishTask(Long publisher, Long taskId);
-
-    /**
      * 任务评论数+inc
      */
     void incCommentCount(Long taskId,Integer inc);

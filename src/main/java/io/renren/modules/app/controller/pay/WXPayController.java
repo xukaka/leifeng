@@ -218,8 +218,6 @@ public class WXPayController {
         if (!WXPayConstants.SUCCESS.equals(torder.getTradeState())) {
             return R.error("任务订单状态异常：TradeState="+torder.getTradeState());
         }
- /*       TaskEntity task = taskService.selectById(taskId);
-        if (task.getStatus()!=TaskStatusEnum)*/
 
         String refundData = wxPayService.refundRequest(torder.getTransactionId(), taskId, String.valueOf(torder.getTotalFee()));
         logger.info("退款接口微信返回结果：{}", refundData);
@@ -266,10 +264,7 @@ public class WXPayController {
     @GetMapping("/logs")
     @ApiOperation("分页获取钱包交易日志列表")
     public R getLogs(Long memberId,Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<MemberWalletLogDto> logs = memberWalletLogService.getLogs(memberId,page);
         return R.ok().put("result", logs);
     }
@@ -284,32 +279,16 @@ public class WXPayController {
     @GetMapping("/withdrawal/list")
     @ApiOperation("分页获取企业提现订单列表")
     public R getWithdrawalOrders(Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<WithdrawalOrderDto> orders = withdrawalOrderService.getWithdrawalOrders(page);
         return R.ok().put("result", orders);
     }
-
-
-
-    @GetMapping("/withdrawal/check")
-    @ApiOperation("校验提现用户的交易数据是否正常")
-    public R checkWithdrawalOrder(Long id) {
-        withdrawalOrderService.checkWithdrawalOrder(id);
-        return R.ok();
-    }
-
 
     @GetMapping("/list")
     @ApiOperation("分页获取任务订单列表")
     @Transactional
     public R getTaskOrders(String tradeState, Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<TaskOrderDto> orders = taskOrderService.getTaskOrders(tradeState, page);
         return R.ok().put("result", orders);
     }

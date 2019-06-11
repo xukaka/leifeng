@@ -1,9 +1,7 @@
 package io.renren.modules.app.entity.task;
 
-import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import io.renren.modules.app.entity.BaseEntity;
-import org.springframework.data.annotation.Id;
 
 @TableName("t_task_order")
 public class TaskOrderEntity extends BaseEntity {

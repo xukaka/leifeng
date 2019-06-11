@@ -13,7 +13,6 @@ public class BannerUpdateForm extends BannerForm{
     private Long id;
 
 
-
     public Long getId() {
         return id;
     }

@@ -26,8 +26,4 @@ public class TaskOrderImpl extends ServiceImpl<TaskOrderDao, TaskOrderEntity> im
         return new PageUtils<>(orders, total, page.getPageSize(), page.getCurrPage());
     }
 
-    @Override
-    public long sumTotalFee(String tradeState) {
-       return baseMapper.sumTotalFee(tradeState);
-    }
 }

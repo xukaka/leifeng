@@ -2,6 +2,7 @@ package io.renren.modules.app.controller.story;
 
 import io.renren.common.utils.JsonUtil;
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.PageWrapperUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.DiaryDto;
@@ -23,10 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author huangshishui
- * @date 2019/4/18 22:56
- **/
 @Api(tags = "日记")
 @RestController
 @RequestMapping("/app/diary")
@@ -59,10 +56,7 @@ public class DiaryController {
     @GetMapping("/list")
     @ApiOperation("分页获取日记列表")
     public R getDiarys( Integer curPage,  Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<DiaryDto> diarys = diaryService.getDiarys(page);
         return R.ok().put("result", diarys);
 

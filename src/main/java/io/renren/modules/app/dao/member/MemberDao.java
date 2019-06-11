@@ -28,12 +28,7 @@ public interface MemberDao extends BaseMapper<Member> {
 
     List<String> getMemberTags(@Param("memberId") Long memberId);
 
-    /**
-     * 增加用户鲜花数
-     * @param memberId 用户id
-     * @param inc 增量
-     */
-    void incFlowerCount(@Param("memberId")Long memberId,@Param("inc")int inc);
+
 
     //增加用户经验值和虚拟币
     void incMemberExperienceAndVirtualCurrency(@Param("memberId")Long memberId, @Param("experience")Integer experience, @Param("virtualCurrency")Integer virtualCurrency);

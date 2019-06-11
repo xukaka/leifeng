@@ -22,7 +22,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
     @Autowired
-    private MemberService userService;
+    private MemberService memberService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -39,7 +39,7 @@ public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgu
         }
 
         //获取用户信息
-        Member user = userService.selectById((Long)object);
+        Member user = memberService.selectById((Long)object);
 
         return user;
     }

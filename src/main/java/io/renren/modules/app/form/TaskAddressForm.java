@@ -42,30 +42,14 @@ public class TaskAddressForm {
     @ApiModelProperty(value = "维度", example = "")
     @NotNull
     private Double latitude;
+
     @ApiModelProperty(value = "经度", example = "")
     @NotNull
     private Double longitude;
 
-    /*
-        @ApiModelProperty(value = "省", example = "广东省")
-        @NotBlank
-        private String province;
-
-        @ApiModelProperty(value = "市", example = "深圳市")
-        @NotBlank
-        private String city;
-
-        @ApiModelProperty(value = "区", example = "南山区")
-        @NotBlank
-        private String district;
-
-        @ApiModelProperty(value = "街道", example = "沙河街道")
-        @NotBlank
-        private String street;
-*/
-        @ApiModelProperty(value = "详细地址", example = "北京市朝阳区上白石43栋601")
-        @NotBlank
-        private String detail;
+    @ApiModelProperty(value = "详细地址", example = "北京市朝阳区上白石43栋601")
+    @NotBlank
+    private String detail;
 
 
     public String getDetail() {

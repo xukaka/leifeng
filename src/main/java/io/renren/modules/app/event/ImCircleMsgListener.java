@@ -34,9 +34,6 @@ public class ImCircleMsgListener {
         //设置红点
         imService.setRedDot(toMemberId,3);
 
-
-
-//        ImMessageUtils.sendSingleMessage(circleMsg);
     }
 }
 

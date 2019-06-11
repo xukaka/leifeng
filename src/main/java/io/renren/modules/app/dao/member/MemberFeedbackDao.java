@@ -2,7 +2,9 @@ package io.renren.modules.app.dao.member;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import io.renren.modules.app.entity.member.MemberFeedback;
+import io.renren.modules.app.form.PageWrapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,5 +16,5 @@ import java.util.List;
  */
 @Mapper
 public interface MemberFeedbackDao extends BaseMapper<MemberFeedback> {
-    List<MemberFeedback> getPage(HashMap<String,Object> param);
+
 }

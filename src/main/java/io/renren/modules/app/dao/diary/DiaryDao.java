@@ -9,10 +9,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @author huangshishui
- * @date 2019/4/18 23:37
- **/
 @Mapper
 public interface DiaryDao extends BaseMapper<DiaryEntity> {
 

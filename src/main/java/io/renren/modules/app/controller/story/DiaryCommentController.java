@@ -1,6 +1,7 @@
 package io.renren.modules.app.controller.story;
 
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.PageWrapperUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.CommentDto;
@@ -36,10 +37,7 @@ public class DiaryCommentController {
     @GetMapping("/list")
     @ApiOperation("分页获取评论列表")
     public R getComments(Long diaryId, Integer curPage,  Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<CommentDto> comments = commentService.getComments(diaryId,CommentTypeEnum.diary, page);
         return R.ok().put("result", comments);
     }

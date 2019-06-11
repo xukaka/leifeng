@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 public class MemberWalletImpl extends ServiceImpl<MemberWalletDao, MemberWalletEntity> implements MemberWalletService {
 
 
-
     @Override
     public void incMoney(Long memberId, Long inc) {
         baseMapper.incMoney(memberId,inc);

@@ -3,28 +3,5 @@
 
 <mapper namespace="io.renren.modules.app.dao.member.MemberFeedbackDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="io.renren.modules.app.entity.member.MemberFeedback" id="feedbackMap">
-        <result property="id" column="id"/>
-        <result property="memberId" column="member_id"/>
-        <result property="content" column="content"/>
-        <result property="createTime" column="create_time"/>
-    </resultMap>
-
-    <select id="getPage" resultMap="feedbackMap">
-        select * from member_feedback where 1=1
-        <if test="memberId!=null and '' != memberId">
-          and member_id =#{memberId}
-        </if>
-        order by create_time desc
-        limit ${offset},${limit}
-    </select>
-
-    <select id="getTotalCount" resultType="integer">
-        select count(*) from member_feedback where 1=1
-        <if test="memberId!=null and '' != memberId">
-           and member_id =#{memberId}
-        </if>
-    </select>
 
 </mapper>

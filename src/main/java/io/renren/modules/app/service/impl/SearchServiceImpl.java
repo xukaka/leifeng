@@ -118,7 +118,6 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
 
     /**
      * 添加搜索日志
-     * @param keyword
      */
     private void addSearchLog(String keyword) {
         SearchLogEntity log = new SearchLogEntity(DateUtils.now(),keyword);

@@ -26,7 +26,6 @@ public interface ImService {
     /**
      * 设置消息类型
      */
-//    void setMessageType(MessageTypeForm messageTypeForm);
     void setMessageType(Long fromId,Long toId);
 
 
@@ -57,8 +56,6 @@ public interface ImService {
 
     /**
      * 获取红点
-     * @param memberId
-     * @return
      */
     RedDotDto getRedDot(Long memberId);
 

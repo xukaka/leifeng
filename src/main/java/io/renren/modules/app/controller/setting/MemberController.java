@@ -3,10 +3,7 @@ package io.renren.modules.app.controller.setting;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import io.renren.common.utils.PageUtils;
-import io.renren.common.utils.R;
-import io.renren.common.utils.RabbitMqHelper;
-import io.renren.common.utils.RedisUtils;
+import io.renren.common.utils.*;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.*;
@@ -40,7 +37,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/app/member")
-@Api(tags = "用户信息接口")
+@Api(tags = "用户接口")
 public class MemberController {
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
@@ -57,10 +54,7 @@ public class MemberController {
     @PostMapping("/list")
     @ApiOperation("搜索用户列表-分页")
     public R searchMembers(@RequestBody MemberQueryForm form) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", form.getCurPage());
-        pageMap.put("size", form.getPageSize());
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(form.getCurPage(), form.getPageSize());
         PageUtils<MemberDto> members = memberService.searchMembers(form, page);
         return R.ok().put("result", members);
     }
@@ -96,13 +90,6 @@ public class MemberController {
     public R updateLocation(@RequestBody LocationForm locationForm) {
         memberService.updateLocationNumber(ReqUtils.curMemberId(), locationForm);
         return R.ok();
-    }
-
-    @Login
-    @GetMapping("/userId")
-    @ApiOperation("获取用户memberID")
-    public R userInfo(@RequestAttribute("userId") Integer userId) {
-        return R.ok().put("result", userId);
     }
 
 
@@ -143,10 +130,7 @@ public class MemberController {
     @GetMapping("/follow/list")
     @ApiOperation("分页获取关注的用户列表")
     public R getFollowMembers(Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<MemberDto> members = memberService.getFollowMembers(ReqUtils.curMemberId(), page);
         return R.ok().put("result", members);
     }
@@ -156,10 +140,7 @@ public class MemberController {
     @GetMapping("/fans/list")
     @ApiOperation("分页获取粉丝用户列表")
     public R getFansMembers(Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<MemberDto> members = memberService.getFansMembers(ReqUtils.curMemberId(), page);
         return R.ok().put("result", members);
     }
@@ -176,49 +157,18 @@ public class MemberController {
     @GetMapping("/score/list")
     @ApiOperation("分页获取用户评分列表")
     public R getMemberScores(Long memberId,Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<MemberScoreDto> scores= memberService.getMemberScores(memberId,page);
         return R.ok().put("result",scores);
-    }
-
-    @GetMapping("/avatar/phone")
-    @ApiOperation("根据手机号获取用户头像")
-    public R getAvatarByPhone(String phone) {
-        if (StringUtils.isEmpty(phone)) {
-            return R.error(HttpStatus.SC_BAD_REQUEST, "手机号不为空");
-        }
-        String avatar = "";
-        Member member = memberService.selectOne(new EntityWrapper<Member>().eq("mobile", phone));
-        if (!ObjectUtils.isEmpty(member))
-            avatar = member.getAvatar();
-
-        return R.ok().put("result", avatar);
     }
 
     @Login
     @PostMapping("/feedback/save")
     @ApiOperation("保存用户反馈")
-    public R savefeedback(String content) {
-
-        MemberFeedback feedback = new MemberFeedback();
-        feedback.setContent(content);
-        feedback.setMemberId(ReqUtils.curMemberId());
-        feedback.setCreateTime(System.currentTimeMillis());
-        memberFeedbackService.insert(feedback);
+    public R saveFeedback(String content) {
+        memberService.saveFeedback(ReqUtils.curMemberId(),content);
         return R.ok();
-    }
 
-    @PostMapping("/feedback/list")
-    @ApiOperation("用户反馈列表")
-    public R feedbackList(Map<String, Object> params) {
-        PageWrapper page = new PageWrapper(params);
-        List<MemberFeedback> list = memberFeedbackService.getPage(page);
-        return R.ok().put("result", list)
-                .put("page", page.getCurrPage())
-                .put("size", page.getPageSize());
     }
 
     @GetMapping("/skillRadarChart")
@@ -242,10 +192,7 @@ public class MemberController {
     @GetMapping("/getInviteFriends")
     @ApiOperation("分页获取邀请好友列表")
     public R getInviteFriends(Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<InviteFriendsDto> inviteFriends= memberService.getInviteFriends(ReqUtils.curMemberId(),page);
         return R.ok().put("result",inviteFriends);
     }

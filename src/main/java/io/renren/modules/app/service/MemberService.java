@@ -140,4 +140,7 @@ public interface MemberService extends IService<Member> {
 
     //邀请好友
     void addInviteFriends(Long inviteMemberId,Long friendMemberId,Integer experience,Integer virtualCurrency);
+
+    //保存用户反馈
+    void saveFeedback(Long curMemberId, String content);
 }

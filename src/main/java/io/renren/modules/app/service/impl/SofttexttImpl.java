@@ -42,7 +42,6 @@ public class SofttexttImpl extends ServiceImpl<SofttextDao, SofttextEntity> impl
 
     @Override
     public void createSofttext(SofttextForm form) {
-
         ValidatorUtils.validateEntity(form);
         logger.info("createSofttext method:from={}", form);
         SofttextEntity softtext = new SofttextEntity();

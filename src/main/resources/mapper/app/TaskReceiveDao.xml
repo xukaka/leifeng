@@ -2,13 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="io.renren.modules.app.dao.task.TaskReceiveDao">
-    <!--获取任务领取人-->
- <!--   <select id="getReceiver" resultType="io.renren.modules.app.dto.MemberDto">
-        SELECT
-          m.*
-        FROM t_task_receive re
-        JOIN member m ON re.receiver_id = m.id
-        WHERE re.id = #{receiveId}
-    </select>-->
+
 
 </mapper>

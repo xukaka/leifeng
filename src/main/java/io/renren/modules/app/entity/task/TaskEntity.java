@@ -23,14 +23,7 @@ public class TaskEntity extends BaseEntity {
      * 描述
      */
     private String description;
-    /**
-     * 任务开始时间
-     */
-//    private Long startTime;
-    /**
-     * 任务过期时间
-     */
-//    private Long expireTime;
+
     /**
      * 虚拟货币(雷锋币)
      */

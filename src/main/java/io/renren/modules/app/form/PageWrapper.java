@@ -1,43 +1,38 @@
 package io.renren.modules.app.form;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotBlank;
 import java.util.HashMap;
 import java.util.Map;
 
 @ApiModel
-public class PageWrapper extends HashMap {
+public class PageWrapper extends HashMap<String, Object> {
 
-    private int currPage=1;
+    private int currPage = 1;
 
-    private int pageSize=10;
+    private int pageSize = 10;
 
     private int offset;
 
     private int limit;
 
 
-
-    public PageWrapper(Map params){
+    public PageWrapper(Map<String, Object> params) {
         this.putAll(params);
 
         //分页参数
-        if(params.get("page") != null){
-            currPage = (int)params.get("page");
-//            currPage = Integer.parseInt((String)params.get("page"));
+        if (params.get("page") != null) {
+            currPage = (int) params.get("page");
         }
 
-        if(params.get("size") != null){
-            pageSize = (int)params.get("size");
-//            pageSize = Integer.parseInt((String)params.get("size"));
+        if (params.get("size") != null) {
+            pageSize = (int) params.get("size");
         }
 
-        this.put("offset",(currPage-1)*pageSize);
-        this.put("limit",pageSize);
+        this.put("offset", (currPage - 1) * pageSize);
+        this.put("limit", pageSize);
 
-        offset = (currPage-1)*pageSize;
+        offset = (currPage - 1) * pageSize;
         limit = pageSize;
     }
 
@@ -73,13 +68,4 @@ public class PageWrapper extends HashMap {
         this.limit = limit;
     }
 
-    @Override
-    public String toString() {
-        return "PageWrapper{" +
-                "currPage=" + currPage +
-                ", pageSize=" + pageSize +
-                ", offset=" + offset +
-                ", limit=" + limit +
-                '}';
-    }
 }

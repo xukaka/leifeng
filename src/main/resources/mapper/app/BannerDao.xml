@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.renren.modules.app.dao.banner.BannerDao">
-    <!-- resultMap-->
-<!--    <resultMap type="io.renren.modules.app.dto.BannerDto" id="bannerMap">
-        <id property="id" column="id"/>
-        <result property="title" column="title"/>
-        <result property="coverUrl" column="cover_url"/>
-        <result property="linkUrl" column="link_url"/>
-        <result property="type" column="type"/>
-        <result property="createTime" column="create_time"/>
-
-        &lt;!&ndash;关联创建人&ndash;&gt;
-        <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
-            <id property="id" column="creator_id"/>
-            <result property="nickName" column="creator_nick_name"/>
-            <result property="realName" column="creator_real_name"/>
-            <result property="avatar" column="creator_avatar"/>
-            <result property="sex" column="creator_sex"/>
-        </association>
-    </resultMap>-->
 
     <!--获取横幅详情-->
     <select id="getBanner" resultType="io.renren.modules.app.dto.BannerDto">

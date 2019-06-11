@@ -16,44 +16,27 @@ import java.util.List;
 public interface MemberFollowDao extends BaseMapper<MemberFollowEntity> {
 
     /**
-     * 分页获取关注用户的列表
-     *
-     * @param fromMemberId
-     * @param page
-     * @return
+     * 分页获取关注用户列表
      */
     List<MemberDto> getFollowMembers(@Param("fromMemberId") Long fromMemberId, @Param("page") PageWrapper page);
 
     /**
-     * 分页获取粉丝的列表
-     *
-     * @param fromMemberId
-     * @param page
-     * @return
+     * 分页获取粉丝列表
      */
     List<MemberDto> getFansMembers(@Param("toMemberId") Long fromMemberId, @Param("page") PageWrapper page);
 
     /**
      * 关注用户的总数
-     *
-     * @param fromMemberId
-     * @return
      */
     int followCount(@Param("fromMemberId") Long fromMemberId);
 
     /**
      * 粉丝总数
-     *
-     * @return
      */
     int fansCount(@Param("toMemberId") Long toMemberId);
 
     /**
      * 是否关注
-     *
-     * @param fromMemberId
-     * @param toMemberId
-     * @return
      */
     int isFollowed(@Param("fromMemberId") Long fromMemberId, @Param("toMemberId") Long toMemberId);
 

@@ -228,9 +228,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     public void publishTask(Long taskId) {
-      /*  if (!isPayedTask(taskId)){
-            throw new RRException("任务未支付");
-        }*/
         TaskEntity task = this.selectById(taskId);
         updateTaskStatus(taskId, TaskStatusEnum.published);
 
@@ -314,7 +311,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void chooseTaskReceiver(Long taskId, Long memberId,Long receiverId) {
-//        TaskEntity task = baseMapper.selectById(taskId);
         boolean isChooseable = isChooseableReceiver(taskId, receiverId);
         if (!isChooseable) {
             throw new RRException("任务已开始，不能选择人了", 100);
@@ -338,10 +334,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     @Transactional
     public void executeTask(Long taskId, Long receiverId) {
-
-        /*if (task.getStatus() == TaskStatusEnum.cancelled) {
-            throw new RRException("刷新任务状态...", 100);
-        }*/
         boolean isExecutable = isExecutableTask(taskId, receiverId);
         if (!isExecutable) {
             throw new RRException("刷新任务状态...", 100);
@@ -392,15 +384,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         TaskDto task = baseMapper.getTask(taskId);
         if (publisherId == null || !publisherId.equals(task.getCreator().getId())
                 || (task.getStatus() != TaskStatusEnum.published && task.getStatus() != TaskStatusEnum.received)) {
-            /*TaskReceiveEntity receive = new TaskReceiveEntity();
-            receive.setStatus(TaskStatusEnum.cancelled);
-            receive.setUpdateTime(DateUtils.now());
-            Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
-            wrapper.eq("task_id", taskId)
-                    .eq("receiver_id", task.getReceiver().getId());
-            Integer result = taskReceiveDao.update(receive, wrapper);
-            if (result != null && result > 0) {
-            }*/
             throw new RRException("任务执行中，不能取消", 100);
         }
         updateTaskStatus(taskId, TaskStatusEnum.cancelled);
@@ -414,11 +397,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             if (!CollectionUtils.isEmpty(taskReceives)) {
                 for (TaskReceiveEntity taskReceive : taskReceives) {
                     rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(publisherId,taskReceive.getReceiverId(),taskId, "取消"));
-//                    ImMessageUtils.sendTaskStatusMessage(taskId.toString(), "任务[" + task.getTitle() + "]已取消", "26", taskReceive.getReceiverId().toString(), "SystemTaskStatus");
                 }
             }
-
-
         });
 
     }
@@ -428,7 +408,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
         if (torder == null) {
             throw new RRException("任务订单未生成");
-
         }
 
         if (!WXPayConstants.SUCCESS.equals(torder.getTradeState())) {
@@ -444,31 +423,18 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
                 if (WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
                     torder.setTradeState(WXPayConstants.REFUND);
                     taskOrderService.updateById(torder);
-
-               /* return R.ok().put("refundId", map.get("refund_id"))
-                        .put("refundFee", map.get("refund_fee"));*/
                 } else {
                     logger.info(map.get("err_code") + ":" + map.get("err_code_des"));
-//                return R.error(map.get("err_code") + ":" + map.get("err_code_des"));
                 }
             } else {
                 logger.info(map.get("return_msg"));
-//            return R.error(map.get("return_msg"));
             }
         } catch (Exception e) {
             throw new RRException(e.toString());
         }
 
-
     }
 
-/*    @Override
-    public void republishTask(Long publisher, Long taskId) {
-        TaskEntity task = baseMapper.selectById(taskId);
-        if (task != null && publisher != null && publisher.equals(task.getCreatorId())) {
-            updateTaskStatus(taskId, TaskStatusEnum.published);
-        }
-    }*/
 
     //任务取消，设置领取人状态为发布
     private void updateReceiverTaskStatus(Long taskId) {
@@ -540,7 +506,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             //领取人钱包金额增加
             memberWalletService.incMoney(receiverId, order.getTotalFee());
 
-//            order.setTradeState(WXPayConstants.CLOSED);//设置为关闭,这一步很重要
             taskOrderService.updateById(order);
         } else {
             logger.info("任务订单状态异常，请联系客服");

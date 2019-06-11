@@ -34,7 +34,7 @@ public class BannertImpl extends ServiceImpl<BannerDao, BannerEntity> implements
     }
 
     @Override
-    public void createBanner( BannerForm form) {
+    public void createBanner(BannerForm form) {
         ValidatorUtils.validateEntity(form);
         BannerEntity banner = new BannerEntity();
         BeanUtils.copyProperties(form, banner);
@@ -45,7 +45,7 @@ public class BannertImpl extends ServiceImpl<BannerDao, BannerEntity> implements
 
     @Override
     public BannerDto getBanner(Long id) {
-       return baseMapper.getBanner(id);
+        return baseMapper.getBanner(id);
     }
 
     @Override

@@ -38,31 +38,4 @@ public class WithdrawalOrderImpl extends ServiceImpl<WithdrawalOrderDao, Withdra
         return new PageUtils<>(orders, total, page.getPageSize(), page.getCurrPage());
     }
 
-
-
-    @Override
-    public void checkWithdrawalOrder(Long id) {
-        WithdrawalOrderEntity order = this.selectById(id);
-        if (order == null) {
-            throw new RRException("提现订单不存在");
-        }
-        if (!"AUDIT".equals(order.getTradeState())) {
-            throw new RRException("提现订单状态异常:TradeState=" + order.getTradeState());
-        }
-//        memberWalletLogService.checkTotalMoney()
-
-        /**
-         * 校验钱包入账流水是否正常
-         *
-         * 1,查询用户入账的 taskOrder
-         * 2，查询入账流水log
-         */
-
-      /*  taskOrderService.select
-
-        Long memberId = order.getMemberId();
-        MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>().eq("member_id",memberId));
-*/
-
-    }
 }

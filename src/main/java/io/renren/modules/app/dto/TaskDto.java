@@ -32,14 +32,7 @@ public class TaskDto implements Serializable {
      * 标签名称
      */
     private List<String> tagNames;
-    /**
-     * 任务开始时间
-     */
-//    private Long startTime;
-    /**
-     * 任务过期时间
-     */
-//    private Long expireTime;
+
     /**
      * 当前当前系统时间
      */

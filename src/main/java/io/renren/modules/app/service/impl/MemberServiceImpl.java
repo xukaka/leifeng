@@ -1,7 +1,6 @@
 package io.renren.modules.app.service.impl;
 
 
-import cn.hutool.db.Page;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -12,11 +11,13 @@ import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.dao.member.*;
 import io.renren.modules.app.dto.*;
-import io.renren.modules.app.entity.im.ImFollowNoticeStatus;
 import io.renren.modules.app.entity.member.*;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.form.*;
-import io.renren.modules.app.service.*;
+import io.renren.modules.app.service.ImService;
+import io.renren.modules.app.service.MemberAuthsService;
+import io.renren.modules.app.service.MemberService;
+import io.renren.modules.app.service.MemberWalletService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,6 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
-
-//import com.github.qcloudsms.SmsSingleSender;
-//import com.github.qcloudsms.SmsSingleSenderResult;
 
 
 @Service
@@ -52,6 +50,9 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     private InviteFriendsDao inviteFriendsDao;
     @Resource
     private MemberWalletService memberWalletService;
+
+    @Resource
+    private MemberFeedbackDao memberFeedbackDao;
     @Resource
     private RedisUtils redisUtils;
 
@@ -66,8 +67,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     @Value("${sms.signName}")
     private String signName;
-
-//    private ConcurrentHashMap<String, String> phoneCodeMap = new ConcurrentHashMap<>();
 
     @Override
     public PageUtils<MemberDto> searchMembers(MemberQueryForm form, PageWrapper page) {
@@ -264,13 +263,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     @Transactional
     public void score(Long judgerId, MemberScoreForm form) {
         ValidatorUtils.validateEntity(form);
-        sendFlowers(judgerId, form);
         MemberScoreEntity score = new MemberScoreEntity();
         BeanUtils.copyProperties(form, score);
         score.setJudgerId(judgerId);
         score.setCreateTime(DateUtils.now());
         memberScoreDao.insert(score);
-
         //TODO 发送消息给被评分人
     }
 
@@ -284,21 +281,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         return new PageUtils<>(scores, total, page.getPageSize(), page.getCurrPage());
     }
 
-
-    private void sendFlowers(Long judgerId, MemberScoreForm form) {
-        Integer giveFlowerCount = form.getFlowerCount();
-        if (giveFlowerCount == null) {
-            return;
-        }
-        Member judger = selectById(judgerId);
-        Integer judgerFlowerCount = judger.getFlowerCount();
-        if (judgerFlowerCount < giveFlowerCount) {
-            throw new RRException("鲜花数不足", 100);
-        }
-        baseMapper.incFlowerCount(judgerId, -giveFlowerCount);
-        baseMapper.incFlowerCount(form.getMemberId(), giveFlowerCount);
-    }
-
     @Override
     public void sendPhoneCode(String phoneNum) throws Exception {
         //随机生成4位验证码
@@ -309,12 +291,10 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
                 templateId, params, signName, "", "");
         logger.info("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));
         redisUtils.set(RedisKeys.PHONE_CODE_KEY + phoneNum, code, 100);//100s过期
-//        phoneCodeMap.put(phoneNum, code);
     }
 
     @Override
     public boolean validatePhoneCode(String phoneNum, String code) {
-//        logger.info("phoneCodeMap的内容为：" + JsonUtil.Java2Json(phoneCodeMap));
         String originCode = redisUtils.get(RedisKeys.PHONE_CODE_KEY + phoneNum);
         return StringUtils.equals(code, originCode);
 
@@ -336,7 +316,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             memberCheckInDao.insert(checkIn);
             ThreadPoolUtils.execute(() -> {
                 //增加用户的经验值
-                incMemberExperienceAndVirtualCurrency(memberId, experience,0);
+                incMemberExperienceAndVirtualCurrency(memberId, experience, 0);
             });
 
             result.put("checkInStatus", 0);
@@ -353,8 +333,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     //增加用户经验值和虚拟币
     @Override
-    public void incMemberExperienceAndVirtualCurrency(Long memberId, Integer experience,Integer virtualCurrency) {
-        baseMapper.incMemberExperienceAndVirtualCurrency(memberId, experience,virtualCurrency);
+    public void incMemberExperienceAndVirtualCurrency(Long memberId, Integer experience, Integer virtualCurrency) {
+        baseMapper.incMemberExperienceAndVirtualCurrency(memberId, experience, virtualCurrency);
     }
 
     @Override
@@ -365,7 +345,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     @Override
     public ScoreBoardDto getScoreBoard(Long memberId) {
         ScoreBoardDto board = memberScoreDao.getScoreBoard(memberId);
-        if (board.getScoreTotalNum() == 0){
+        if (board.getScoreTotalNum() == 0) {
             return board;
         }
         //计算综合评分
@@ -373,7 +353,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
                 + board.getFourStarNum() * 4.0
                 + board.getThreeStarNum() * 3.0
                 + board.getTwoStarNum() * 2.0
-                + board.getOneStarNum() * 1.0)  / board.getScoreTotalNum();
+                + board.getOneStarNum() * 1.0) / board.getScoreTotalNum();
 
         //保留小数点后一位
         double scoreFormat = new BigDecimal(scoreAverage).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -404,7 +384,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     @Override
     public List<SkillRadarChartDto> getSkillRadarChart(Long memberId) {
-
         List<SkillRadarChartDto> chart = baseMapper.getSkillRadarChart(memberId);
         if (CollectionUtils.isEmpty(chart)) {
             return new ArrayList<>();
@@ -413,6 +392,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
 
+    @Override
+    public void saveFeedback(Long memberId, String content) {
+        MemberFeedback feedback = new MemberFeedback();
+        feedback.setContent(content);
+        feedback.setMemberId(memberId);
+        feedback.setCreateTime(DateUtils.now());
+        memberFeedbackDao.insert(feedback);
+    }
 
 
 }

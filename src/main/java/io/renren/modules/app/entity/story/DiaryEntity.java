@@ -3,10 +3,6 @@ package io.renren.modules.app.entity.story;
 import com.baomidou.mybatisplus.annotations.TableName;
 import io.renren.modules.app.entity.BaseEntity;
 
-/**
- * @author huangshishui
- * @date 2019/4/18 22:49
- **/
 @TableName("t_diary")
 public class DiaryEntity extends BaseEntity {
 

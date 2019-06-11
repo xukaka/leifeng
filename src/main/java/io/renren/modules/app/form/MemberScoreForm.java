@@ -38,10 +38,6 @@ public class MemberScoreForm {
     @ApiModelProperty(value = "分数", example = "4")
     @NotNull
     private Integer score;
-/*
-    @ApiModelProperty(value = "奖状id", example = "")
-    private Long certificateId;*/
-
 
     @ApiModelProperty(value = "鲜花数", example = "")
     private Integer flowerCount;

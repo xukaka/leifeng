@@ -1,6 +1,7 @@
 package io.renren.modules.app.controller.task;
 
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.PageWrapperUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.MemberDto;
@@ -41,10 +42,7 @@ public class TaskCircleController {
     @GetMapping("/list")
     @ApiOperation("分页获取任务圈列表")
     public R getCircles(String keyword, Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<TaskCircleDto> circles = taskCircleService.getCircles(ReqUtils.curMemberId(), keyword, page);
         return R.ok().put("result", circles);
     }
@@ -53,10 +51,7 @@ public class TaskCircleController {
     @GetMapping("/list/myJoined")
     @ApiOperation("分页获取我加入的任务圈列表")
     public R getMyJoinedCircles(Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<TaskCircleDto> circles = taskCircleService.getMyJoinedCircles(ReqUtils.curMemberId(), page);
         return R.ok().put("result", circles);
     }
@@ -113,10 +108,7 @@ public class TaskCircleController {
     @GetMapping("/members")
     @ApiOperation("分页获取圈成员列表")
     public R searchCircleMembers(Long circleId, String keyword, Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<MemberDto> members = taskCircleService.getCircleMembers(circleId, keyword, page);
         return R.ok().put("result", members);
     }

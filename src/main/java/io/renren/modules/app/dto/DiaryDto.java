@@ -14,7 +14,6 @@ public class DiaryDto implements Serializable {
     //创建人
     private Member creator;
 
-
     //头像
     private String avatar;
     //标题

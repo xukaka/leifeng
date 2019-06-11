@@ -1,11 +1,8 @@
 package io.renren.modules.app.dto;
 
-import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.member.Member;
-import io.renren.modules.app.entity.task.TaskAddressEntity;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 提现订单

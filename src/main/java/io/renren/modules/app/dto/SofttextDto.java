@@ -7,10 +7,8 @@ public class SofttextDto implements Serializable {
     //id
     private Long id;
 
-
     //标题
     private String title;
-
 
     //链接url
     private String linkUrl;

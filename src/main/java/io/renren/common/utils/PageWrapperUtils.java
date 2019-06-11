@@ -14,29 +14,20 @@
  * the License.
  */
 
-package io.renren.modules.app.form;
+package io.renren.common.utils;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.renren.modules.app.form.PageWrapper;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-import java.util.List;
-
-@ApiModel(value = "任务圈更新表单")
-public class TaskCircleUpdateForm extends TaskCircleForm{
-
-    @ApiModelProperty(value = "圈id", example = "")
-    @NotNull
-    private Long id;
+import java.util.HashMap;
+import java.util.Map;
 
 
-    public Long getId() {
-        return id;
-    }
+public class PageWrapperUtils {
 
-    public void setId(Long id) {
-        this.id = id;
+    public static PageWrapper getPage(Integer curPage,Integer pageSize) {
+        Map<String, Object> pageMap = new HashMap<>();
+        pageMap.put("page", curPage);
+        pageMap.put("size", pageSize);
+        return new PageWrapper(pageMap);
     }
 }

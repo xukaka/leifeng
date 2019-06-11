@@ -26,20 +26,12 @@ public interface TaskCircleDao extends BaseMapper<TaskCircleEntity> {
 
     /**
      * 分页获取任务圈列表
-     *
-     * @param circleName
-     * @param page
-     * @return
      */
     List<TaskCircleDto> getCircles(@Param("keyword") String circleName, @Param("page") PageWrapper page);
 
 
     /**
      * 分页获取我加入的任务圈列表
-     *
-     * @param memberId
-     * @param page
-     * @return
      */
     List<TaskCircleDto> getMyJoinedCircles(Long memberId, PageWrapper page);
 

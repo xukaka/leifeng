@@ -43,9 +43,7 @@
         limit 0,4
     </select>
 
-    <update id="incFlowerCount">
-        update member m set m.flower_count = m.flower_count + #{inc} where m.id = #{memberId}
-    </update>
+
 
 
     <update id="incMemberExperienceAndVirtualCurrency">

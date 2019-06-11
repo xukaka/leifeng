@@ -16,7 +16,5 @@ public interface WithdrawalOrderService extends IService<WithdrawalOrderEntity> 
     PageUtils<WithdrawalOrderDto> getWithdrawalOrders(PageWrapper page);
 
 
-    //校验用户交易数据是否正常
-    void checkWithdrawalOrder(Long id);
 }
 

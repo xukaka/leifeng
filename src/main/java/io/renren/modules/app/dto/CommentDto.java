@@ -29,7 +29,6 @@ public class CommentDto implements Serializable {
      */
     private Member commentator;
 
-
     /**
      * 内容
      */

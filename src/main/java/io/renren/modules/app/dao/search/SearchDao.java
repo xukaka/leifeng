@@ -22,7 +22,6 @@ public interface SearchDao extends BaseMapper<SearchHistoryEntity> {
     void insertLog(SearchLogEntity log);
     /**
      * 统计热门搜索
-     * @return
      */
     List<HotSearchDto> getHotSearch();
 }

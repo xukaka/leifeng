@@ -10,19 +10,18 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * IM任务状态
+ * IM任务通知
  */
 @Mapper
 public interface ImTaskDao extends BaseMapper<ImTaskNotice> {
 
     /**
-     * 分页获取任务状态通知列表
+     * 分页获取任务通知列表
      */
     List<ImTaskNoticeDto> getTaskNotices(@Param("memberId") Long memberId, @Param("page") PageWrapper page);
 
     /**
-     * 任务状态通知总数
-     * @return
+     * 任务通知总数
      */
     int getTaskNoticeCount(@Param("memberId")Long memberId);
 }

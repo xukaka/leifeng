@@ -6,10 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel
 public class LocationForm {
 
-/*    @ApiModelProperty(value = "用户的id")
-    @NotBlank
-    private Long memid;*/
-
     @ApiModelProperty(value = "维度")
     private Double lat;
 
@@ -18,14 +14,6 @@ public class LocationForm {
 
     @ApiModelProperty(value = "地址")
     private String address;
-
-   /* public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }*/
 
 
     public String getAddress() {

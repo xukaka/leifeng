@@ -1,6 +1,7 @@
 package io.renren.modules.app.controller.banner;
 
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.PageWrapperUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.dto.BannerDto;
 import io.renren.modules.app.dto.SofttextDto;
@@ -28,10 +29,7 @@ public class SofttextController {
     @GetMapping("/list")
     @ApiOperation("分页获取软文列表")
     public R getSofttexts(Integer curPage,  Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<SofttextDto> softtexts = softtextService.getSofttexts(page);
         return R.ok().put("result", softtexts);
     }

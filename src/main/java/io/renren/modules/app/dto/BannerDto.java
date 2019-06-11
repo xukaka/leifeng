@@ -12,8 +12,6 @@ public class BannerDto implements Serializable {
     //横幅id
     private Long id;
 
-
-
     //标题
     private String title;
 

@@ -12,7 +12,7 @@ import io.renren.modules.app.form.*;
 public interface SofttextService {
 
     /**
-     * 获取软文列表
+     * 分页获取软文列表
      */
     PageUtils<SofttextDto> getSofttexts(PageWrapper page);
 

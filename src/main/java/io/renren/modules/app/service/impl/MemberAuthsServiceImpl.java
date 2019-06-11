@@ -8,7 +8,7 @@ import io.renren.modules.app.service.MemberAuthsService;
 import org.springframework.stereotype.Service;
 
 
-@Service("MemberAuthsService")
+@Service
 public class MemberAuthsServiceImpl extends ServiceImpl<MemberAuthsDao, MemberAuths> implements MemberAuthsService {
 
     @Override

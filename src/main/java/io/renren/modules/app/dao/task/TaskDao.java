@@ -22,7 +22,6 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
 
     /**
      * 任务横幅列表-top15
-     * @return
      */
     List<TaskBannerDto> getTaskBanners();
 
@@ -31,10 +30,6 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
 
     /**
      * 分页搜索任务-根据查询条件
-     *
-     * @param queryMap
-     * @param page
-     * @return
      */
     List<TaskDto> searchTasks(@Param("queryMap") Map<String, Object> queryMap, @Param("page") PageWrapper page);
 
@@ -50,45 +45,27 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
     //插入任务-标签关系
     void insertTaskTagRelation(@Param("taskId") Long taskId, @Param("tagIds") List<Long> tagIds);
 
-    //插入任务-被提示的用户关系
-//    void insertTaskNotifiedUserRelation(@Param("taskId") Long taskId, @Param("userIds") List<Long> userIds);
-
     /**
      * 任务发布总数
-     *
-     * @param publisherId
-     * @return
      */
     int publishCount(@Param("publisherId") Long publisherId);
 
     /**
      * 任务领取总数
-     *
-     * @param receiverId
-     * @return
      */
     int receiveCount(@Param("receiverId") Long receiverId);
 
     /**
      * 任务总数-根据查询条件
-     *
-     * @param queryMap
-     * @return
      */
     int count(@Param("queryMap") Map<String, Object> queryMap);
 
-
     /**
      * 是否可领取任务
-     * @param taskId
-     * @return
      */
     int isReceiveableTask(@Param("receiverId")Long receiverId ,@Param("taskId")Long taskId );
     /**
      * 是否可提交任务
-     * @param receiverId
-     * @param taskId
-     * @return
      */
     int isSubmitableTask(@Param("receiverId")Long receiverId,@Param("taskId")Long taskId );
 
@@ -100,48 +77,35 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
 
     /**
      * 分页获取任务领取人列表
-     * @return
      */
     List<MemberDto> getTaskReceivers(@Param("taskId") Long taskId, @Param("page") PageWrapper page);
 
     /**
      * 任务领取人总数
-     * @return
      */
     int receiverCount(@Param("taskId") Long taskId);
 
     /**
      * 是否可选择任务领取人
-     * @param taskId
-     * @return
      */
     int isChooseableReceiver(@Param("taskId")Long taskId ,@Param("receiverId")Long receiverId);
 
     /**
      * 任务是否可执行
-     * @param taskId
-     * @param receiverId
-     * @return
      */
     int isExecutableTask(@Param("taskId")Long taskId ,@Param("receiverId")Long receiverId);
 
 
     /**
      * 任务评论数 +inc
-     * @param taskId
-     * @param inc
      */
     void incCommentCount(@Param("taskId")Long taskId,@Param("inc")Integer inc);
     /**
      * 任务点赞数 +inc
-     * @param taskId
-     * @param inc
      */
     void incLikeCount(@Param("taskId")Long taskId,@Param("inc")Integer inc);
     /**
      * 任务浏览数 +inc
-     * @param taskId
-     * @param inc
      */
     void incViewCount(@Param("taskId")Long taskId,@Param("inc")Integer inc);
 

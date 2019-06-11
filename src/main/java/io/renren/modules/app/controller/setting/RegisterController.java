@@ -1,7 +1,6 @@
 package io.renren.modules.app.controller.setting;
 
 
-import com.alibaba.fastjson.JSON;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
@@ -10,7 +9,6 @@ import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberAuths;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.form.LoginForm;
-import io.renren.modules.app.form.RegisterForm;
 import io.renren.modules.app.form.WxUserInfoForm;
 import io.renren.modules.app.service.MemberAuthsService;
 import io.renren.modules.app.service.MemberService;
@@ -24,7 +22,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -64,25 +61,6 @@ public class RegisterController {
     @Autowired
     private WechatService wechatService;
 
-    /* @PostMapping("register")
-    @ApiOperation("注册")
-   public R wxRegister(@RequestBody RegisterForm form) {
-        logger.info("[AppRegisterController.wxRegister] request param:{}", JSON.toJSONString(form));
-        //表单校验
-        ValidatorUtils.validateEntity(form);
-        Member member = new Member();
-        BeanUtils.copyProperties(form, member);
-        member.setCreateTime(System.currentTimeMillis());
-
-        MemberAuths auths = new MemberAuths();
-        auths.setCredential(DigestUtils.sha256Hex(form.getCredential()));
-        auths.setIdentityType(form.getIdentityType());
-        auths.setIdentifier(form.getIdentifier());
-
-        memberService.registerMemberWithAuth(member, auths);
-
-        return R.ok();
-    }*/
 
     /**
      * 微信登录

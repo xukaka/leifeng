@@ -1,18 +1,11 @@
 package io.renren.modules.app.service;
 
-import com.baomidou.mybatisplus.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.dto.BannerDto;
-import io.renren.modules.app.dto.DiaryDto;
-import io.renren.modules.app.dto.TaskCircleDto;
 import io.renren.modules.app.entity.BannerTypeEnum;
-import io.renren.modules.app.entity.task.TaskCircleEntity;
 import io.renren.modules.app.form.BannerForm;
 import io.renren.modules.app.form.BannerUpdateForm;
 import io.renren.modules.app.form.PageWrapper;
-import io.renren.modules.app.form.TaskCircleForm;
-
-import java.util.List;
 
 /**
  * banner

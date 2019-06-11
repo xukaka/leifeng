@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * 热门搜索返回实例
+ * 热门搜索
  */
 public class HotSearchDto implements Serializable {
 

@@ -1,6 +1,7 @@
 package io.renren.modules.app.controller.banner;
 
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.PageWrapperUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.BannerDto;
@@ -33,10 +34,7 @@ public class BannerController {
     @GetMapping("/list")
     @ApiOperation("分页获取横幅列表")
     public R getBanners( BannerTypeEnum type,  Integer curPage,  Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<BannerDto> banners = bannerService.getBanners(type, page);
         return R.ok().put("result", banners);
     }

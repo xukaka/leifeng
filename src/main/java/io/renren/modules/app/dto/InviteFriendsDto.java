@@ -1,12 +1,8 @@
 package io.renren.modules.app.dto;
 
-import io.renren.modules.app.entity.member.Member;
-import io.renren.modules.app.entity.story.DiaryContentEntity;
-
 import java.io.Serializable;
-import java.util.List;
 
-
+//邀请好友
 public class InviteFriendsDto implements Serializable {
     //id
     private Long id;

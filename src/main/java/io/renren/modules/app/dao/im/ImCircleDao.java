@@ -24,7 +24,6 @@ public interface ImCircleDao extends BaseMapper<ImCircleNotice> {
 
     /**
      * 任务状态通知总数
-     * @return
      */
     int getCircleNoticeCount(@Param("toMemberId") Long toMemberId);
 }

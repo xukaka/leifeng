@@ -1,6 +1,7 @@
 package io.renren.modules.app.controller.task;
 
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.PageWrapperUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.MemberDto;
@@ -85,10 +86,7 @@ public class TaskController {
     @GetMapping("/receiver/list")
     @ApiOperation("分页获取任务领取人列表")
     public R getTaskReceivers(Long taskId, Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<MemberDto> tasks = taskService.getTaskReceivers(taskId, page);
         return R.ok().put("result", tasks);
     }
@@ -133,14 +131,6 @@ public class TaskController {
         return R.ok();
     }
 
-/*    @Login
-    @GetMapping("/republish")
-    @ApiOperation("重新发布任务")
-    public R republishTask(Long taskId) {
-        taskService.republishTask(ReqUtils.curMemberId(), taskId);
-        return R.ok();
-    }*/
-
 
     @Login
     @GetMapping("/submit")
@@ -173,22 +163,16 @@ public class TaskController {
     @GetMapping("/publish/list")
     @ApiOperation("分页获取发布任务列表")
     public R getPublishedTasks(Long publisherId, Integer curPage, Integer pageSize) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", curPage);
-        pageMap.put("size", pageSize);
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<TaskDto> tasks = taskService.getPublishedTasks(publisherId, page);
         return R.ok().put("result", tasks);
     }
 
-    //    @Login
+
     @PostMapping("/search/list")
     @ApiOperation("搜索任务列表-分页")
     public R searchTasks(@RequestBody TaskQueryForm form) {
-        Map<String, Object> pageMap = new HashMap<>();
-        pageMap.put("page", form.getCurPage());
-        pageMap.put("size", form.getPageSize());
-        PageWrapper page = new PageWrapper(pageMap);
+        PageWrapper page = PageWrapperUtils.getPage(form.getCurPage(), form.getPageSize());
         PageUtils<TaskDto> tasks = taskService.searchTasks(form, page);
         return R.ok().put("result", tasks);
     }

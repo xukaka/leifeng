@@ -20,12 +20,8 @@ import java.util.List;
 public interface TaskOrderService extends IService<TaskOrderEntity> {
 
 
-
-
     //分页获取任务订单列表
     PageUtils<TaskOrderDto> getTaskOrders(String tradeState,PageWrapper page);
 
-    //任务订单总金额
-    long sumTotalFee(String tradeState);
 }
 

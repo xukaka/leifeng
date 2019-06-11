@@ -17,8 +17,5 @@ import java.util.Map;
  */
 public interface MemberFeedbackService extends IService<MemberFeedback> {
 
-    PageUtils queryPage(Map<String, Object> params);
-
-    List<MemberFeedback> getPage(HashMap<String,Object> param);
 }
 

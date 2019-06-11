@@ -4,18 +4,6 @@
 <mapper namespace="io.renren.modules.app.dao.pay.MemberWalletLogDao">
 
 
-   <!-- <select id="checkTaskOrderLog" resultType="int">
-        SELECT
-       t.*
-
-        FROM t_member_wallet_log log
-
-        JOIN t_task_order o ON log.out_trade_no = o.out_trade_no and o.trade_state='CLOSED'
-
-        WHERE log.member_id = #{memberId}
-    </select>
--->
-
    <select id="getLogs" resultType="io.renren.modules.app.entity.pay.MemberWalletLogEntity">
       select log.*
       from

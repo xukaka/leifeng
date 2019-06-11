@@ -16,8 +16,4 @@ import java.util.List;
 @Mapper
 public interface TaskCircleAuditDao extends BaseMapper<TaskCircleAuditEntity> {
 
-
-
-
-
 }

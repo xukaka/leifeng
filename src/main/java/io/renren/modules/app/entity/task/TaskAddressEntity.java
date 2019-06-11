@@ -27,22 +27,6 @@ public class TaskAddressEntity extends BaseEntity {
     private String mobile;
 
     /**
-     * 省
-     */
-//    private String province;
-    /**
-     * 市
-     */
-//    private String city;
-    /**
-     * 区
-     */
-//    private String district;
-    /**
-     * 街道
-     */
-//    private String street;
-    /**
      * 详细地址
      */
     private String detail;
