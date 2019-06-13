@@ -31,6 +31,8 @@ public class WXPayConfig {
 
     private String orderQuery;
 
+    private String refundQuery;
+
     private String transferUrl;
 
     private String cert;
@@ -185,6 +187,14 @@ public class WXPayConfig {
 
     public void setRefund(String refund) {
         this.refund = refund;
+    }
+
+    public String getRefundQuery() {
+        return refundQuery;
+    }
+
+    public void setRefundQuery(String refundQuery) {
+        this.refundQuery = refundQuery;
     }
 
     public InputStream getCertStream(){

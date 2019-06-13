@@ -208,7 +208,6 @@ public class WXPayService {
     //根据预下订单接口的返回数据重新签名返回参数给移动端发起支付
     public Map<String, String> reGenerateParamForApp(String wxResponseData) throws Exception {
         Map<String, String> map = WXPayUtil.xmlToMap(wxResponseData);
-        System.out.println("xml转成map后为=" + JsonUtil.Java2Json(map));
         Map<String, String> backData = new HashMap<>();
         if ("SUCCESS".equals(map.get("return_code"))) {
             if ("SUCCESS".equals(map.get("result_code"))) {
@@ -223,7 +222,6 @@ public class WXPayService {
         } else {
             throw new Exception(map.get("return_msg"));
         }
-        System.out.println("微信再签名后的包装参数为=" + JsonUtil.Java2Json(backData));
         return backData;
     }
 
@@ -270,6 +268,49 @@ public class WXPayService {
                 .build();
 
         HttpPost httpPost = new HttpPost(this.config.getOrderQuery());
+
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(8 * 1000).setConnectTimeout(6 * 1000).build();
+        httpPost.setConfig(requestConfig);
+
+        StringEntity postEntity = new StringEntity(data, "UTF-8");
+        httpPost.addHeader("Content-Type", "text/xml");
+        httpPost.addHeader("User-Agent", WXPayConstants.USER_AGENT);
+        httpPost.setEntity(postEntity);
+
+        HttpResponse httpResponse = httpClient.execute(httpPost);
+        HttpEntity httpEntity = httpResponse.getEntity();
+        return EntityUtils.toString(httpEntity, "UTF-8");
+    }
+
+
+    public String refundQueryRequest(String outTradeNo) throws Exception {
+        //检验参数必填
+        checkWXPayConfig();
+
+        Map<String, String> reqdata = new HashMap<>();
+        reqdata.put("appid", config.getAppId());
+        reqdata.put("mch_id", config.getMchId());
+        reqdata.put("out_trade_no", outTradeNo);
+        reqdata.put("nonce_str", WXPayUtil.generateNonceStr());
+        String sign = WXPayUtil.generateSignature(reqdata, config.getKey());
+        reqdata.put("sign", sign);
+        String data = WXPayUtil.mapToXml(reqdata);
+
+        BasicHttpClientConnectionManager connManager;
+        connManager = new BasicHttpClientConnectionManager(
+                RegistryBuilder.<ConnectionSocketFactory>create()
+                        .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                        .register("https", SSLConnectionSocketFactory.getSocketFactory())
+                        .build(),
+                null,
+                null,
+                null
+        );
+        HttpClient httpClient = HttpClientBuilder.create()
+                .setConnectionManager(connManager)
+                .build();
+
+        HttpPost httpPost = new HttpPost(this.config.getRefundQuery());
 
         RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(8 * 1000).setConnectTimeout(6 * 1000).build();
         httpPost.setConfig(requestConfig);

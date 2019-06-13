@@ -107,6 +107,7 @@ wx:
   orderQuery: https://api.mch.weixin.qq.com/pay/orderquery
   transferUrl: https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers
   refund: https://api.mch.weixin.qq.com/secapi/pay/refund
+  refundQuery: https://api.mch.weixin.qq.com/pay/refundquery
   cert: wx_apiclient_cert.p12
 
 #微信公众号

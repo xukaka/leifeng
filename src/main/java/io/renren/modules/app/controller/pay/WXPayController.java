@@ -59,25 +59,25 @@ public class WXPayController {
     @Login
     @PostMapping("/prePay")
     @ApiOperation("微信预下订单接口")
-    public R prePay( Long totalFee, Long taskId) throws Exception {
-        MemberWalletEntity wallet= memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>()
+    public R prePay(Long totalFee, Long taskId) throws Exception {
+        MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>()
                 .eq("member_id", ReqUtils.curMemberId()));
 
-        String prodDesc="任务订单";
+        String prodDesc = "任务订单";
         //生成taskorder订单入库
         String outTradeNo;
         TaskOrderEntity taskOrder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
         if (taskOrder == null) { //新增
             TaskOrderEntity torder = new TaskOrderEntity();
-            outTradeNo= "NO" + OrderNoUtil.generateOrderNo(taskId);
+            outTradeNo = "NO" + OrderNoUtil.generateOrderNo(taskId);
             torder.setOutTradeNo(outTradeNo);
             torder.setAttach(prodDesc);
             torder.setTaskId(taskId);
             torder.setTotalFee(totalFee);
             torder.setCreateTime(DateUtils.now());
             taskOrderService.insert(torder);
-        }else{
-            outTradeNo= taskOrder.getOutTradeNo();
+        } else {
+            outTradeNo = taskOrder.getOutTradeNo();
         }
         String totalFeeStr = String.valueOf(totalFee);//交易的金额，单位为分
         Map<String, String> reqData = wxPayService.fillRequestData(prodDesc, outTradeNo, totalFeeStr, ReqUtils.getRemoteAddr(), wallet.getOpenId());
@@ -154,9 +154,9 @@ public class WXPayController {
         String xresdata = wxPayService.orderQueryRequest(torder.getOutTradeNo());
         Map<String, String> map = WXPayUtil.xmlToMap(xresdata);
         if (WXPayConstants.SUCCESS.equals(map.get("return_code")) && WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
-            return R.ok().put("result",map.get("trade_state"));
+            return R.ok().put("result", map.get("trade_state"));
         }
-        return R.error().put("result",map);
+        return R.error().put("result", map);
 
 
         /*if (WXPayConstants.SUCCESS.equals(torder.getTradeState())) {
@@ -216,7 +216,7 @@ public class WXPayController {
             return R.error("任务订单金额为0");
         }
         if (!WXPayConstants.SUCCESS.equals(torder.getTradeState())) {
-            return R.error("任务订单状态异常：TradeState="+torder.getTradeState());
+            return R.error("任务订单状态异常：TradeState=" + torder.getTradeState());
         }
 
         String refundData = wxPayService.refundRequest(torder.getTransactionId(), taskId, String.valueOf(torder.getTotalFee()));
@@ -238,8 +238,32 @@ public class WXPayController {
             logger.info(map.get("return_msg"));
             return R.error(map.get("return_msg"));
         }
+    }
 
 
+    //退款查询接口
+    @GetMapping("/refundQuery")
+    @ApiOperation("查询微信退款结果")
+    public R refundQuery(Long taskId) throws Exception {
+        TaskOrderEntity taskOrder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
+        if (taskOrder == null) {
+            return R.error().put("result", "task order is null,taskId=" + taskId);
+        }
+        logger.info("根据taskid查询到订单：{}", JsonUtil.Java2Json(taskOrder));
+        //从微信平台查询退款信息
+        String refundData = wxPayService.refundQueryRequest(taskOrder.getOutTradeNo());
+        Map<String, String> map = WXPayUtil.xmlToMap(refundData);
+        if (WXPayConstants.SUCCESS.equals(map.get("return_code")) && WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
+            Map<String,String> refundMap=new HashMap<>();
+            refundMap.put("refund_status_$n",map.get("result_code_0"));//退款状态
+            refundMap.put("settlement_refund_fee_$n",map.get("settlement_refund_fee_0"));//退款金额
+            refundMap.put("refund_success_time_$n",map.get("refund_success_time_0"));//退款成功时间
+            refundMap.put("refund_recv_accout_$n",map.get("refund_recv_accout_0"));//退款入账账户
+            refundMap.put("refund_reason","任务取消");
+
+            return R.ok().put("result",refundMap);
+        }
+        return R.error().put("result", map);
     }
 
     //企业提现订单
@@ -263,9 +287,9 @@ public class WXPayController {
 
     @GetMapping("/logs")
     @ApiOperation("分页获取钱包交易日志列表")
-    public R getLogs(Long memberId,Integer curPage, Integer pageSize) {
+    public R getLogs(Long memberId, Integer curPage, Integer pageSize) {
         PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
-        PageUtils<MemberWalletLogDto> logs = memberWalletLogService.getLogs(memberId,page);
+        PageUtils<MemberWalletLogDto> logs = memberWalletLogService.getLogs(memberId, page);
         return R.ok().put("result", logs);
     }
 
