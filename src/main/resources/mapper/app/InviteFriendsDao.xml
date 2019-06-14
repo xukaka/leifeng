@@ -23,7 +23,7 @@
         select
         count(1)
         from t_invite_friends f
-        join member m on m.id = f.friend_memeber_id
+        join member m on m.id = f.friend_member_id
         where f.invite_member_id=#{inviteMemberId}
     </select>
 </mapper>
