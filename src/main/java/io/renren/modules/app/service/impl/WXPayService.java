@@ -233,8 +233,7 @@ public class WXPayService {
                 return false;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.info("签名校验出错异常");
+            logger.info("签名校验出错异常",e);
             return false;
         }
         return true;
