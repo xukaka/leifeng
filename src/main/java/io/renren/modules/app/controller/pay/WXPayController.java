@@ -321,7 +321,7 @@ public class WXPayController {
         }
         refundMap.put("refund_recv_accout", refundRecvAccout);//退款入账账户
         refundMap.put("refund_reason", "任务取消");//自定义:退款原因
-        refundMap.put("refund_mch:", "有诚意[雷锋在线]");//自定义：退款商户
+        refundMap.put("refund_mch", "有诚意[雷锋在线]");//自定义：退款商户
         return refundMap;
     }
 
