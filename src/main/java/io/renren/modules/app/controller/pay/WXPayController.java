@@ -254,6 +254,7 @@ public class WXPayController {
         String refundData = wxPayService.refundQueryRequest(taskOrder.getOutTradeNo());
         Map<String, String> map = WXPayUtil.xmlToMap(refundData);
         if (WXPayConstants.SUCCESS.equals(map.get("return_code")) && WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
+            logger.info("查询微信退款结果:refundData={}",map);
             Map<String, String> refundMap = getRefundMap(map);
 
             return R.ok().put("result", refundMap);
@@ -279,14 +280,14 @@ public class WXPayController {
          * $n为下标，从0开始编号。
          */
         String refundStatus = null;
-        if (map.get("result_code_0") != null) {
-            refundStatus = map.get("result_code_0");
-        } else if (map.get("result_code_1") != null) {
-            refundStatus = map.get("result_code_1");
-        } else if (map.get("result_code_2") != null) {
-            refundStatus = map.get("result_code_2");
-        } else if (map.get("result_code_3") != null) {
-            refundStatus = map.get("result_code_3");
+        if (map.get("refund_status_0") != null) {
+            refundStatus = map.get("refund_status_0");
+        } else if (map.get("refund_status_1") != null) {
+            refundStatus = map.get("refund_status_1");
+        } else if (map.get("refund_status_2") != null) {
+            refundStatus = map.get("refund_status_2");
+        } else if (map.get("refund_status_3") != null) {
+            refundStatus = map.get("refund_status_3");
         }
 
         refundMap.put("refund_status", refundStatus);//退款状态
@@ -314,7 +315,7 @@ public class WXPayController {
         if (map.get("refund_recv_accout_0") != null) {
             refundRecvAccout = map.get("refund_recv_accout_0");
         } else if (map.get("refund_recv_accout_1") != null) {
-            refundRecvAccout = map.get("refund_recv_accout_0");
+            refundRecvAccout = map.get("refund_recv_accout_1");
         } else if (map.get("refund_recv_accout_2") != null) {
             refundRecvAccout = map.get("refund_recv_accout_2");
         } else if (map.get("refund_recv_accout_3") != null) {
