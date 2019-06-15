@@ -254,16 +254,75 @@ public class WXPayController {
         String refundData = wxPayService.refundQueryRequest(taskOrder.getOutTradeNo());
         Map<String, String> map = WXPayUtil.xmlToMap(refundData);
         if (WXPayConstants.SUCCESS.equals(map.get("return_code")) && WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
-            Map<String,String> refundMap=new HashMap<>();
-            refundMap.put("refund_status_$n",map.get("result_code_0"));//退款状态
-            refundMap.put("settlement_refund_fee_$n",map.get("settlement_refund_fee_0"));//退款金额
-            refundMap.put("refund_success_time_$n",map.get("refund_success_time_0"));//退款成功时间
-            refundMap.put("refund_recv_accout_$n",map.get("refund_recv_accout_0"));//退款入账账户
-            refundMap.put("refund_reason","任务取消");
+            Map<String, String> refundMap = getRefundMap(map);
 
-            return R.ok().put("result",refundMap);
+            return R.ok().put("result", refundMap);
         }
         return R.error().put("result", map);
+    }
+
+    /**
+     * 封装退款信息
+     * @param map
+     * @return
+     */
+    private Map<String, String> getRefundMap(Map<String, String> map) {
+        Map<String, String> refundMap = new HashMap<>();
+
+        /**
+         * 退款状态：
+         * SUCCESS—退款成功
+         * REFUNDCLOSE—退款关闭。
+         * PROCESSING—退款处理中
+         * CHANGE—退款异常，退款到银行发现用户的卡作废或者冻结了，导致原路退款银行卡失败，可前往商户平台（pay.weixin.qq.com）-交易中心，手动处理此笔退款。
+         *
+         * $n为下标，从0开始编号。
+         */
+        String refundStatus = null;
+        if (map.get("result_code_0") != null) {
+            refundStatus = map.get("result_code_0");
+        } else if (map.get("result_code_1") != null) {
+            refundStatus = map.get("result_code_1");
+        } else if (map.get("result_code_2") != null) {
+            refundStatus = map.get("result_code_2");
+        } else if (map.get("result_code_3") != null) {
+            refundStatus = map.get("result_code_3");
+        }
+
+        refundMap.put("refund_status", refundStatus);//退款状态
+        /**
+         * 退款金额=申请退款金额-非充值代金券退款金额，退款金额<=申请退款金额
+         */
+        refundMap.put("settlement_refund_fee", map.get("settlement_refund_fee_0"));//退款金额
+        /**
+         * 退款成功时间，当退款状态为退款成功时有返回。$n为下标，从0开始编号。
+         */
+        refundMap.put("refund_success_time", map.get("refund_success_time_0"));//退款成功时间
+        /**
+         * 取当前退款单的退款入账方
+         * 1）退回银行卡：
+         * {银行名称}{卡类型}{卡尾号}
+         * 2）退回支付用户零钱:
+         * 支付用户零钱
+         * 3）退还商户:
+         * 商户基本账户
+         * 商户结算银行账户
+         * 4）退回支付用户零钱通:
+         * 支付用户零钱通
+         */
+        String refundRecvAccout = null;
+        if (map.get("refund_recv_accout_0") != null) {
+            refundRecvAccout = map.get("refund_recv_accout_0");
+        } else if (map.get("refund_recv_accout_1") != null) {
+            refundRecvAccout = map.get("refund_recv_accout_0");
+        } else if (map.get("refund_recv_accout_2") != null) {
+            refundRecvAccout = map.get("refund_recv_accout_2");
+        } else if (map.get("refund_recv_accout_3") != null) {
+            refundRecvAccout = map.get("refund_recv_accout_3");
+        }
+        refundMap.put("refund_recv_accout", refundRecvAccout);//退款入账账户
+        refundMap.put("refund_reason", "任务取消");//自定义
+        return refundMap;
     }
 
     //企业提现订单
