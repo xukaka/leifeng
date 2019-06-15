@@ -291,10 +291,8 @@ public class WXPayController {
         }
 
         refundMap.put("refund_status", refundStatus);//退款状态
-        /**
-         * 退款金额=申请退款金额-非充值代金券退款金额，退款金额<=申请退款金额
-         */
-        refundMap.put("settlement_refund_fee", map.get("settlement_refund_fee_0"));//退款金额
+
+        refundMap.put("refund_fee", map.get("refund_fee"));//退款金额
         /**
          * 退款成功时间，当退款状态为退款成功时有返回。$n为下标，从0开始编号。
          */
