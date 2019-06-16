@@ -141,7 +141,7 @@ public interface MemberService extends IService<Member> {
     //获取用户评分面板
     ScoreBoardDto getScoreBoard(Long memberId);
 
-    //邀请好友
+    //添加邀请好友
     void addInviteFriends(Long inviteMemberId,Long friendMemberId,Integer experience,Integer virtualCurrency);
 
     //保存用户反馈
