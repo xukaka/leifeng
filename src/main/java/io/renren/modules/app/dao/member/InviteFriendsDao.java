@@ -1,6 +1,7 @@
 package io.renren.modules.app.dao.member;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import io.renren.modules.app.dto.ExperienceAndVirtualCurrencyDto;
 import io.renren.modules.app.dto.InviteFriendsDto;
 import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.SkillRadarChartDto;
@@ -25,4 +26,7 @@ public interface InviteFriendsDao extends BaseMapper<InviteFriendsEntity> {
     List<InviteFriendsDto> getInviteFriends(@Param("inviteMemberId") Long inviteMemberId, @Param("page") PageWrapper page);
     //获取邀请好友总数
     int count(@Param("inviteMemberId") Long inviteMemberId);
+
+    //统计经验值和虚拟币
+    ExperienceAndVirtualCurrencyDto getTotalExperienceAndVirtualCurrency(@Param("inviteMemberId") Long inviteMemberId);
 }

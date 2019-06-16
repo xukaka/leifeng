@@ -383,6 +383,15 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
+    public ExperienceAndVirtualCurrencyDto getTotalExperienceAndVirtualCurrency(Long inviteMemberId) {
+        ExperienceAndVirtualCurrencyDto dto= inviteFriendsDao.getTotalExperienceAndVirtualCurrency(inviteMemberId);
+        if (dto == null){
+            dto = new ExperienceAndVirtualCurrencyDto();
+        }
+        return dto;
+    }
+
+    @Override
     public List<SkillRadarChartDto> getSkillRadarChart(Long memberId) {
         List<SkillRadarChartDto> chart = baseMapper.getSkillRadarChart(memberId);
         if (CollectionUtils.isEmpty(chart)) {

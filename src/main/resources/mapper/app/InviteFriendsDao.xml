@@ -19,6 +19,15 @@
         LIMIT #{page.offset},#{page.limit}
     </select>
 
+    <select id="getTotalExperienceAndVirtualCurrency" resultType="io.renren.modules.app.dto.ExperienceAndVirtualCurrencyDto">
+        select
+        sum(f.experience) as totalExperience,
+        sum(f.virtual_currency) as totalVirtualCurrency
+        from t_invite_friends f
+        join member m on m.id = f.friend_member_id
+        where f.invite_member_id=#{inviteMemberId}
+    </select>
+
     <select id="count" resultType="int">
         select
         count(1)

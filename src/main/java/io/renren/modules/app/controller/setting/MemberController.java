@@ -156,17 +156,17 @@ public class MemberController {
 
     @GetMapping("/score/list")
     @ApiOperation("分页获取用户评分列表")
-    public R getMemberScores(Long memberId,Integer curPage, Integer pageSize) {
+    public R getMemberScores(Long memberId, Integer curPage, Integer pageSize) {
         PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
-        PageUtils<MemberScoreDto> scores= memberService.getMemberScores(memberId,page);
-        return R.ok().put("result",scores);
+        PageUtils<MemberScoreDto> scores = memberService.getMemberScores(memberId, page);
+        return R.ok().put("result", scores);
     }
 
     @Login
     @PostMapping("/feedback/save")
     @ApiOperation("保存用户反馈")
     public R saveFeedback(String content) {
-        memberService.saveFeedback(ReqUtils.curMemberId(),content);
+        memberService.saveFeedback(ReqUtils.curMemberId(), content);
         return R.ok();
 
     }
@@ -174,7 +174,7 @@ public class MemberController {
     @GetMapping("/skillRadarChart")
     @ApiOperation("用户技能雷达图")
     public R skillRadarChart(Long memberId) {
-        List<SkillRadarChartDto> chart= memberService.getSkillRadarChart(memberId);
+        List<SkillRadarChartDto> chart = memberService.getSkillRadarChart(memberId);
         return R.ok().put("result", chart);
 
     }
@@ -193,10 +193,18 @@ public class MemberController {
     @ApiOperation("分页获取邀请好友列表")
     public R getInviteFriends(Integer curPage, Integer pageSize) {
         PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
-        PageUtils<InviteFriendsDto> inviteFriends= memberService.getInviteFriends(ReqUtils.curMemberId(),page);
-        return R.ok().put("result",inviteFriends);
+        PageUtils<InviteFriendsDto> inviteFriends = memberService.getInviteFriends(ReqUtils.curMemberId(), page);
+        return R.ok().put("result", inviteFriends);
     }
 
+
+    @Login
+    @GetMapping("/getTotalExperienceAndVirtualCurrency")
+    @ApiOperation("统计获取的经验值和虚拟币")
+    public R getTotalExperienceAndVirtualCurrency() {
+        ExperienceAndVirtualCurrencyDto dto = memberService.getTotalExperienceAndVirtualCurrency(ReqUtils.curMemberId());
+        return R.ok().put("result", dto);
+    }
 
 
 }

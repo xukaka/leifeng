@@ -131,6 +131,9 @@ public interface MemberService extends IService<Member> {
     //分页获取邀请好友列表
     PageUtils<InviteFriendsDto> getInviteFriends(Long inviteMemberId, PageWrapper page);
 
+    //统计经验值和虚拟币
+    ExperienceAndVirtualCurrencyDto getTotalExperienceAndVirtualCurrency(Long inviteMemberId);
+
 
     //任务完成数+inc
     void incTaskCompleteCount(Long memberId, Integer inc);
