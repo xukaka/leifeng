@@ -170,8 +170,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     @Override
     public void wxUpdateMember(WxUserInfoForm userInfo) {
-//        redisUtils.set(RedisKeys.WX_PHONE + userInfo.getPhone(), userInfo, 70);//70s过期
-
         Member member = selectById(userInfo.getMemberId());
         if (member != null) {
             if (StringUtils.isEmpty(member.getNickName())) {
@@ -182,15 +180,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             }
             if (member.getSex() == null) {
                 member.setSex(userInfo.getGender());
-            }
-            if (member.getLat() == null) {
-                member.setLat(userInfo.getLat());
-            }
-            if (member.getLng() == null) {
-                member.setLng(userInfo.getLng());
-            }
-            if (StringUtils.isEmpty(member.getAddress())) {
-                member.setAddress(userInfo.getAddress());
             }
 
             this.updateById(member);
