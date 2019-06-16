@@ -69,7 +69,8 @@ public class RegisterController {
     @ApiOperation("微信登录")
     @ApiImplicitParam(name = "code", value = "微信login方法返回的code", paramType = "query")
     public R wxLogin(String code, String phoneNum, String phoneCode, Long inviteMemberId) {
-
+        logger.info("RegisterController.wxLogin code={},phoneNum={},phoneCode={},inviteMemberId={}",
+                code,phoneNum,phoneCode,inviteMemberId);
         if (StringUtils.isEmpty(phoneNum)) {
             throw new RRException("手机号不能空");
         }
