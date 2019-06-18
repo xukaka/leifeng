@@ -100,6 +100,7 @@ public class RegisterController {
             int loginType = 1;
             if (ObjectUtils.isEmpty(auths)) {
                 Member member = new Member();
+                member.setMobile(phoneNum);
                 member.setCreateTime(DateUtils.now());
 
                 //创建用户钱包

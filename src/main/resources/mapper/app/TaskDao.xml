@@ -10,6 +10,7 @@
         a.detail AS address_detail,
         m.nick_name AS creator_nick_name,
         m.real_name AS creator_real_name,
+        m.mobile AS creator_mobile,
         m.avatar AS creator_avatar,
         m.self_intro AS creator_self_intro,
         m.mobile AS creator_mobile,
