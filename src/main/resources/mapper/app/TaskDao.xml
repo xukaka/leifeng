@@ -197,6 +197,7 @@
             <id property="id" column="creator_id"/>
             <result property="nickName" column="creator_nick_name"/>
             <result property="realName" column="creator_real_name"/>
+            <result property="mobile" column="creator_mobile"/>
             <result property="avatar" column="creator_avatar"/>
             <result property="sex" column="creator_sex"/>
             <result property="level" column="creator_level"/>
