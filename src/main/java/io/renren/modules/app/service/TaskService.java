@@ -49,7 +49,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 创建任务
      */
-    void createTask(Long creatorId, TaskForm form);
+    Long createTask(Long creatorId, TaskForm form);
 
     /**
      * 发布任务

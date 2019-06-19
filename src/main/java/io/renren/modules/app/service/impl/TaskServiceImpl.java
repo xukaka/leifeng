@@ -214,7 +214,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     @Transactional
-    public void createTask(Long creatorId, TaskForm form) {
+    public Long createTask(Long creatorId, TaskForm form) {
         ValidatorUtils.validateEntity(form);
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);
@@ -224,6 +224,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         this.insert(task);
         addTaskImageRelation(task.getId(), form.getImageUrls());
         addTaskTagRelation(task.getId(), form.getTagIds());
+        return task.getId();
     }
 
     @Override

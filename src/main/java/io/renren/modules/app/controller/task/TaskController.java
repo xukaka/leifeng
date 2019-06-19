@@ -45,14 +45,14 @@ public class TaskController {
     @PostMapping("/create")
     @ApiOperation("创建任务")
     public R createTask(@RequestBody TaskForm form) {
-        taskService.createTask(ReqUtils.curMemberId(), form);
-        return R.ok();
+        Long taskId = taskService.createTask(ReqUtils.curMemberId(), form);
+        return R.ok().put("result", taskId);
     }
 
     @Login
     @PostMapping("/publish")
     @ApiOperation("发布任务")
-    public R publishTask(Long taskId){
+    public R publishTask(Long taskId) {
         taskService.publishTask(taskId);
         return R.ok();
     }
@@ -95,7 +95,7 @@ public class TaskController {
     @GetMapping("/receiver/choose")
     @ApiOperation("选择任务领取人")
     public R chooseTaskReceiver(Long taskId, Long receiverId) {
-        taskService.chooseTaskReceiver(taskId,ReqUtils.curMemberId(), receiverId);
+        taskService.chooseTaskReceiver(taskId, ReqUtils.curMemberId(), receiverId);
         return R.ok();
     }
 
