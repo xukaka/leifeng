@@ -8,6 +8,7 @@ import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.dao.member.MemberFollowDao;
+import io.renren.modules.app.dao.member.MemberScoreDao;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
 import io.renren.modules.app.dto.MemberDto;
@@ -18,6 +19,7 @@ import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberFollowEntity;
+import io.renren.modules.app.entity.member.MemberScoreEntity;
 import io.renren.modules.app.entity.member.MemberTagRelationEntity;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
@@ -71,6 +73,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Resource
     private MemberFollowDao memberFollowDao;
+
 
     @Autowired
     private WXPayService wxPayService;
@@ -191,10 +194,14 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             //是否点赞
             boolean isLiked = likeService.existsLiked(id, LikeTypeEnum.task, curMemberId);
             task.setLiked(isLiked);
+            //是否评分
+            boolean isScored = memberService.isScored(id);
+            task.setScored(isScored);
             task.setCurSystemTime(DateUtils.now());
         }
         return task;
     }
+
 
     /**
      * 是否领取（是否存在领取列表中）

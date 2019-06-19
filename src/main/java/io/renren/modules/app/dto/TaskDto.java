@@ -69,6 +69,11 @@ public class TaskDto implements Serializable {
      * 是否点赞
      */
     private Boolean isLiked= false;
+
+    /**
+     * 是否评分
+     */
+    private Boolean isScored = false;
     /**
      * 任务领取人
      */
@@ -137,7 +142,13 @@ public class TaskDto implements Serializable {
     }
 
 
+    public Boolean getScored() {
+        return isScored;
+    }
 
+    public void setScored(Boolean scored) {
+        isScored = scored;
+    }
 
     public Long getCurSystemTime() {
         return curSystemTime;

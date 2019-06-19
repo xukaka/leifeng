@@ -247,6 +247,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         return count > 0;
     }
 
+    @Override
+    public boolean isScored(Long taskId){
+        Wrapper<MemberScoreEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId);
+        int count = memberScoreDao.selectCount(wrapper);
+        return count > 0;
+    }
 
     @Override
     @Transactional

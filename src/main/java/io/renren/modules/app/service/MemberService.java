@@ -97,6 +97,9 @@ public interface MemberService extends IService<Member> {
      */
     boolean isFollowed(Long fromMemberId, Long toMemberId);
 
+    //任务是否已评分
+    boolean isScored(Long taskId);
+
     /**
      * 用户评分
      *
