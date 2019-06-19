@@ -149,9 +149,16 @@ public class MemberController {
     @Login
     @PostMapping("/score")
     @ApiOperation("用户评分")
-    public R socre(@RequestBody MemberScoreForm form) {
+    public R score(@RequestBody MemberScoreForm form) {
         memberService.score(ReqUtils.curMemberId(), form);
         return R.ok();
+    }
+
+    @GetMapping("/score/detail")
+    @ApiOperation("获取用户评分详情")
+    public R getScore(Long taskId) {
+        MemberScoreDto score= memberService.getScore(taskId);
+        return R.ok().put("result", score);
     }
 
     @GetMapping("/score/list")

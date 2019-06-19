@@ -27,15 +27,7 @@ public class MemberScoreEntity extends BaseEntity {
      */
     private Integer score;
 
-    /**
-     * 奖状id
-     */
-//    private Long certificateId;
 
-    /**
-     * 鲜花数
-     */
-    private Integer flowerCount;
 
     /**
      * 评论内容
@@ -75,14 +67,6 @@ public class MemberScoreEntity extends BaseEntity {
 
     public void setScore(Integer score) {
         this.score = score;
-    }
-
-    public Integer getFlowerCount() {
-        return flowerCount;
-    }
-
-    public void setFlowerCount(Integer flowerCount) {
-        this.flowerCount = flowerCount;
     }
 
     public String getContent() {

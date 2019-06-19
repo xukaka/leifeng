@@ -248,7 +248,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
     @Override
-    public boolean isScored(Long taskId){
+    public boolean isScored(Long taskId) {
         Wrapper<MemberScoreEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("task_id", taskId);
         int count = memberScoreDao.selectCount(wrapper);
@@ -265,6 +265,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         score.setCreateTime(DateUtils.now());
         memberScoreDao.insert(score);
         //TODO 发送消息给被评分人
+    }
+
+    @Override
+    public MemberScoreDto getScore(Long taskId) {
+        return memberScoreDao.getScore(taskId);
     }
 
     @Override
@@ -380,8 +385,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     @Override
     public ExperienceAndVirtualCurrencyDto getTotalExperienceAndVirtualCurrency(Long inviteMemberId) {
-        ExperienceAndVirtualCurrencyDto dto= inviteFriendsDao.getTotalExperienceAndVirtualCurrency(inviteMemberId);
-        if (dto == null){
+        ExperienceAndVirtualCurrencyDto dto = inviteFriendsDao.getTotalExperienceAndVirtualCurrency(inviteMemberId);
+        if (dto == null) {
             dto = new ExperienceAndVirtualCurrencyDto();
         }
         return dto;

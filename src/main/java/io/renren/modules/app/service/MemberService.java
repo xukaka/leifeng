@@ -108,6 +108,9 @@ public interface MemberService extends IService<Member> {
      */
     void score(Long judgerId, MemberScoreForm form);
 
+    //获取任务评分详情
+    MemberScoreDto getScore(Long taskId);
+
     //获取用户评分列表
     PageUtils<MemberScoreDto> getMemberScores(Long memberId, PageWrapper page);
 

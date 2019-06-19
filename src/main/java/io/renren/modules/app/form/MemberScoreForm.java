@@ -39,8 +39,6 @@ public class MemberScoreForm {
     @NotNull
     private Integer score;
 
-    @ApiModelProperty(value = "鲜花数", example = "")
-    private Integer flowerCount;
 
 
     @ApiModelProperty(value = "评论内容", example = "")
@@ -71,13 +69,6 @@ public class MemberScoreForm {
         this.score = score;
     }
 
-    public Integer getFlowerCount() {
-        return flowerCount;
-    }
-
-    public void setFlowerCount(Integer flowerCount) {
-        this.flowerCount = flowerCount;
-    }
 
     public String getContent() {
         return content;

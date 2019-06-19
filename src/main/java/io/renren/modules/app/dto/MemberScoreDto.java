@@ -16,6 +16,15 @@ public class MemberScoreDto implements Serializable {
     private String judgerAvatar;//评分人头像
     private Integer judgerSex;//评分人性别
 
+
+    /**
+     * 接收人id（被评分人）
+     */
+    private Long receiverId;
+    private String receiverNickName;//接收人昵称
+    private String receiverAvatar;//接收人头像
+    private Integer receiverSex;//接收人性别
+
     /**
      * 任务id
      */
@@ -117,5 +126,37 @@ public class MemberScoreDto implements Serializable {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(Long receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public String getReceiverNickName() {
+        return receiverNickName;
+    }
+
+    public void setReceiverNickName(String receiverNickName) {
+        this.receiverNickName = receiverNickName;
+    }
+
+    public String getReceiverAvatar() {
+        return receiverAvatar;
+    }
+
+    public void setReceiverAvatar(String receiverAvatar) {
+        this.receiverAvatar = receiverAvatar;
+    }
+
+    public Integer getReceiverSex() {
+        return receiverSex;
+    }
+
+    public void setReceiverSex(Integer receiverSex) {
+        this.receiverSex = receiverSex;
     }
 }

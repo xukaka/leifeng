@@ -18,6 +18,9 @@ public interface MemberScoreDao extends BaseMapper<MemberScoreEntity> {
     //获取评分面板数据
     ScoreBoardDto getScoreBoard(@Param("memberId") Long memberId);
 
+    //获取评分详情-根据任务id
+    MemberScoreDto getScore(Long taskId);
+
     //分页获取用户评分列表
     List<MemberScoreDto> getMemberScores(@Param("memberId") Long memberId, @Param("page") PageWrapper page);
 
