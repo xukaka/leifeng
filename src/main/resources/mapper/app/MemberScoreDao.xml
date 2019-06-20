@@ -27,8 +27,11 @@
         m.nick_name as receiverNickName,
         m.avatar as receiverAvatar,
         m.sex as receiverSex,
+        m.experience as receiverExperience,
         t.id as taskId,
-        t.title as taskTitle
+        t.title as taskTitle,
+        t.complete_time as taskCompleteTime,
+        t.virtual_currency as taskVirtualCurrency
         from t_member_score s
         join member m on s.member_id = m.id
         join t_task t on s.task_id=t.id

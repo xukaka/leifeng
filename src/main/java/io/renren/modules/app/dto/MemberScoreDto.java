@@ -24,6 +24,8 @@ public class MemberScoreDto implements Serializable {
     private String receiverNickName;//接收人昵称
     private String receiverAvatar;//接收人头像
     private Integer receiverSex;//接收人性别
+    private Integer receiverExperience;//接收人经验值
+
 
     /**
      * 任务id
@@ -32,6 +34,12 @@ public class MemberScoreDto implements Serializable {
 
     //任务标题
     private String taskTitle;
+
+    //任务虚拟币
+    private Integer taskVirtualCurrency;
+
+    //任务完成时间
+    private Long taskCompleteTime;
     /**
      * 分数
      */
@@ -158,5 +166,29 @@ public class MemberScoreDto implements Serializable {
 
     public void setReceiverSex(Integer receiverSex) {
         this.receiverSex = receiverSex;
+    }
+
+    public Integer getReceiverExperience() {
+        return receiverExperience;
+    }
+
+    public void setReceiverExperience(Integer receiverExperience) {
+        this.receiverExperience = receiverExperience;
+    }
+
+    public Integer getTaskVirtualCurrency() {
+        return taskVirtualCurrency;
+    }
+
+    public void setTaskVirtualCurrency(Integer taskVirtualCurrency) {
+        this.taskVirtualCurrency = taskVirtualCurrency;
+    }
+
+    public Long getTaskCompleteTime() {
+        return taskCompleteTime;
+    }
+
+    public void setTaskCompleteTime(Long taskCompleteTime) {
+        this.taskCompleteTime = taskCompleteTime;
     }
 }
