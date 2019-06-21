@@ -136,8 +136,13 @@ public interface MemberService extends IService<Member> {
      */
     List<SkillRadarChartDto> getSkillRadarChart(Long memberId);
 
-    //用户增加经验值和虚拟币
-    void incMemberExperienceAndVirtualCurrency(Long memberId, Integer experience,Integer virtualCurrency);
+    //用户增加经验值
+    void incMemberExperience(Long memberId, Integer inc);
+    //用户增加虚拟币
+    void incMemberVirtualCurrency(Long memberId, Integer inc);
+
+    //用户增加积分值
+    void incMemberIntegralValue(Long memberId, Integer inc);
 
     //分页获取邀请好友列表
     PageUtils<InviteFriendsDto> getInviteFriends(Long inviteMemberId, PageWrapper page);

@@ -30,8 +30,13 @@ public interface MemberDao extends BaseMapper<Member> {
 
 
 
-    //增加用户经验值和虚拟币
-    void incMemberExperienceAndVirtualCurrency(@Param("memberId")Long memberId, @Param("experience")Integer experience, @Param("virtualCurrency")Integer virtualCurrency);
+    //增加用户经验值
+    void incMemberExperience(@Param("memberId")Long memberId, @Param("inc")Integer inc);
+
+    //增加用户虚拟币
+    void incMemberVirtualCurrency(@Param("memberId")Long memberId,@Param("inc")Integer inc);
+    //增加用户积分值
+    void incMemberIntegralValue(@Param("memberId")Long memberId,@Param("inc")Integer inc);
 
     //获取用户技能雷达图书数据
     List<SkillRadarChartDto> getSkillRadarChart(@Param("memberId")Long memberId);

@@ -117,7 +117,8 @@ public class RegisterController {
                 //邀请好友
                 if (inviteMemberId != null && inviteMemberId > 0) {
                     //给邀请人增加经验值和雷锋币
-                    memberService.incMemberExperienceAndVirtualCurrency(inviteMemberId, 5, 2);
+                    memberService.incMemberExperience(inviteMemberId, 5);
+                    memberService.incMemberVirtualCurrency(inviteMemberId, 2);
                     //给邀请人添加邀请好友
                     memberService.addInviteFriends(inviteMemberId, member.getId(), 5, 2);
                 }

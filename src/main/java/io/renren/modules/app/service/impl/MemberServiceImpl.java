@@ -315,7 +315,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             memberCheckInDao.insert(checkIn);
             ThreadPoolUtils.execute(() -> {
                 //增加用户的经验值
-                incMemberExperienceAndVirtualCurrency(memberId, experience, 0);
+                incMemberExperience(memberId, experience);
             });
 
             result.put("checkInStatus", 0);
@@ -330,10 +330,22 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     }
 
 
-    //增加用户经验值和虚拟币
+    //增加用户经验值
     @Override
-    public void incMemberExperienceAndVirtualCurrency(Long memberId, Integer experience, Integer virtualCurrency) {
-        baseMapper.incMemberExperienceAndVirtualCurrency(memberId, experience, virtualCurrency);
+    public void incMemberExperience(Long memberId, Integer inc) {
+        baseMapper.incMemberExperience(memberId, inc);
+    }
+
+    //增加用户虚拟币
+    @Override
+    public void incMemberVirtualCurrency(Long memberId,Integer inc) {
+        baseMapper.incMemberVirtualCurrency(memberId, inc);
+    }
+
+    //增加用户积分值
+    @Override
+    public void incMemberIntegralValue(Long memberId,Integer inc) {
+        baseMapper.incMemberIntegralValue(memberId, inc);
     }
 
     @Override

@@ -42,9 +42,9 @@ public class TaskDto implements Serializable {
      */
     private Long receiveTime;
     /**
-     * 虚拟货币(雷锋币)
+     * 金额
      */
-    private Integer virtualCurrency;
+    private Integer money;
 
     /**
      * 经验值
@@ -168,12 +168,12 @@ public class TaskDto implements Serializable {
         this.curSystemTime = curSystemTime;
     }
 
-    public Integer getVirtualCurrency() {
-        return virtualCurrency;
+    public Integer getMoney() {
+        return money;
     }
 
-    public void setVirtualCurrency(Integer virtualCurrency) {
-        this.virtualCurrency = virtualCurrency;
+    public void setMoney(Integer money) {
+        this.money = money;
     }
 
     public List<String> getImageUrls() {

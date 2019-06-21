@@ -538,6 +538,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             ThreadPoolUtils.execute(() -> {
                 //任务完成数+1
                 memberService.incTaskCompleteCount(receiverId, 1);
+                //任务经验值增加
+                memberService.incMemberExperience(receiverId,task.getExperience());
+                //任务积分值增加
+                memberService.incMemberIntegralValue(receiverId,task.getIntegralValue());
+
                 rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId, receiverId, taskId, "确认完成"));
                 //给领取人添加标签
                 addTag2Member(receiverId, taskId);

@@ -46,11 +46,16 @@
 
 
 
-    <update id="incMemberExperienceAndVirtualCurrency">
-        update member m
-        set m.experience = m.experience + #{experience},
-             m.virtual_currency = m.virtual_currency + #{virtualCurrency}
-        where m.id = #{memberId}
+    <update id="incMemberIntegralValue">
+        update member m set m.integral_value = m.integral_value + #{inc}  where m.id = #{memberId}
+    </update>
+
+    <update id="incMemberVirtualCurrency">
+        update member m set  m.virtual_currency = m.virtual_currency + #{inc} where m.id = #{memberId}
+    </update>
+
+    <update id="incMemberExperience">
+       update member m set m.experience = m.experience + #{inc} where m.id = #{memberId}
     </update>
 
     <update id="incTaskCompleteCount">
