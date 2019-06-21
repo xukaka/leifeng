@@ -41,10 +41,9 @@ public class Member implements Serializable {
     private String mobile;
     //状态
     private Integer status=1;
-    //鲜花数
-    private Integer flowerCount = 0;
-    //奖状数
-    private Integer certificateCount = 0;
+    //积分值
+    private Integer integralValue = 0;
+
     //任务完成数
     private Integer taskCompleteCount=0;
     //经验值
@@ -158,20 +157,12 @@ public class Member implements Serializable {
         this.lng = lng;
     }
 
-    public Integer getFlowerCount() {
-        return flowerCount;
+    public Integer getIntegralValue() {
+        return integralValue;
     }
 
-    public void setFlowerCount(Integer flowerCount) {
-        this.flowerCount = flowerCount;
-    }
-
-    public Integer getCertificateCount() {
-        return certificateCount;
-    }
-
-    public void setCertificateCount(Integer certificateCount) {
-        this.certificateCount = certificateCount;
+    public void setIntegralValue(Integer integralValue) {
+        this.integralValue = integralValue;
     }
 
     public Integer getLevel() {

@@ -10,7 +10,7 @@
         </if>
         <if test="queryMap.minLat != null and queryMap.maxLat != null
                  and queryMap.minLng!=null and queryMap.maxLng != null">
-            AND m.lat &gt;= #{queryMap.minLat} AND m.lat &lt;= #{queryMap.maxLat}
+            AND m.lat >= #{queryMap.minLat} AND m.lat &lt;= #{queryMap.maxLat}
             AND m.lng &gt;= #{queryMap.minLng} AND m.lng &lt;= #{queryMap.maxLng}
         </if>
     </sql>
@@ -22,7 +22,7 @@
 
     <select id="searchMembers" resultType="io.renren.modules.app.dto.MemberDto">
         select m.* from member m
-        where m.status = 1
+        where m.status = 1 and m.lat is not null and m.lng is not null
         <include refid="searchMemberCondition"/>
         ORDER BY m.create_time DESC
         LIMIT #{page.offset},#{page.limit}
@@ -30,7 +30,7 @@
 
     <select id="count" resultType="int">
         select count(*) from member m
-        where m.status = 1
+        where m.status = 1 and m.lat is not null and m.lng is not null
         <include refid="searchMemberCondition"/>
     </select>
 

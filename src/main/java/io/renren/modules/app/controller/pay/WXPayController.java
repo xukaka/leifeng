@@ -4,15 +4,11 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.renren.common.utils.*;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.dto.*;
-import io.renren.modules.app.entity.TaskStatusEnum;
-import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
-import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
-import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.entity.task.TaskOrderEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.*;
-import io.renren.modules.app.service.impl.WXPayService;
+import io.renren.modules.app.service.impl.WechatPayService;
 import io.renren.modules.app.utils.ReqUtils;
 import io.renren.modules.app.utils.WXPayConstants;
 import io.renren.modules.app.utils.WXPayUtil;
@@ -43,7 +39,7 @@ import java.util.Map;
 public class WXPayController {
     private final static Logger logger = LoggerFactory.getLogger(WXPayController.class);
     @Autowired
-    private WXPayService wxPayService;
+    private WechatPayService wechatPayService;
     @Autowired
     private TaskOrderService taskOrderService;
     @Autowired
@@ -80,11 +76,11 @@ public class WXPayController {
             outTradeNo = taskOrder.getOutTradeNo();
         }
         String totalFeeStr = String.valueOf(totalFee);//交易的金额，单位为分
-        Map<String, String> reqData = wxPayService.fillRequestData(prodDesc, outTradeNo, totalFeeStr, ReqUtils.getRemoteAddr(), wallet.getOpenId());
+        Map<String, String> reqData = wechatPayService.fillRequestData(prodDesc, outTradeNo, totalFeeStr, ReqUtils.getRemoteAddr(), wallet.getOpenId());
         logger.info("微信预下订单请求参数：{}", JsonUtil.Java2Json(reqData));
-        String wxResponse = wxPayService.prePayRequest(WXPayUtil.mapToXml(reqData));
+        String wxResponse = wechatPayService.prePayRequest(WXPayUtil.mapToXml(reqData));
         logger.info("微信预下订单请求结果：{}", wxResponse);
-        Map<String, String> wxPayMap = wxPayService.reGenerateParamForApp(wxResponse);
+        Map<String, String> wxPayMap = wechatPayService.reGenerateParamForApp(wxResponse);
         return R.ok().put("result", wxPayMap);
     }
 
@@ -112,7 +108,7 @@ public class WXPayController {
 
         if (WXPayConstants.SUCCESS.equals(map.get("return_code"))) {
             //签名校验
-            boolean signFlag = wxPayService.validateSign(map);
+            boolean signFlag = wechatPayService.validateSign(map);
             if (WXPayConstants.SUCCESS.equals(map.get("result_code")) && signFlag) {
                 String outTradeNo = map.get("out_trade_no");
                 long totalFee = Long.valueOf(map.get("total_fee"));
@@ -151,7 +147,7 @@ public class WXPayController {
         TaskOrderEntity torder = taskOrderService.selectById(taskOrderId);
         logger.info("根据taskid查询到订单：{}", JsonUtil.Java2Json(torder));
         //从微信平台查询订单支付状态
-        String xresdata = wxPayService.orderQueryRequest(torder.getOutTradeNo());
+        String xresdata = wechatPayService.orderQueryRequest(torder.getOutTradeNo());
         Map<String, String> map = WXPayUtil.xmlToMap(xresdata);
         if (WXPayConstants.SUCCESS.equals(map.get("return_code")) && WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
             return R.ok().put("result", map.get("trade_state"));
@@ -219,7 +215,7 @@ public class WXPayController {
             return R.error("任务订单状态异常：TradeState=" + torder.getTradeState());
         }
 
-        String refundData = wxPayService.refundRequest(torder.getTransactionId(), taskId, String.valueOf(torder.getTotalFee()));
+        String refundData = wechatPayService.refundRequest(torder.getTransactionId(), taskId, String.valueOf(torder.getTotalFee()));
         logger.info("退款接口微信返回结果：{}", refundData);
 
         Map<String, String> map = WXPayUtil.xmlToMap(refundData);
@@ -251,7 +247,7 @@ public class WXPayController {
         }
         logger.info("根据taskid查询到订单：{}", JsonUtil.Java2Json(taskOrder));
         //从微信平台查询退款信息
-        String refundData = wxPayService.refundQueryRequest(taskOrder.getOutTradeNo());
+        String refundData = wechatPayService.refundQueryRequest(taskOrder.getOutTradeNo());
         Map<String, String> map = WXPayUtil.xmlToMap(refundData);
         if (WXPayConstants.SUCCESS.equals(map.get("return_code")) && WXPayConstants.SUCCESS.equals(map.get("result_code"))) {
             logger.info("查询微信退款结果:refundData={}",map);
@@ -330,7 +326,7 @@ public class WXPayController {
     @PostMapping("/preWithdrawal")
     @ApiOperation("提现订单申请接口")
     public R preWithdrawal(Long amount) {
-        wxPayService.preWithdrawal(ReqUtils.curMemberId(), amount);
+        wechatPayService.preWithdrawal(ReqUtils.curMemberId(), amount);
         return R.ok();
     }
 
@@ -340,7 +336,7 @@ public class WXPayController {
     @ApiOperation("提现功能接口")
     public R withdrawal(String outTradeNo) throws Exception {
         logger.info("[WXPayController.withdrawal] 进入");
-        Map<String, String> result = wxPayService.withdrawal(outTradeNo);
+        Map<String, String> result = wechatPayService.withdrawal(outTradeNo);
         return R.ok().put("result", result);
     }
 

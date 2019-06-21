@@ -3,9 +3,7 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.DateUtils;
-import io.renren.common.utils.JsonUtil;
 import io.renren.common.utils.OrderNoUtil;
-import io.renren.common.utils.R;
 import io.renren.modules.app.config.WXPayConfig;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
@@ -34,24 +32,20 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
-import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 @Service
-public class WXPayService {
-    private final static Logger logger = LoggerFactory.getLogger(WXPayService.class);
+public class WechatPayService {
+    private final static Logger logger = LoggerFactory.getLogger(WechatPayService.class);
     @Autowired
     private MemberWalletService memberWalletService;
     @Autowired

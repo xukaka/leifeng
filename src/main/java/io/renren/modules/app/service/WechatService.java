@@ -53,7 +53,6 @@ public class WechatService {
      * @param url 当前页面url
      */
     public Map<String,Object> createSignature(String url) {
-//        String myUrl = "https://pet.fangzheng.fun/";
         String nonceStr = create_nonce_str();
         long timestamp = create_timestamp();
 
@@ -101,98 +100,6 @@ public class WechatService {
 
 
 
-    //微信网页授权
-    private Map<String,String> getOpenIdAndAccessToken(String code){
-        Map<String,String> map = new HashMap<>();
-
-        //创建httpclient
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        CloseableHttpResponse response = null;
-
-        try {
-            URIBuilder builder = new URIBuilder(aouth2Url);
-            builder.addParameter("appid",appId);
-            builder.addParameter("secret",appSecret);
-            builder.addParameter("code",code);
-            builder.addParameter("grant_type","authorization_code");
-
-            HttpGet httpGet = new HttpGet(builder.build());
-            response = httpClient.execute(httpGet);
-
-            if (response.getStatusLine().getStatusCode() == 200) {
-                String resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
-                LOGGER.info("微信网页授权请求url的结果为："+resultString);
-                if(!StringUtils.isEmpty(resultString)){
-                    JSONObject wxobject = JSONObject.parseObject(resultString);
-                    String openid = wxobject.getString("openid");
-                    if(!StringUtils.isEmpty(openid)){  //请求成功
-                        map.put("openId",wxobject.getString("openid"));
-                        map.put("accessToken",wxobject.getString("access_token"));
-                    }
-                }
-            }
-
-        }catch (Exception e){
-            LOGGER.error("getOpen请求错误:",e);
-        }finally {
-            try {
-                if (response != null) {
-                    response.close();
-                }
-                httpClient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return map;
-    }
-
-    //返回微信公众号的unionid
-    public String getUnionid(String code){
-
-       Map<String,String> map =  getOpenIdAndAccessToken(code);
-
-        //创建httpclient
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        CloseableHttpResponse response = null;
-
-        try {
-            URIBuilder builder = new URIBuilder(userinfoUrl);
-            LOGGER.info("getUnionid map={}",map);
-            builder.addParameter("openid",map.get("openId"));
-            builder.addParameter("access_token",map.get("accessToken"));
-            builder.addParameter("lang","zh_CN" );
-
-            HttpGet httpGet = new HttpGet(builder.build());
-            response = httpClient.execute(httpGet);
-
-            if (response.getStatusLine().getStatusCode() == 200) {
-                String resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
-                LOGGER.info("微信公众号授权请求url的结果为："+resultString);
-                if(!StringUtils.isEmpty(resultString)){
-                    JSONObject wxobject = JSONObject.parseObject(resultString);
-                    String unionid = wxobject.getString("unionid");
-                    if(!StringUtils.isEmpty(unionid)){  //请求成功
-                       return unionid;
-                    }
-                }
-            }
-
-        }catch (Exception e){
-            LOGGER.error("getOpen请求错误:",e);
-        }finally {
-            try {
-                if (response != null) {
-                    response.close();
-                }
-                httpClient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return null;
-    }
 
 }
 

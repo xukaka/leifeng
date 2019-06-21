@@ -8,7 +8,6 @@ import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.config.RabbitMQConfig;
 import io.renren.modules.app.dao.member.MemberFollowDao;
-import io.renren.modules.app.dao.member.MemberScoreDao;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
 import io.renren.modules.app.dto.MemberDto;
@@ -18,8 +17,6 @@ import io.renren.modules.app.entity.LikeTypeEnum;
 import io.renren.modules.app.entity.TaskDifficultyEnum;
 import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.member.Member;
-import io.renren.modules.app.entity.member.MemberFollowEntity;
-import io.renren.modules.app.entity.member.MemberScoreEntity;
 import io.renren.modules.app.entity.member.MemberTagRelationEntity;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
@@ -76,7 +73,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
 
     @Autowired
-    private WXPayService wxPayService;
+    private WechatPayService wxPayService;
 
     private static final long EXPIRE = 60 * 10;//10分钟
 

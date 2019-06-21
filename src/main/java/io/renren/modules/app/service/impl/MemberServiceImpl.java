@@ -13,6 +13,7 @@ import io.renren.modules.app.dao.member.*;
 import io.renren.modules.app.dto.*;
 import io.renren.modules.app.entity.member.*;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
+import io.renren.modules.app.entity.task.TaskReceiveEntity;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.ImService;
 import io.renren.modules.app.service.MemberAuthsService;
@@ -158,32 +159,23 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     @Override
     public void updateMember(MemberForm form) {
         ValidatorUtils.validateEntity(form);
-        Member member = selectById(form.getId());
-        if (member != null) {
-            member.setNickName(form.getNickName());
-            member.setAvatar(form.getAvatar());
-            member.setSex(form.getSex());
-            member.setSelfIntro(form.getSelfIntro());
-            this.updateById(member);
-        }
+        Wrapper<Member> wrapper = new EntityWrapper<Member>().eq("id", form.getId());
+        Member member = new Member();
+        member.setNickName(form.getNickName());
+        member.setAvatar(form.getAvatar());
+        member.setSex(form.getSex());
+        member.setSelfIntro(form.getSelfIntro());
+        this.update(member,wrapper);
     }
 
     @Override
     public void wxUpdateMember(WxUserInfoForm userInfo) {
-        Member member = selectById(userInfo.getMemberId());
-        if (member != null) {
-            if (StringUtils.isEmpty(member.getNickName())) {
-                member.setNickName(userInfo.getNickName());
-            }
-            if (StringUtils.isEmpty(member.getAvatar())) {
-                member.setAvatar(userInfo.getAvatarUrl());
-            }
-            if (member.getSex() == null) {
-                member.setSex(userInfo.getGender());
-            }
-
-            this.updateById(member);
-        }
+        Wrapper<Member> wrapper = new EntityWrapper<Member>().eq("id", userInfo.getMemberId());
+        Member member = new Member();
+        member.setAvatar(userInfo.getAvatarUrl());
+        member.setNickName(userInfo.getNickName());
+        member.setSex(userInfo.getGender());
+        this.update(member,wrapper);
     }
 
     @Override
@@ -291,7 +283,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         SmsSingleSenderResult result = ssender.sendWithParam("86", phoneNum,
                 templateId, params, signName, "", "");
         logger.info("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));
-        redisUtils.set(RedisKeys.PHONE_CODE_KEY + phoneNum, code, 100);//100s过期
+        redisUtils.set(RedisKeys.PHONE_CODE_KEY + phoneNum, code, 5 * 60);//5分钟过期
     }
 
     @Override
@@ -303,8 +295,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     /**
      * 签到
-     *
-     * @param memberId
      */
     @Override
     @Transactional

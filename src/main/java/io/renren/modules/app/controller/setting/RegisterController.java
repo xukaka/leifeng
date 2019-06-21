@@ -70,7 +70,7 @@ public class RegisterController {
     @ApiImplicitParam(name = "code", value = "微信login方法返回的code", paramType = "query")
     public R wxLogin(String code, String phoneNum, String phoneCode, Long inviteMemberId) {
         logger.info("RegisterController.wxLogin code={},phoneNum={},phoneCode={},inviteMemberId={}",
-                code,phoneNum,phoneCode,inviteMemberId);
+                code, phoneNum, phoneCode, inviteMemberId);
         if (StringUtils.isEmpty(phoneNum)) {
             throw new RRException("手机号不能空");
         }
@@ -119,7 +119,7 @@ public class RegisterController {
                     //给邀请人增加经验值和雷锋币
                     memberService.incMemberExperienceAndVirtualCurrency(inviteMemberId, 5, 2);
                     //给邀请人添加邀请好友
-                    memberService.addInviteFriends( inviteMemberId,member.getId(),5,2);
+                    memberService.addInviteFriends(inviteMemberId, member.getId(), 5, 2);
                 }
             }
 
@@ -177,55 +177,8 @@ public class RegisterController {
             memberService.sendPhoneCode(phone);
             return R.ok();
         } catch (Exception e) {
-            e.printStackTrace();
             return R.error(e.getMessage());
         }
-    }
-
-    @PostMapping("/phone/validate")
-    @ApiOperation("验证手机号和验证码是否一致")
-    public R phoneValidate(String phone, String code) {
-        boolean success = memberService.validatePhoneCode(phone, code);
-        if (success) {
-            return R.ok();
-        }
-        return R.error(HttpStatus.SC_FORBIDDEN, "验证码错误");
-    }
-
-    @PostMapping("/phone/bindPhone")
-    @ApiOperation("用户绑定手机号")
-    public R bindPhone(String phone, String memberId) {
-        Member member = memberService.selectById(memberId);
-        if (member != null) {
-            WxUserInfoForm form = redisUtils.get(RedisKeys.WX_PHONE + phone, WxUserInfoForm.class);
-            if (form != null) {
-                if (StringUtils.isEmpty(member.getNickName())) {
-                    member.setNickName(form.getNickName());
-                }
-                if (StringUtils.isEmpty(member.getAvatar())) {
-                    member.setAvatar(form.getAvatarUrl());
-                }
-                if (member.getSex() == null) {
-                    member.setSex(form.getGender());
-                }
-            }
-            member.setMobile(phone);
-            memberService.updateById(member);
-            return R.ok();
-        }
-        return R.error(HttpStatus.SC_FORBIDDEN, "没有查询到用户");
-    }
-
-    @GetMapping("getUnionid")
-    @ApiOperation("获取微信公众号Unionid")
-    public R getUnionid(String code) {
-        //表单校验
-        logger.info("RegisterController.getUnionid 参数code：{}", code);
-        if (StringUtils.isEmpty(code)) {
-            throw new RRException("code is null");
-        }
-        String unionid = wechatService.getUnionid(code);
-        return R.ok().put("result", unionid);
     }
 
 }
