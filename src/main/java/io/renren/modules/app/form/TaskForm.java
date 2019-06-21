@@ -51,9 +51,9 @@ public class TaskForm {
     @NotNull
     private Long expireTime;*/
 
-    @ApiModelProperty(value = "虚拟货币（雷锋币）", example = "")
+    @ApiModelProperty(value = "金额", example = "")
     @NotNull
-    private Integer virtualCurrency;
+    private Integer money;
 
     @ApiModelProperty(value = "任务地址id", example = "")
     @NotNull
@@ -91,13 +91,12 @@ public class TaskForm {
         this.tagIds = tagIds;
     }
 
-
-    public Integer getVirtualCurrency() {
-        return virtualCurrency;
+    public Integer getMoney() {
+        return money;
     }
 
-    public void setVirtualCurrency(Integer virtualCurrency) {
-        this.virtualCurrency = virtualCurrency;
+    public void setMoney(Integer money) {
+        this.money = money;
     }
 
     public Long getAddressId() {

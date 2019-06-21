@@ -2,36 +2,34 @@ package io.renren.modules.app.entity;
 
 public enum TaskDifficultyEnum {
 
-    FREE(Integer.MIN_VALUE, 0),
+    SIMPLE(1, 2000),//单位为RMB分
 
-    SIMPLE(1, 20),
+    NORMAL(2001, 10000),
 
-    NORMAL(21, 50),
+    DIFFICULT(10001, Integer.MAX_VALUE);
 
-    DIFFICULT(51, Integer.MAX_VALUE);
+    private int minMoney;
 
-    private int minVirtualCurrency;
+    private int maxMoney;
 
-    private int maxVirtualCurrency;
-
-    TaskDifficultyEnum(int minVirtualCurrency, int maxVirtualCurrency) {
-        this.minVirtualCurrency = minVirtualCurrency;
-        this.maxVirtualCurrency = maxVirtualCurrency;
+    TaskDifficultyEnum(int minMoney, int maxMoney) {
+        this.minMoney = minMoney;
+        this.maxMoney = maxMoney;
     }
 
-    public int getMinVirtualCurrency() {
-        return minVirtualCurrency;
+    public int getMinMoney() {
+        return minMoney;
     }
 
-    public void setMinVirtualCurrency(int minVirtualCurrency) {
-        this.minVirtualCurrency = minVirtualCurrency;
+    public void setMinMoney(int minMoney) {
+        this.minMoney = minMoney;
     }
 
-    public int getMaxVirtualCurrency() {
-        return maxVirtualCurrency;
+    public int getMaxMoney() {
+        return maxMoney;
     }
 
-    public void setMaxVirtualCurrency(int maxVirtualCurrency) {
-        this.maxVirtualCurrency = maxVirtualCurrency;
+    public void setMaxMoney(int maxMoney) {
+        this.maxMoney = maxMoney;
     }
 }

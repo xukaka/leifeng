@@ -31,19 +31,17 @@
         </if>
         <if test="queryMap.difficulty!=null and queryMap.difficulty != ''">
             <choose>
-                <when test="queryMap.difficulty =='FREE'">
-                    AND t.virtual_currency = #{queryMap.maxVirtualCurrency}
-                </when>
+
                 <when test="queryMap.difficulty == 'SIMPLE'">
-                    AND t.virtual_currency &gt;= #{queryMap.minVirtualCurrency}
-                    AND t.virtual_currency &lt;= #{queryMap.maxVirtualCurrency}
+                    AND t.virtual_currency &gt;= #{queryMap.minMoney}
+                    AND t.virtual_currency &lt;= #{queryMap.maxMoney}
                 </when>
                 <when test="queryMap.difficulty =='NORMAL'">
-                    AND t.virtual_currency &gt;= #{queryMap.minVirtualCurrency}
-                    AND t.virtual_currency &lt;= #{queryMap.maxVirtualCurrency}
+                    AND t.virtual_currency &gt;= #{queryMap.minMoney}
+                    AND t.virtual_currency &lt;= #{queryMap.maxMoney}
                 </when>
                 <when test="queryMap.difficulty =='DIFFICULT'">
-                    AND t.virtual_currency &gt; #{queryMap.maxVirtualCurrency}
+                    AND t.virtual_currency &gt; #{queryMap.maxMoney}
                 </when>
             </choose>
         </if>

@@ -25,9 +25,19 @@ public class TaskEntity extends BaseEntity {
     private String description;
 
     /**
-     * 虚拟货币(雷锋币)
+     * 金额
      */
-    private Integer virtualCurrency;
+    private Integer money=0;
+
+    /**
+     * 积分值
+     */
+    private Integer integralValue=0;
+
+    /**
+     * 经验值
+     */
+    private Integer experience=0;
     /**
      * 任务地址id
      */
@@ -75,14 +85,12 @@ public class TaskEntity extends BaseEntity {
         this.description = description;
     }
 
-
-
-    public Integer getVirtualCurrency() {
-        return virtualCurrency;
+    public Integer getMoney() {
+        return money;
     }
 
-    public void setVirtualCurrency(Integer virtualCurrency) {
-        this.virtualCurrency = virtualCurrency;
+    public void setMoney(Integer money) {
+        this.money = money;
     }
 
     public Long getAddressId() {
@@ -150,5 +158,19 @@ public class TaskEntity extends BaseEntity {
         this.viewCount = viewCount;
     }
 
+    public Integer getIntegralValue() {
+        return integralValue;
+    }
 
+    public void setIntegralValue(Integer integralValue) {
+        this.integralValue = integralValue;
+    }
+
+    public Integer getExperience() {
+        return experience;
+    }
+
+    public void setExperience(Integer experience) {
+        this.experience = experience;
+    }
 }

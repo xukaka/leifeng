@@ -45,6 +45,16 @@ public class TaskDto implements Serializable {
      * 虚拟货币(雷锋币)
      */
     private Integer virtualCurrency;
+
+    /**
+     * 经验值
+     */
+    private Integer integralValue;
+
+    /**
+     * 经验值
+     */
+    private Integer experience;
     /**
      * 任务地址
      */
@@ -268,5 +278,21 @@ public class TaskDto implements Serializable {
 
     public void setLiked(Boolean liked) {
         isLiked = liked;
+    }
+
+    public Integer getIntegralValue() {
+        return integralValue;
+    }
+
+    public void setIntegralValue(Integer integralValue) {
+        this.integralValue = integralValue;
+    }
+
+    public Integer getExperience() {
+        return experience;
+    }
+
+    public void setExperience(Integer experience) {
+        this.experience = experience;
     }
 }

@@ -137,19 +137,16 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             TaskDifficultyEnum difficulty = form.getTaskDifficulty();
             queryMap.put("difficulty", difficulty.name());
             switch (difficulty) {
-                case FREE:
-                    queryMap.put("maxVirtualCurrency", difficulty.getMaxVirtualCurrency());
-                    break;
                 case SIMPLE:
-                    queryMap.put("minVirtualCurrency", difficulty.getMinVirtualCurrency());
-                    queryMap.put("maxVirtualCurrency", difficulty.getMaxVirtualCurrency());
+                    queryMap.put("minMoney", difficulty.getMinMoney());
+                    queryMap.put("maxMoney", difficulty.getMaxMoney());
                     break;
                 case NORMAL:
-                    queryMap.put("minVirtualCurrency", difficulty.getMinVirtualCurrency());
-                    queryMap.put("maxVirtualCurrency", difficulty.getMaxVirtualCurrency());
+                    queryMap.put("minMoney", difficulty.getMinMoney());
+                    queryMap.put("maxMoney", difficulty.getMaxMoney());
                     break;
                 case DIFFICULT:
-                    queryMap.put("minVirtualCurrency", difficulty.getMinVirtualCurrency());
+                    queryMap.put("minMoney", difficulty.getMinMoney());
                 default:
                     break;
             }
@@ -225,10 +222,30 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         task.setCreatorId(creatorId);
         task.setStatus(TaskStatusEnum.notpay);
         task.setCreateTime(DateUtils.now());
+        task.setExperience(calTaskExperience(form.getMoney()));
+        task.setIntegralValue(calTaskIntegralValue(form.getMoney()));
         this.insert(task);
         addTaskImageRelation(task.getId(), form.getImageUrls());
         addTaskTagRelation(task.getId(), form.getTagIds());
         return task.getId();
+    }
+
+    //计算任务经验值
+    private int calTaskExperience(int money) {
+        int taskExperience = 0;
+        if (money <= TaskDifficultyEnum.SIMPLE.getMaxMoney()) {
+            taskExperience = 1;
+        } else if (money <= TaskDifficultyEnum.NORMAL.getMaxMoney()) {
+            taskExperience = 2;
+        } else if (money <= TaskDifficultyEnum.DIFFICULT.getMaxMoney()) {
+            taskExperience = 3;
+        }
+        return taskExperience;
+    }
+
+    //计算任务积分值:积分值按照金额(1元=100分)的0.001计算
+    private int calTaskIntegralValue(int money) {
+        return (int)Math.round(money *0.001);
     }
 
     @Override
@@ -308,14 +325,14 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         ThreadPoolUtils.execute(() -> {
             TaskEntity task = this.selectById(taskId);
             //推送消息给任务发布人
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId,task.getCreatorId(), taskId, "领取"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId, task.getCreatorId(), taskId, "领取"));
         });
     }
 
 
     @Override
     @Transactional
-    public void chooseTaskReceiver(Long taskId, Long memberId,Long receiverId) {
+    public void chooseTaskReceiver(Long taskId, Long memberId, Long receiverId) {
         boolean isChooseable = isChooseableReceiver(taskId, receiverId);
         if (!isChooseable) {
             throw new RRException("任务已开始，不能选择人了", 100);
@@ -329,7 +346,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.received);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(memberId,receiverId, taskId, "指派"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(memberId, receiverId, taskId, "指派"));
 
         }
 
@@ -353,7 +370,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.executing);
             TaskEntity task = selectById(taskId);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId,task.getCreatorId(), taskId, "执行"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId, task.getCreatorId(), taskId, "执行"));
         }
     }
 
@@ -378,7 +395,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             updateTaskStatus(taskId, TaskStatusEnum.published);
         }
         ThreadPoolUtils.execute(() -> {
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId,task.getCreator().getId(),taskId, "取消"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId, task.getCreator().getId(), taskId, "取消"));
         });
     }
 
@@ -401,7 +418,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             List<TaskReceiveEntity> taskReceives = taskReceiveDao.selectList(wrapper);
             if (!CollectionUtils.isEmpty(taskReceives)) {
                 for (TaskReceiveEntity taskReceive : taskReceives) {
-                    rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(publisherId,taskReceive.getReceiverId(),taskId, "取消"));
+                    rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(publisherId, taskReceive.getReceiverId(), taskId, "取消"));
                 }
             }
         });
@@ -476,7 +493,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.submitted);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId,task.getCreatorId(),taskId, "提交"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId, task.getCreatorId(), taskId, "提交"));
         }
     }
 
@@ -521,7 +538,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             ThreadPoolUtils.execute(() -> {
                 //任务完成数+1
                 memberService.incTaskCompleteCount(receiverId, 1);
-                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId,receiverId,taskId, "确认完成"));
+                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId, receiverId, taskId, "确认完成"));
                 //给领取人添加标签
                 addTag2Member(receiverId, taskId);
             });
