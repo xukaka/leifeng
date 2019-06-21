@@ -36,8 +36,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/app/wx/pay")
 @Api(tags = "微信支付")
-public class WXPayController {
-    private final static Logger logger = LoggerFactory.getLogger(WXPayController.class);
+public class WechatPayController {
+    private final static Logger logger = LoggerFactory.getLogger(WechatPayController.class);
     @Autowired
     private WechatPayService wechatPayService;
     @Autowired

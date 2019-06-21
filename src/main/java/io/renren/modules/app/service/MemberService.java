@@ -82,6 +82,11 @@ public interface MemberService extends IService<Member> {
     PageUtils<MemberDto> getFollowMembers(Long fromMemberId, PageWrapper page);
 
     /**
+     * 获取用户关注总数和fans总数
+     */
+    FollowAndFansCountDto getFollowAndFansCount(Long memberId);
+
+    /**
      * 分页获取粉丝用户列表
      *
      * @param toMemberId

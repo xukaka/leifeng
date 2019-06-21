@@ -126,6 +126,15 @@ public class MemberController {
         return R.ok();
     }
 
+
+    @Login
+    @GetMapping("/getFollowAndFansCount")
+    @ApiOperation("获取用户关注总数和粉丝总数")
+    public R getFollowAndFansCount() {
+        FollowAndFansCountDto dto = memberService.getFollowAndFansCount(ReqUtils.curMemberId());
+        return R.ok().put("result", dto);
+    }
+
     @Login
     @GetMapping("/follow/list")
     @ApiOperation("分页获取关注的用户列表")
@@ -157,7 +166,7 @@ public class MemberController {
     @GetMapping("/score/detail")
     @ApiOperation("获取用户评分详情")
     public R getScore(Long taskId) {
-        MemberScoreDto score= memberService.getScore(taskId);
+        MemberScoreDto score = memberService.getScore(taskId);
         return R.ok().put("result", score);
     }
 

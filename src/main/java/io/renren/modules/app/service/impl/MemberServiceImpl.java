@@ -165,7 +165,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         member.setAvatar(form.getAvatar());
         member.setSex(form.getSex());
         member.setSelfIntro(form.getSelfIntro());
-        this.update(member,wrapper);
+        this.update(member, wrapper);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         member.setAvatar(userInfo.getAvatarUrl());
         member.setNickName(userInfo.getNickName());
         member.setSex(userInfo.getGender());
-        this.update(member,wrapper);
+        this.update(member, wrapper);
     }
 
     @Override
@@ -211,6 +211,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         memberFollowDao.delete(wrapper);
 //        redisUtils.delListKey("follow-currentUser:" + fromMemberId, toMemberId);
 //        redisUtils.delListKey("follow:" + toMemberId, fromMemberId);
+    }
+
+
+    @Override
+    public FollowAndFansCountDto getFollowAndFansCount(Long memberId) {
+        int followCount = memberFollowDao.followCount(memberId);
+        int fansCount = memberFollowDao.fansCount(memberId);
+        return new FollowAndFansCountDto(followCount, fansCount);
     }
 
     @Override
