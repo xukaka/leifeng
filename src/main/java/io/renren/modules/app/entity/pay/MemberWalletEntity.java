@@ -1,6 +1,5 @@
 package io.renren.modules.app.entity.pay;
 
-import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import io.renren.modules.app.entity.BaseEntity;
 

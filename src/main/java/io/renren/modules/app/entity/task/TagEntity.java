@@ -16,7 +16,7 @@ public class TagEntity extends BaseEntity {
     /**
      * 使用次数
      */
-    private Long usageCount = 0L;
+    private Long usageCount;
 
     public TagEntity() {
     }

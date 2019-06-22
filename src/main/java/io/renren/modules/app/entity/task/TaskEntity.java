@@ -27,17 +27,17 @@ public class TaskEntity extends BaseEntity {
     /**
      * 金额
      */
-    private Integer money=0;
+    private Integer money;
 
     /**
      * 积分值
      */
-    private Integer integralValue=0;
+    private Integer integralValue;
 
     /**
      * 经验值
      */
-    private Integer experience=0;
+    private Integer experience;
     /**
      * 任务地址id
      */
@@ -53,12 +53,12 @@ public class TaskEntity extends BaseEntity {
     /**
      * 评论数
      */
-    private Integer commentCount = 0;
+    private Integer commentCount;
 
     /**
      * 浏览数
      */
-    private Integer viewCount = 0;
+    private Integer viewCount;
     /**
      * 状态
      */

@@ -31,17 +31,17 @@ public class TaskCircleEntity extends BaseEntity {
     /**
      * 是否需要审核
      */
-    private Boolean needReview=false;
+    private Boolean needReview;
 
     /**
      * 成员数
      */
-    private Integer memberCount = 0;
+    private Integer memberCount;
 
     /**
      * 任务数
      */
-    private Integer taskCount = 0;
+    private Integer taskCount;
 
     public Long getCreatorId() {
         return creatorId;
