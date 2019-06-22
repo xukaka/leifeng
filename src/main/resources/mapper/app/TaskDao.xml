@@ -33,15 +33,15 @@
             <choose>
 
                 <when test="queryMap.difficulty == 'SIMPLE'">
-                    AND t.virtual_currency &gt;= #{queryMap.minMoney}
-                    AND t.virtual_currency &lt;= #{queryMap.maxMoney}
+                    AND t.money &gt;= #{queryMap.minMoney}
+                    AND t.money &lt;= #{queryMap.maxMoney}
                 </when>
                 <when test="queryMap.difficulty =='NORMAL'">
-                    AND t.virtual_currency &gt;= #{queryMap.minMoney}
-                    AND t.virtual_currency &lt;= #{queryMap.maxMoney}
+                    AND t.money &gt;= #{queryMap.minMoney}
+                    AND t.money &lt;= #{queryMap.maxMoney}
                 </when>
                 <when test="queryMap.difficulty =='DIFFICULT'">
-                    AND t.virtual_currency &gt; #{queryMap.maxMoney}
+                    AND t.money &gt; #{queryMap.maxMoney}
                 </when>
             </choose>
         </if>
@@ -57,7 +57,7 @@
             <id property="id" column="id"/>
             <result property="title" column="title"/>
             <result property="completeTime" column="complete_time"/>
-            <result property="virtualCurrency" column="virtual_currency"/>
+            <result property="money" column="money"/>
         </association>
         <!--关联地址-->
         <association property="address" javaType="io.renren.modules.app.entity.task.TaskAddressEntity">
@@ -84,7 +84,7 @@
         <result property="startTime" column="start_time"/>
         <result property="expireTime" column="expire_time"/>
         <result property="createTime" column="create_time"/>
-        <result property="virtualCurrency" column="virtual_currency"/>
+        <result property="money" column="money"/>
         <result property="status" column="status"/>
         <result property="likeCount" column="like_count"/>
         <result property="commentCount" column="comment_count"/>
@@ -137,7 +137,7 @@
         <result property="startTime" column="start_time"/>
         <result property="expireTime" column="expire_time"/>
         <result property="createTime" column="create_time"/>
-        <result property="virtualCurrency" column="virtual_currency"/>
+        <result property="money" column="money"/>
         <result property="status" column="status"/>
         <result property="likeCount" column="like_count"/>
         <result property="commentCount" column="comment_count"/>
@@ -179,7 +179,7 @@
         <result property="expireTime" column="expire_time"/>
         <result property="createTime" column="create_time"/>
         <result property="receiveTime" column="receive_time"/>
-        <result property="virtualCurrency" column="virtual_currency"/>
+        <result property="money" column="money"/>
         <result property="status" column="status"/>
         <result property="likeCount" column="like_count"/>
         <result property="commentCount" column="comment_count"/>
