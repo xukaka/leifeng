@@ -3,7 +3,6 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.netty.util.internal.StringUtil;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
@@ -156,11 +155,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
     @Override
-    public PageUtils<TaskDto> getPublishedTasks(Long publisherId,  String status,PageWrapper page) {
-        TaskStatusEnum taskStatus = null;
-        if (StringUtils.isNotEmpty(status)){
-            taskStatus = TaskStatusEnum.valueOf(status);
-        }
+    public PageUtils<TaskDto> getPublishedTasks(Long publisherId,  TaskStatusEnum status,PageWrapper page) {
+        String taskStatus = status!=null?status.name():null;
         List<TaskDto> tasks = baseMapper.getPublishedTasks(publisherId,taskStatus, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
