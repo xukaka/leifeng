@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
+import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskQueryForm;
@@ -34,7 +35,7 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
     List<TaskDto> searchTasks(@Param("queryMap") Map<String, Object> queryMap, @Param("page") PageWrapper page);
 
     //分页获取用户的发布任务列表
-    List<TaskDto> getPublishedTasks(@Param("publisherId") Long publisherId, @Param("page") PageWrapper page);
+    List<TaskDto> getPublishedTasks(@Param("publisherId") Long publisherId, @Param("status")TaskStatusEnum status, @Param("page") PageWrapper page);
 
     //分页获取用户的领取任务列表
     List<TaskDto> getReceivedTasks(@Param("receiverId") Long receiverId, @Param("page") PageWrapper page);
@@ -48,7 +49,7 @@ public interface TaskDao extends BaseMapper<TaskEntity> {
     /**
      * 任务发布总数
      */
-    int publishCount(@Param("publisherId") Long publisherId);
+    int publishCount(@Param("publisherId") Long publisherId,@Param("status")TaskStatusEnum status);
 
     /**
      * 任务领取总数

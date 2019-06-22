@@ -246,6 +246,9 @@
         JOIN t_task_address a ON t.address_id = a.id
         JOIN member m ON t.creator_id = m.id
         WHERE t.creator_id = #{publisherId} AND t.deleted = 0
+        <if test="status!=null and status!=''">
+            AND t.status = #{status}
+        </if>
         ORDER BY t.create_time DESC
         LIMIT #{page.offset},#{page.limit}
         )AS task
@@ -260,6 +263,10 @@
         count(1)
         FROM t_task t
         WHERE t.creator_id = #{publisherId} and t.deleted = 0
+        <if test="status!=null and status!=''">
+            AND t.status = #{status}
+        </if>
+
     </select>
 
     <!--用户领取的任务列表-->

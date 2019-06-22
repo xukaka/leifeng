@@ -155,12 +155,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
     @Override
-    public PageUtils<TaskDto> getPublishedTasks(Long publisherId, PageWrapper page) {
-        List<TaskDto> tasks = baseMapper.getPublishedTasks(publisherId, page);
+    public PageUtils<TaskDto> getPublishedTasks(Long publisherId,  TaskStatusEnum status,PageWrapper page) {
+        List<TaskDto> tasks = baseMapper.getPublishedTasks(publisherId,status, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
-        int total = baseMapper.publishCount(publisherId);
+        int total = baseMapper.publishCount(publisherId,status);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 

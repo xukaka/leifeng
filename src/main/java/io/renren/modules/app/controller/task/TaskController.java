@@ -8,6 +8,7 @@ import io.renren.modules.app.dto.MemberDto;
 import io.renren.modules.app.dto.TaskBannerDto;
 import io.renren.modules.app.dto.TaskDto;
 import io.renren.modules.app.entity.LikeTypeEnum;
+import io.renren.modules.app.entity.TaskStatusEnum;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
@@ -162,9 +163,9 @@ public class TaskController {
 
     @GetMapping("/publish/list")
     @ApiOperation("分页获取发布任务列表")
-    public R getPublishedTasks(Long publisherId, Integer curPage, Integer pageSize) {
+    public R getPublishedTasks(Long publisherId, TaskStatusEnum status,Integer curPage, Integer pageSize) {
         PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
-        PageUtils<TaskDto> tasks = taskService.getPublishedTasks(publisherId, page);
+        PageUtils<TaskDto> tasks = taskService.getPublishedTasks(publisherId,status, page);
         return R.ok().put("result", tasks);
     }
 

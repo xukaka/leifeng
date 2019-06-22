@@ -33,7 +33,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 分页获取发布的任务
      */
-    PageUtils<TaskDto> getPublishedTasks(Long publisherId, PageWrapper page);
+    PageUtils<TaskDto> getPublishedTasks(Long publisherId, TaskStatusEnum status, PageWrapper page);
 
     /**
      * 分页获取领取的任务
