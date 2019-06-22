@@ -163,7 +163,7 @@ public class TaskController {
 
     @GetMapping("/publish/list")
     @ApiOperation("分页获取发布任务列表")
-    public R getPublishedTasks(Long publisherId, TaskStatusEnum status,Integer curPage, Integer pageSize) {
+    public R getPublishedTasks(Long publisherId, String status,Integer curPage, Integer pageSize) {
         PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
         PageUtils<TaskDto> tasks = taskService.getPublishedTasks(publisherId,status, page);
         return R.ok().put("result", tasks);
