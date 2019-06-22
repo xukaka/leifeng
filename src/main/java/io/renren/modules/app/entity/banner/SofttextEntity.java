@@ -19,7 +19,7 @@ public class SofttextEntity extends BaseEntity {
     private String htmlContent;
 
     //浏览数
-    private Integer viewCount=0;
+    private Integer viewCount;
 
     //url
     private String linkUrl;

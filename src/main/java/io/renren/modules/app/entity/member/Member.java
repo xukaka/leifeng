@@ -25,7 +25,7 @@ public class Member implements Serializable {
     //个性说明
     private String selfIntro;
     //等级
-    private Integer level=0;
+    private Integer level;
     //维度
     private Double lat;
     //经度
@@ -40,16 +40,16 @@ public class Member implements Serializable {
     //电话
     private String mobile;
     //状态
-    private Integer status=1;
+    private Integer status;
     //积分值
-    private Integer integralValue = 0;
+    private Integer integralValue;
 
     //任务完成数
-    private Integer taskCompleteCount=0;
+    private Integer taskCompleteCount;
     //经验值
-    private Integer experience = 0;
+    private Integer experience;
     //虚拟币
-    private Integer virtualCurrency=0;
+    private Integer virtualCurrency;
     //创建时间
     private Long createTime;
 

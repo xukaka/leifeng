@@ -34,10 +34,6 @@ public class TaskDto implements Serializable {
     private List<String> tagNames;
 
     /**
-     * 当前当前系统时间
-     */
-    private Long curSystemTime;
-    /**
      * 任务领取时间
      */
     private Long receiveTime;
@@ -158,14 +154,6 @@ public class TaskDto implements Serializable {
 
     public void setScored(Boolean scored) {
         isScored = scored;
-    }
-
-    public Long getCurSystemTime() {
-        return curSystemTime;
-    }
-
-    public void setCurSystemTime(Long curSystemTime) {
-        this.curSystemTime = curSystemTime;
     }
 
     public Integer getMoney() {

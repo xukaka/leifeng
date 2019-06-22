@@ -16,13 +16,13 @@ public class DiaryEntity extends BaseEntity {
     private Boolean isPrivate = false;
 
     //    浏览数
-    private Integer viewCount = 0;
+    private Integer viewCount;
 
     //评论数
-    private Integer commentCount = 0;
+    private Integer commentCount;
 
     //点赞数
-    private Integer likeCount = 0;
+    private Integer likeCount;
 
     public Long getCreatorId() {
         return creatorId;

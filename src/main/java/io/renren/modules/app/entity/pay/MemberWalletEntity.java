@@ -12,7 +12,7 @@ public class MemberWalletEntity extends BaseEntity{
 
     private Long memberId;//用户id
 
-    private Long money=0L;//金额，单位为分
+    private Long money;//金额，单位为分
 
     private String salt;//32位密码随机干扰字符串
     private String payPassword;//支付密码

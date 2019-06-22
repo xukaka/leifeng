@@ -191,7 +191,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             //是否评分
             boolean isScored = memberService.isScored(id);
             task.setScored(isScored);
-            task.setCurSystemTime(DateUtils.now());
         }
         return task;
     }

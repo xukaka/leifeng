@@ -27,7 +27,7 @@ public abstract class BaseEntity implements Serializable {
     /**
      * 是否删除
      */
-    private Boolean deleted = false;
+    private Boolean deleted;
 
     public Long getId() {
         return id;
