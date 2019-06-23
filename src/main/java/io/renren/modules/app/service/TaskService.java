@@ -125,5 +125,7 @@ public interface TaskService extends IService<TaskEntity> {
      */
     void incViewCount(Long taskId,Integer inc);
 
+    //通知TA领取任务
+    void noticeReceiveTask(Long curMemberId,Long notifiedMemberId, Long taskId);
 }
 

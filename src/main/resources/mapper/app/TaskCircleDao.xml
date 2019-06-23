@@ -90,7 +90,7 @@
         JOIN t_task_circle_member cm ON tc.id = cm.circle_id
         JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
         JOIN t_tag tg ON rg.tag_id=tg.id
-        JOIN member m ON cm.member_id = m.id
+        JOIN member m ON tc.creator_id = m.id
         WHERE cm.member_id = #{memberId} AND tc.deleted = 0
         ORDER BY cm.create_time DESC
         LIMIT #{page.offset},#{page.limit}
@@ -115,7 +115,7 @@
         JOIN t_task_circle_member cm ON tc.id = cm.circle_id
         JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
         JOIN t_tag tg ON rg.tag_id=tg.id
-        JOIN member m ON cm.member_id = m.id
+        JOIN member m ON  tc.creator_id = m.id
     </select>
 
     <!--圈成员数+inc-->

@@ -20,6 +20,7 @@ import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberTagRelationEntity;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
+import io.renren.modules.app.entity.story.DiaryContentEntity;
 import io.renren.modules.app.entity.task.*;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
@@ -37,10 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -97,8 +95,16 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             return new PageUtils<>();
         }
         setTaskDistance(form, tasks);
+        sortTagNames(tasks);
         int total = baseMapper.count(queryMap);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
+    }
+
+    //标签默认排序
+    private void sortTagNames(List<TaskDto> tasks) {
+        for (TaskDto task:tasks) {
+            task.getTagNames().sort((o1, o2) -> o1.compareTo(o2));
+        }
     }
 
 
@@ -649,6 +655,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Override
     public void incViewCount(Long taskId, Integer inc) {
         baseMapper.incViewCount(taskId, inc);
+    }
+
+    @Override
+    public void noticeReceiveTask(Long curMemberId,Long notifiedMemberId, Long taskId) {
+            //推送消息给被通知的用户
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId, notifiedMemberId, taskId, "通知我领取"));
+
     }
 
 

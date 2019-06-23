@@ -194,4 +194,12 @@ public class TaskController {
         return R.ok();
     }
 
+    @Login
+    @GetMapping("/noticeReceive")
+    @ApiOperation("通知TA领取")
+    public R noticeReceive(Long notifiedMemberId,Long taskId) {
+        taskService.noticeReceiveTask(ReqUtils.curMemberId(),notifiedMemberId, taskId);
+        return R.ok();
+    }
+
 }
