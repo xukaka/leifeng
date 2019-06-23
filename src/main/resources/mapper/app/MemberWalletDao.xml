@@ -11,7 +11,7 @@
 
     <select id="getWallet" resultType="io.renren.modules.app.dto.MemberWalletDto">
         select
-        w.id
+        w.id,
         w.money,
         w.withdrawal_rq_code as withdrawalRqCode,
         m.id as memberId,
