@@ -352,7 +352,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         Integer result = taskReceiveDao.update(receive, wrapper);
         if (result != null && result > 0) {
             updateTaskStatus(taskId, TaskStatusEnum.received);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(memberId, receiverId, taskId, "指派"));
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(memberId, receiverId, taskId, "指派给我"));
 
         }
 

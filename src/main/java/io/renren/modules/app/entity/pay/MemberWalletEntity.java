@@ -19,6 +19,8 @@ public class MemberWalletEntity extends BaseEntity{
     private String idcard;//'身份证号
     private String openId;//提现微信openId
 
+    private String withdrawalRqCode;//提现二维码
+
     public Long getMemberId() {
         return memberId;
     }
@@ -73,6 +75,14 @@ public class MemberWalletEntity extends BaseEntity{
 
     public void setOpenId(String openId) {
         this.openId = openId;
+    }
+
+    public String getWithdrawalRqCode() {
+        return withdrawalRqCode;
+    }
+
+    public void setWithdrawalRqCode(String withdrawalRqCode) {
+        this.withdrawalRqCode = withdrawalRqCode;
     }
 
     @Override

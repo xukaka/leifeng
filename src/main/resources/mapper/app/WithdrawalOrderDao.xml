@@ -10,6 +10,7 @@
         <result property="attach" column="attach"/>
         <result property="createTime" column="create_time"/>
         <result property="tradeState" column="trade_state"/>
+        <result property="withdrawalRqCode" column="withdrawal_rq_code"/>
         <!--关联创建人-->
         <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="member_id"/>
@@ -28,10 +29,12 @@
         m.nick_name AS member_nick_name,
         m.real_name AS member_real_name,
         m.avatar AS member_avatar,
-        m.sex AS member_sex
+        m.sex AS member_sex,
+        w.withdrawal_rq_code AS withdrawalRqCode
         from
         t_withdrawal_order o
         join member m on o.member_id=m.id
+        join t_member_wallet w on w.member_id=o.member_id
         ORDER BY o.create_time DESC
         LIMIT #{page.offset},#{page.limit}
 
@@ -43,7 +46,7 @@
         from
         t_withdrawal_order o
         join member m on o.member_id=m.id
-
+        join t_member_wallet w on w.member_id=o.member_id
     </select>
 
 </mapper>

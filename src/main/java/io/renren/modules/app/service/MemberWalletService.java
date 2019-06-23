@@ -19,5 +19,7 @@ public interface MemberWalletService extends IService<MemberWalletEntity> {
     //获取钱包信息
     MemberWalletDto getWallet(Long memberId);
 
+    //设置提现二维码
+    void withdrawalRqCode(Long curMemberId, Long walletId, String withdrawalRqCode);
 }
 

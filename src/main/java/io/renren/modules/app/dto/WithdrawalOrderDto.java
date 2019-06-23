@@ -25,6 +25,9 @@ public class WithdrawalOrderDto implements Serializable {
     //创建时间
     private Long createTime;
 
+    //提现二维码
+    private String withdrawalRqCode;
+
     public Long getId() {
         return id;
     }
@@ -79,5 +82,13 @@ public class WithdrawalOrderDto implements Serializable {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public String getWithdrawalRqCode() {
+        return withdrawalRqCode;
+    }
+
+    public void setWithdrawalRqCode(String withdrawalRqCode) {
+        this.withdrawalRqCode = withdrawalRqCode;
     }
 }

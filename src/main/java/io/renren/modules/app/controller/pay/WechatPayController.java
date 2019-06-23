@@ -364,4 +364,12 @@ public class WechatPayController {
         return R.ok().put("result", wallet);
     }
 
+    @Login
+    @GetMapping("/withdrawalRqCode")
+    @ApiOperation("设置提现二维码")
+    public R withdrawalRqCode(Long walletId,String withdrawalRqCode) {
+        memberWalletService.withdrawalRqCode(ReqUtils.curMemberId(),walletId,withdrawalRqCode);
+        return R.ok();
+    }
+
 }

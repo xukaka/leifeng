@@ -22,6 +22,9 @@ public class MemberWalletDto implements Serializable {
      */
     private Long money;
 
+    //提现二维码
+    private String withdrawalRqCode;
+
 
     public String getNickName() {
         return nickName;
@@ -61,5 +64,13 @@ public class MemberWalletDto implements Serializable {
 
     public void setMoney(Long money) {
         this.money = money;
+    }
+
+    public String getWithdrawalRqCode() {
+        return withdrawalRqCode;
+    }
+
+    public void setWithdrawalRqCode(String withdrawalRqCode) {
+        this.withdrawalRqCode = withdrawalRqCode;
     }
 }
