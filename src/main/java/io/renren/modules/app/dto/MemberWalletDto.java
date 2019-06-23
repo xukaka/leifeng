@@ -1,7 +1,5 @@
 package io.renren.modules.app.dto;
 
-import io.renren.modules.app.entity.member.Member;
-
 import java.io.Serializable;
 
 /**
@@ -9,6 +7,7 @@ import java.io.Serializable;
  */
 public class MemberWalletDto implements Serializable {
 
+    private Long id;//钱包id
 
     private Long memberId;
     //昵称
@@ -72,5 +71,13 @@ public class MemberWalletDto implements Serializable {
 
     public void setWithdrawalRqCode(String withdrawalRqCode) {
         this.withdrawalRqCode = withdrawalRqCode;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
