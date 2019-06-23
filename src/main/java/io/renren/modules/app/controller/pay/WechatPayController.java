@@ -81,6 +81,7 @@ public class WechatPayController {
         String wxResponse = wechatPayService.prePayRequest(WXPayUtil.mapToXml(reqData));
         logger.info("微信预下订单请求结果：{}", wxResponse);
         Map<String, String> wxPayMap = wechatPayService.reGenerateParamForApp(wxResponse);
+        logger.info("预下订单接口的返回数据重新签名返回参数给移动端发起支付结果：{}", wxPayMap);
         return R.ok().put("result", wxPayMap);
     }
 
