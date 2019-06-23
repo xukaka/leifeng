@@ -170,33 +170,6 @@ public class WechatPayController {
         }*/
     }
 
-    //企业转账提现功能接口
-    /*@Login
-    @PostMapping("/transfer")
-    @ApiOperation("企业提现功能接口")
-    public R transferMoney(String openId, String realName, Integer amount, Long memberId) throws Exception {
-        logger.info("[WXPayController.transferMoney] 进入");
-        String transdata = wxPayService.transferMoneyRequest(openId, realName, String.valueOf(amount));
-        logger.info("转账提现接口微信返回结果：{}", transdata);
-
-        Map<String, String> map = WXPayUtil.xmlToMap(transdata);
-        String returnCode = map.get("return_code");
-        if (!StringUtils.isEmpty(returnCode) && "SUCCESS".equals(returnCode)) {
-            String resultCode = map.get("result_code");
-            if (!StringUtils.isEmpty(resultCode) && "SUCCESS".equals(resultCode)) {
-
-                return R.ok().put("tradeNo", map.get("partner_trade_no"))
-                        .put("paymentNo", map.get("payment_no"))
-                        .put("paymentTime", map.get("payment_time"));
-            } else {
-                logger.info(map.get("err_code") + ":" + map.get("err_code_des"));
-                return R.error(map.get("err_code") + ":" + map.get("err_code_des"));
-            }
-        } else {
-            logger.info(map.get("return_msg"));
-            return R.error(map.get("return_msg"));
-        }
-    }*/
 
     //申请退款接口
     @Login
@@ -337,6 +310,15 @@ public class WechatPayController {
     public R withdrawal(String outTradeNo) throws Exception {
         logger.info("[WXPayController.withdrawal] 进入");
         Map<String, String> result = wechatPayService.withdrawal(outTradeNo);
+        return R.ok().put("result", result);
+    }
+
+    //企业提现功能接口
+    @GetMapping("/manualWithdrawal")
+    @ApiOperation("提现功能接口-人工提现")
+    public R manualWithdrawal(String outTradeNo) throws Exception {
+        logger.info("[WXPayController.manualWithdrawal] 进入");
+        Map<String, String> result = wechatPayService.manualWithdrawal(outTradeNo);
         return R.ok().put("result", result);
     }
 

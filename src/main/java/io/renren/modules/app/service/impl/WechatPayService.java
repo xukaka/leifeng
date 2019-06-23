@@ -531,4 +531,29 @@ public class WechatPayService {
         }
         return result;
     }
+
+
+
+    /**
+     *人工 提现（临时方案，后期需调整为自动提醒：参考WechatPayService.withdrawal方法）
+     */
+    public Map<String, String> manualWithdrawal(String outTradeNo) throws Exception {
+        Map<String, String> result = new HashMap<>();
+        WithdrawalOrderEntity order = withdrawalOrderService.selectOne(new EntityWrapper<WithdrawalOrderEntity>()
+                .eq("out_trade_no", outTradeNo));
+        if (order == null) {
+            throw new RRException("提现订单为空");
+        }
+        if (!WXPayConstants.AUDIT.equals(order.getTradeState())) {
+            throw new RRException("订单已经处理过了，不能重复提现,TradeState="+order.getTradeState());
+        }
+
+        order.setTradeState(WXPayConstants.SUCCESS);
+        withdrawalOrderService.updateById(order);
+
+        result.put("status","success");
+        result.put("message","人工提现成功，请及时付款到用户账号");
+
+        return result;
+    }
 }
