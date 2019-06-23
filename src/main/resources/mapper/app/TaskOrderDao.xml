@@ -24,7 +24,11 @@
     </select>
 
     <select id="count" resultType="int">
-         select count(1) from  t_task_order o
+         select
+            count(1)
+         from  t_task_order o
+         join t_task t on o.task_id = t.id
+         join member m on m.id = t.creator_id
         where 1 = 1
         <if test="tradeState!=null and tradeState!=''">
             and o.trade_state=#{tradeState}
