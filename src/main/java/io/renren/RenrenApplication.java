@@ -48,7 +48,7 @@ public class RenrenApplication extends SpringBootServletInitializer {
 		//初始化SSL;(开启SSL之前,你要保证你有SSL证书哦...)
 		//设置群组监听器，非必须，根据需要自己选择性实现;
 		imConfig.setImGroupListener(new ImDemoGroupListener());
-		ImServerStarter imServerStarter = new ImServerStarter(imConfig);
+		ImServerStarter imServerStarter = new ImServerStarter(imConfig );
 
 		/*****************start 以下处理器根据业务需要自行添加与扩展，每个Command都可以添加扩展,此处为demo中处理**********************************/
 		HandshakeReqHandler handshakeReqHandler = CommandManager.getCommand(Command.COMMAND_HANDSHAKE_REQ, HandshakeReqHandler.class);

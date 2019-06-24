@@ -85,8 +85,8 @@ public class TaskCircleController {
     @GetMapping("/join")
     @ApiOperation("加入任务圈")
     public R joinCircle(Long circleId) {
-        taskCircleService.joinCircle(ReqUtils.curMemberId(), circleId);
-        return R.ok();
+        Map<String,Object> result = taskCircleService.joinCircle(ReqUtils.curMemberId(), circleId);
+        return R.ok().put("result",result);
     }
 
     @Login

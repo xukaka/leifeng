@@ -18,6 +18,7 @@ import org.jim.common.packets.User;
 import org.jim.common.utils.JsonKit;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.JoinGroupReqHandler;
+import org.jim.server.command.handler.processor.login.LoginCmdProcessor;
 import org.jim.server.helper.redis.RedisMessageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.jim.common.ImConst.GROUP;
+import static org.jim.common.ImConst.USER;
 
 /**
  * @auther: Easy
@@ -38,16 +40,13 @@ public class UserLoginProcessor implements UserLoginServer {
     private RedisMessageHelper redisMessageHelper = new RedisMessageHelper();
 
     @Autowired
-    private RedisUtils redisUtils;
-    @Autowired
     private MemberService memberService;
-    private RedisCache userCache = RedisCacheManager.getCache(GROUP);
-    ;
-    private final String SUBFIX = ":";
+    private RedisCache userCache = RedisCacheManager.getCache(USER);
 
     public User getUser(Long memberId) {
 //        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
-        User user = redisUtils.get("user:" + memberId + ":info", User.class);
+        User user = userCache.get(String.valueOf(memberId),User.class);
+//        User user = redisUtils.get("user:" + memberId + ":info", User.class);
 //        MemberService memberService = SocketServiceUtil.getBean(MemberService.class);
         //demo中用map，生产环境需要用cache
         if (user == null) {
@@ -57,14 +56,15 @@ public class UserLoginProcessor implements UserLoginServer {
                 user.setId(String.valueOf(member.getId()));
                 user.setNick(member.getNickName());
                 user.setAvatar(member.getAvatar());
-                user.setGroups(initGroups(user));
-                return user;
+//                user.setGroups(initGroups(user));
             }
-        } else {
+        }/* else {
             List<Group> groups = redisMessageHelper.getAllGroupUsers(user.getId(), 2);
             user.setGroups(groups);
-        }
+        }*/
         return user;
+
+
     }
 
     public List<Group> initGroups(User user) {
@@ -85,8 +85,6 @@ public class UserLoginProcessor implements UserLoginServer {
     @Override
     public UserRespBody access(UserBody userBody, ChannelContext channelContext) {
         Long memberId = userBody.getMemberId();
-        ImSessionContext imSessionContext = (ImSessionContext) channelContext.getAttribute();
-        String handshakeToken = imSessionContext.getToken();
         UserRespBody userRespBody;
         User user = getUser(memberId);
         if (user == null) {
@@ -123,4 +121,7 @@ public class UserLoginProcessor implements UserLoginServer {
     public String name() {
         return "default";
     }
+
+
+
 }

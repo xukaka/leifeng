@@ -41,8 +41,8 @@
         <fastjson.version>1.2.47</fastjson.version>
         <hutool.version>4.1.1</hutool.version>
         <!--最新版需要本地构建，暂时先用2.5版本-->
-        <j-im-server.version>2.6.0.v20190114-RELEASE</j-im-server.version>
-        <!--<j-im-server.version>2.5.0.v20181115-RELEASE</j-im-server.version>-->
+        <!--<j-im-server.version>2.6.0.v20190114-RELEASE</j-im-server.version>-->
+        <j-im-server.version>2.5.0.v20181115-RELEASE</j-im-server.version>
 
         <!--wagon plugin 配置-->
         <service-path>/work/renren</service-path>
