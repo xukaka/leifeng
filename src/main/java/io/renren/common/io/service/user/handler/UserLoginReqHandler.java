@@ -79,7 +79,6 @@ public class UserLoginReqHandler extends AbstractCmdHandler {
      */
     public void bindUnbindGroup(ChannelContext channelContext, User user) throws Exception {
         String userId = user.getId();
-        System.out.println(userId);
         List<Group> groups = user.getGroups();
         if (groups != null) {
             boolean isStore = ImConst.ON.equals(imConfig.getIsStore());

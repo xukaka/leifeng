@@ -41,7 +41,6 @@ public class RenrenApplication extends SpringBootServletInitializer {
 		imConfig.setIsSSL("on");
 		try {
 			initSsl(imConfig);
-
 		}catch (Exception e){
             logger.error("发生异常 msg={}","原因",e);
 		}
@@ -88,12 +87,9 @@ public class RenrenApplication extends SpringBootServletInitializer {
 			String keyStoreFile = keyStorePath;
 			String trustStoreFile = keyStorePath;
 			String keyStorePwd = PropKit.get("jim.key.store.pwd");
-			if (org.apache.commons.lang3.StringUtils.isNotBlank(keyStoreFile) && StringUtils.isNotBlank(trustStoreFile)) {
-				InputStream keyStoreInputStream = null;
-				InputStream trustStoreInputStream = null;
-				keyStoreInputStream = new ClassPathResource(trustStoreFile).getStream();
-				trustStoreInputStream = new ClassPathResource(trustStoreFile).getStream();
-
+			if (StringUtils.isNotBlank(keyStoreFile) && StringUtils.isNotBlank(trustStoreFile)) {
+				InputStream	keyStoreInputStream = new ClassPathResource(trustStoreFile).getStream();
+				InputStream	trustStoreInputStream = new ClassPathResource(trustStoreFile).getStream();
 				SslConfig sslConfig = SslConfig.forServer(keyStoreInputStream, trustStoreInputStream, keyStorePwd);
 				imConfig.setSslConfig(sslConfig);
 			}

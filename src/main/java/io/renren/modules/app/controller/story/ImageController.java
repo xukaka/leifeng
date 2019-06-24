@@ -2,6 +2,7 @@ package io.renren.modules.app.controller.story;
 
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.Constant;
+import io.renren.common.utils.ImageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.oss.cloud.OSSFactory;
 import io.swagger.annotations.Api;
@@ -35,7 +36,9 @@ public class ImageController {
         }
 
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-        String url = OSSFactory.build().uploadSuffix(file.getBytes(), suffix);
+        //压缩图片：最大1M，循环压缩比率0.8
+        byte[] imageBytes =  ImageUtils.commpressPicForScale(file.getBytes(),1024,0.8);
+        String url = OSSFactory.build().uploadSuffix(imageBytes, suffix);
         logger.info("upload image,get url:" + url);
 
         return R.ok().put("result", url + Constant.IMAGE_STYLE);

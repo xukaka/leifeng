@@ -42,18 +42,6 @@ public final class ImMessageUtils{
         return msg.toJSONString();
     }
 
-    //圈审核结果消息
-/*    public static String getCircleAuditMessage(String auditId,String content,String businessCode,String toId,String fromId){
-        JSONObject msg = new JSONObject();
-        JSONObject extras = new JSONObject();
-        extras.put("businessCode", businessCode);
-        extras.put("auditId", auditId);
-        extras.put("content", content);
-        msg.put("toId", toId);
-        msg.put("fromId", fromId);
-        msg.put("extras",extras);
-        return msg.toJSONString();
-    }*/
 
     //任务状态消息
     public static String getTaskMsg(Long fromMemberId,Long toMemberId,Long taskId,String operate){

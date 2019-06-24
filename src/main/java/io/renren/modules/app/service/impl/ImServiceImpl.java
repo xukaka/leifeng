@@ -91,14 +91,19 @@ public class ImServiceImpl implements ImService {
     @Override
     public void setMessageType(Long fromId, Long toId) {
         LOG.info("setMessageType method:fromId={},toId={}", fromId, toId);
-        String onlineStatus = redisUtils.get("user:" + toId + ":terminal:ws");//目标用户是否在线
 
         redisUtils.zAdd("unread:" + fromId, toId, 0);
-        if ("online".equals(onlineStatus)) {
+        if (isOnline(toId)) {
             redisUtils.zAdd("unread:" + toId, fromId, 0);//已读
         } else {
             redisUtils.zAdd("unread:" + toId, fromId, 1);//未读
         }
+    }
+
+    //用户是否在线
+    private boolean isOnline(Long userId) {
+        String onlineStatus = redisUtils.get("user:" + String.valueOf(userId) + ":terminal:ws");//目标用户是否在线
+        return "online".equals(onlineStatus);
     }
 
     @Override
@@ -188,13 +193,13 @@ public class ImServiceImpl implements ImService {
         List<ChatRedDot> chatRedDots = getChatRedDots(memberId);
         redDot.setChatRedDotList(chatRedDots);
 
-        if ("true".equals(taskRedDotStatus)) {
+        if (Boolean.valueOf(taskRedDotStatus)) {
             redDot.setTaskRedDotStatus(true);
         }
-        if ("true".equals(dynamicRedDotStatus)) {
+        if (Boolean.valueOf(dynamicRedDotStatus)) {
             redDot.setDynamicRedDotStatus(true);
         }
-        if ("true".equals(circleRedDotStatus)) {
+        if (Boolean.valueOf(circleRedDotStatus)) {
             redDot.setCircleRedDotStatus(true);
         }
         return redDot;

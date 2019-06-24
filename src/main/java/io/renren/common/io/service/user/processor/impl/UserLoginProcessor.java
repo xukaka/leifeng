@@ -19,6 +19,8 @@ import org.jim.common.utils.JsonKit;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.JoinGroupReqHandler;
 import org.jim.server.helper.redis.RedisMessageHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
 
 import java.util.ArrayList;
@@ -31,22 +33,28 @@ import static org.jim.common.ImConst.GROUP;
  * @date: 19-4-18 11:11
  * @description:
  */
+@Component
 public class UserLoginProcessor implements UserLoginServer {
     private RedisMessageHelper redisMessageHelper = new RedisMessageHelper();
+
+    @Autowired
+    private RedisUtils redisUtils;
+    @Autowired
+    private MemberService memberService;
     private RedisCache userCache = RedisCacheManager.getCache(GROUP);
     ;
     private final String SUBFIX = ":";
 
     public User getUser(Long memberId) {
-        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
+//        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
         User user = redisUtils.get("user:" + memberId + ":info", User.class);
-        MemberService memberService = SocketServiceUtil.getBean(MemberService.class);
+//        MemberService memberService = SocketServiceUtil.getBean(MemberService.class);
         //demo中用map，生产环境需要用cache
         if (user == null) {
             MemberDto member = memberService.getMember(memberId);
             if (member != null) {
                 user = new User();
-                user.setId(member.getId().toString());
+                user.setId(String.valueOf(member.getId()));
                 user.setNick(member.getNickName());
                 user.setAvatar(member.getAvatar());
                 user.setGroups(initGroups(user));
@@ -63,7 +71,7 @@ public class UserLoginProcessor implements UserLoginServer {
         //模拟的群组;正式根据业务去查数据库或者缓存;
 
         List<Group> groups = new ArrayList<>();
-        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
+//        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
 //        List<Integer> list = redisUtils.getList("follow-currentUser:" + user.getId());
         groups.add(new Group("100", "雷锋通讯组"));
 //        if (list != null) {
