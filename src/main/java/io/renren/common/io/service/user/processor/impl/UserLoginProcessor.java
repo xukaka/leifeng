@@ -19,7 +19,6 @@ import org.jim.common.packets.User;
 import org.jim.common.utils.JsonKit;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.JoinGroupReqHandler;
-import org.jim.server.command.handler.processor.login.LoginCmdProcessor;
 import org.jim.server.helper.redis.RedisMessageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,6 @@ import org.tio.core.ChannelContext;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jim.common.ImConst.GROUP;
 import static org.jim.common.ImConst.USER;
 
 /**
@@ -42,18 +40,18 @@ import static org.jim.common.ImConst.USER;
 public class UserLoginProcessor implements UserLoginServer {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-//    private RedisMessageHelper redisMessageHelper = new RedisMessageHelper();
+    private RedisMessageHelper redisMessageHelper = new RedisMessageHelper();
 
     @Autowired
-    private MemberService memberService;
+//    private MemberService memberService;
     private RedisCache userCache = RedisCacheManager.getCache(USER);
 
     public User getUser(Long memberId) {
-//        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
-        User user = userCache.get(String.valueOf(memberId),User.class);
+        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
+//        User user = userCache.get(String.valueOf(memberId),User.class);
+        User user = redisUtils.get("user:" + memberId + ":info", User.class);
         logger.info("UserLoginProcessor.getUser mothed:param memberId={},user={}",memberId, JSONObject.toJSONString(user));
-//        User user = redisUtils.get("user:" + memberId + ":info", User.class);
-//        MemberService memberService = SocketServiceUtil.getBean(MemberService.class);
+        MemberService memberService = SocketServiceUtil.getBean(MemberService.class);
         //demo中用map，生产环境需要用cache
         if (user == null) {
             MemberDto member = memberService.getMember(memberId);
@@ -62,12 +60,12 @@ public class UserLoginProcessor implements UserLoginServer {
                 user.setId(String.valueOf(member.getId()));
                 user.setNick(member.getNickName());
                 user.setAvatar(member.getAvatar());
-//                user.setGroups(initGroups(user));
+                user.setGroups(initGroups(user));
             }
-        } /*else {
+        } else {
             List<Group> groups = redisMessageHelper.getAllGroupUsers(user.getId(), 2);
             user.setGroups(groups);
-        }*/
+        }
         return user;
 
 
@@ -77,14 +75,14 @@ public class UserLoginProcessor implements UserLoginServer {
         //模拟的群组;正式根据业务去查数据库或者缓存;
 
         List<Group> groups = new ArrayList<>();
-//        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
-//        List<Integer> list = redisUtils.getList("follow-currentUser:" + user.getId());
+        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
+        List<Integer> list = redisUtils.getList("follow-currentUser:" + user.getId());
         groups.add(new Group("100", "J-IM雷锋组"));
-//        if (list != null) {
-//            for (Integer integer : list) {
-//                groups.add(new Group(integer.toString(), integer + "通讯组"));
-//            }
-//        }
+        if (list != null) {
+            for (Integer integer : list) {
+                groups.add(new Group(integer.toString(), integer + "通讯组"));
+            }
+       }
         return groups;
     }
 

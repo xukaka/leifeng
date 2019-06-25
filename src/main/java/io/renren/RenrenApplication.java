@@ -58,8 +58,7 @@ public class RenrenApplication extends SpringBootServletInitializer {
 		//添加登录业务处理器;
 		userHandler.addProcessor(new UserLoginProcessor());
 		UserGroupHandler userGroupHandler = CommandManager.getCommand(Command.addAndGet("COMMAND_JOIN_USER_GROUP_REQ",22), UserGroupHandler.class);
-//		userGroupHandler.addProcessor(new UserGroupProcessor());
-
+//
 		UserCloseHandler userCloseHandler = CommandManager.getCommand(Command.COMMAND_CLOSE_REQ,UserCloseHandler.class);
 		userCloseHandler.addProcessor(new UserCloseProcessor());
 		/*****************end *******************************************************************************************/

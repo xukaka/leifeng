@@ -67,7 +67,7 @@ public class UserLoginReqHandler extends AbstractCmdHandler {
         imSessionContext.getClient().setUser(user);
         ImAio.bindUser(channelContext, userId, imConfig.getMessageHelper().getBindListener());
         //初始化绑定或者解绑群组;
-//        bindUnbindGroup(channelContext, user);
+        bindUnbindGroup(channelContext, user);
         userLoginServer.onSuccess(channelContext);
         userRespBody.clear();
         ImPacket loginRespPacket = new ImPacket(Command.COMMAND_LOGIN_RESP, userRespBody.toByte());

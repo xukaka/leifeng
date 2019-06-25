@@ -158,7 +158,7 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
         boolean exists = existsCircleMember(memberId, circleId);
         if (exists) {
             result.put("status", 2);
-            result.put("msg", "你已是圈成员");
+            result.put("msg", "已是圈成员");
             return result;
         }
         TaskCircleEntity circle = baseMapper.selectById(circleId);
@@ -172,7 +172,7 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
             audit.setCreateTime(DateUtils.now());
             taskCircleAuditDao.insert(audit);
             result.put("status", 1);
-            result.put("msg", "已申请加入圈，待圈主审核");
+            result.put("msg", "待圈主审核");
             ThreadPoolUtils.execute(()->{
                 //推消息给圈主审核
                 rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_CIRCLE, ImMessageUtils.getCircleMsg(circleId, audit.getId(),memberId,circle.getCreatorId(),"join"));
@@ -183,7 +183,7 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
             //圈人数+1
             baseMapper.incCircleMemberCount(circleId,1);
             result.put("status", 0);
-            result.put("msg", "加入圈成功");
+            result.put("msg", "加入成功");
             return result;
 
         }
