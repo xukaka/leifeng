@@ -16,14 +16,12 @@ import org.tio.core.ChannelContext;
 public class UserCloseProcessor  implements UserCloseServer {
     @Override
     public void close(CloseReqBody closeReqBody, ChannelContext channelContext) {
-
+        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
         if(closeReqBody == null || closeReqBody.getUserid() == null){
-            RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
             redisUtils.delete("online:"+channelContext.getUserid());
             ImAio.remove(channelContext, "收到关闭请求");
         }else{
             String userId = closeReqBody.getUserid();
-            RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
             redisUtils.delete("online:"+userId);
             ImAio.remove(userId, "收到关闭请求!");
         }

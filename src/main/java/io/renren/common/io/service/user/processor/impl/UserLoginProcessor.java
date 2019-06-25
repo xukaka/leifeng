@@ -1,5 +1,6 @@
 package io.renren.common.io.service.user.processor.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import io.renren.common.io.SocketServiceUtil;
 import io.renren.common.io.body.UserBody;
 import io.renren.common.io.service.user.processor.UserLoginServer;
@@ -20,6 +21,8 @@ import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.JoinGroupReqHandler;
 import org.jim.server.command.handler.processor.login.LoginCmdProcessor;
 import org.jim.server.helper.redis.RedisMessageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
@@ -37,7 +40,9 @@ import static org.jim.common.ImConst.USER;
  */
 @Component
 public class UserLoginProcessor implements UserLoginServer {
-    private RedisMessageHelper redisMessageHelper = new RedisMessageHelper();
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+//    private RedisMessageHelper redisMessageHelper = new RedisMessageHelper();
 
     @Autowired
     private MemberService memberService;
@@ -46,6 +51,7 @@ public class UserLoginProcessor implements UserLoginServer {
     public User getUser(Long memberId) {
 //        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
         User user = userCache.get(String.valueOf(memberId),User.class);
+        logger.info("UserLoginProcessor.getUser mothed:param memberId={},user={}",memberId, JSONObject.toJSONString(user));
 //        User user = redisUtils.get("user:" + memberId + ":info", User.class);
 //        MemberService memberService = SocketServiceUtil.getBean(MemberService.class);
         //demo中用map，生产环境需要用cache
@@ -58,7 +64,7 @@ public class UserLoginProcessor implements UserLoginServer {
                 user.setAvatar(member.getAvatar());
 //                user.setGroups(initGroups(user));
             }
-        }/* else {
+        } /*else {
             List<Group> groups = redisMessageHelper.getAllGroupUsers(user.getId(), 2);
             user.setGroups(groups);
         }*/
@@ -73,7 +79,7 @@ public class UserLoginProcessor implements UserLoginServer {
         List<Group> groups = new ArrayList<>();
 //        RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
 //        List<Integer> list = redisUtils.getList("follow-currentUser:" + user.getId());
-        groups.add(new Group("100", "雷锋通讯组"));
+        groups.add(new Group("100", "J-IM雷锋组"));
 //        if (list != null) {
 //            for (Integer integer : list) {
 //                groups.add(new Group(integer.toString(), integer + "通讯组"));

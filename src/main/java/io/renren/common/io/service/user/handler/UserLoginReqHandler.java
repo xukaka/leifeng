@@ -49,7 +49,7 @@ public class UserLoginReqHandler extends AbstractCmdHandler {
 
         UserRespBody userRespBody = userLoginServer.access(userBody, channelContext);
         if (userRespBody == null || userRespBody.getUser() == null) {
-            log.info("登录失败, loginName:{}, password:{}", userBody.getMemberId());
+            log.info("登录失败, loginName:{}", userBody.getMemberId());
             if (userRespBody == null) {
                 userRespBody = new UserRespBody(Command.COMMAND_LOGIN_RESP, ImStatus.C10008);
             }
@@ -67,7 +67,7 @@ public class UserLoginReqHandler extends AbstractCmdHandler {
         imSessionContext.getClient().setUser(user);
         ImAio.bindUser(channelContext, userId, imConfig.getMessageHelper().getBindListener());
         //初始化绑定或者解绑群组;
-        bindUnbindGroup(channelContext, user);
+//        bindUnbindGroup(channelContext, user);
         userLoginServer.onSuccess(channelContext);
         userRespBody.clear();
         ImPacket loginRespPacket = new ImPacket(Command.COMMAND_LOGIN_RESP, userRespBody.toByte());

@@ -19,6 +19,7 @@ import io.renren.modules.app.entity.task.TaskEntity;
 import io.renren.modules.app.form.MessageTypeForm;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.ImService;
+import org.jim.server.helper.redis.RedisMessageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,8 @@ public class ImServiceImpl implements ImService {
     private TaskDao taskDao;
     @Resource
     private DiaryDao diaryDao;
+
+    private RedisMessageHelper redisMessageHelper = new RedisMessageHelper();
 
 
     private static final long THIRTY_DAYS = 60 * 60 * 24 * 30;//30天
@@ -101,9 +104,10 @@ public class ImServiceImpl implements ImService {
     }
 
     //用户是否在线
-    private boolean isOnline(Long userId) {
-        String onlineStatus = redisUtils.get("user:" + String.valueOf(userId) + ":terminal:ws");//目标用户是否在线
-        return "online".equals(onlineStatus);
+   private boolean isOnline(Long userId) {
+      return redisMessageHelper.isOnline(String.valueOf(userId));
+  /*      String onlineStatus = redisUtils.get("user:" + String.valueOf(userId) + ":terminal:ws");//目标用户是否在线
+        return "online".equals(onlineStatus);*/
     }
 
     @Override

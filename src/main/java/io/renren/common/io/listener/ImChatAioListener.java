@@ -5,19 +5,16 @@ import org.jim.common.ImPacket;
 import org.jim.common.ImSessionContext;
 import org.jim.common.packets.*;
 import org.jim.server.listener.ImGroupListener;
+import org.jim.server.listener.ImServerAioListener;
 import org.tio.core.ChannelContext;
+import org.tio.core.intf.Packet;
 
+//聊天通道监听
+public class ImChatAioListener extends ImServerAioListener {
 
-public class ImDemoGroupListener extends ImGroupListener {
-	/**
-	 * @param channelContext
-	 * @param group
-	 * @throws Exception
-	 * @author: WChao
-	 */
 	@Override
-	public void onAfterUnbind(ChannelContext channelContext, String group) throws Exception {
-		//发退出房间通知  COMMAND_EXIT_GROUP_NOTIFY_RESP
+	public void onAfterSent(ChannelContext channelContext, Packet packet, boolean isSentSuccess) {
+		/*//发退出房间通知  COMMAND_EXIT_GROUP_NOTIFY_RESP
 		ImSessionContext imSessionContext = (ImSessionContext)channelContext.getAttribute();
 		ExitGroupNotifyRespBody exitGroupNotifyRespBody = new ExitGroupNotifyRespBody();
 		exitGroupNotifyRespBody.setGroup(group);
@@ -32,7 +29,7 @@ public class ImDemoGroupListener extends ImGroupListener {
 		
 		RespBody respBody = new RespBody(Command.COMMAND_EXIT_GROUP_NOTIFY_RESP,exitGroupNotifyRespBody);
 		ImPacket imPacket = new ImPacket(Command.COMMAND_EXIT_GROUP_NOTIFY_RESP, respBody.toByte());
-		ImAio.sendToGroup(group, imPacket);
+		ImAio.sendToGroup(group, imPacket);*/
 		
 	}
 }
