@@ -42,9 +42,9 @@ public class UserLoginProcessor implements UserLoginServer {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private RedisMessageHelper redisMessageHelper = new RedisMessageHelper();
 
-    @Autowired
+//    @Autowired
 //    private MemberService memberService;
-    private RedisCache userCache = RedisCacheManager.getCache(USER);
+//    private RedisCache userCache = RedisCacheManager.getCache(USER);
 
     public User getUser(Long memberId) {
         RedisUtils redisUtils = SocketServiceUtil.getBean(RedisUtils.class);
