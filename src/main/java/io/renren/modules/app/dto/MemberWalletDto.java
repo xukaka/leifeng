@@ -22,7 +22,14 @@ public class MemberWalletDto implements Serializable {
     private Long money;
 
     //提现二维码
+
     private String withdrawalRqCode;
+
+    //二维码状态
+    private Integer rqCodeStatus;
+
+    //二维码备注
+    private String rqCodeRemark;
 
 
     public String getNickName() {
@@ -79,5 +86,21 @@ public class MemberWalletDto implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getRqCodeStatus() {
+        return rqCodeStatus;
+    }
+
+    public void setRqCodeStatus(Integer rqCodeStatus) {
+        this.rqCodeStatus = rqCodeStatus;
+    }
+
+    public String getRqCodeRemark() {
+        return rqCodeRemark;
+    }
+
+    public void setRqCodeRemark(String rqCodeRemark) {
+        this.rqCodeRemark = rqCodeRemark;
     }
 }

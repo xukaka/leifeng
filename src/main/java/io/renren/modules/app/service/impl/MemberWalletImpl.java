@@ -36,4 +36,14 @@ public class MemberWalletImpl extends ServiceImpl<MemberWalletDao, MemberWalletE
         wallet.setWithdrawalRqCode(withdrawalRqCode);
         baseMapper.update(wallet,wrapper);
     }
+
+    @Override
+    public void rqCodeStatusAndRemark(Long walletId, Integer rqCodeStatus, String rqCodeRemark) {
+        Wrapper<MemberWalletEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("id", walletId);
+        MemberWalletEntity wallet = new MemberWalletEntity();
+        wallet.setRqCodeStatus(rqCodeStatus);
+        wallet.setRqCodeRemark(rqCodeRemark);
+        baseMapper.update(wallet,wrapper);
+    }
 }

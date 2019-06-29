@@ -25,8 +25,17 @@ public class WithdrawalOrderDto implements Serializable {
     //创建时间
     private Long createTime;
 
+
+    //钱包id
+    private Long walletId;
     //提现二维码
     private String withdrawalRqCode;
+
+    //二维码状态：0未验证，1有效 ，2无效
+    private Integer rqCodeStatus;
+
+    //二维码备注
+    private String rqCodeRemark;
 
     public Long getId() {
         return id;
@@ -90,5 +99,29 @@ public class WithdrawalOrderDto implements Serializable {
 
     public void setWithdrawalRqCode(String withdrawalRqCode) {
         this.withdrawalRqCode = withdrawalRqCode;
+    }
+
+    public Long getWalletId() {
+        return walletId;
+    }
+
+    public void setWalletId(Long walletId) {
+        this.walletId = walletId;
+    }
+
+    public Integer getRqCodeStatus() {
+        return rqCodeStatus;
+    }
+
+    public void setRqCodeStatus(Integer rqCodeStatus) {
+        this.rqCodeStatus = rqCodeStatus;
+    }
+
+    public String getRqCodeRemark() {
+        return rqCodeRemark;
+    }
+
+    public void setRqCodeRemark(String rqCodeRemark) {
+        this.rqCodeRemark = rqCodeRemark;
     }
 }

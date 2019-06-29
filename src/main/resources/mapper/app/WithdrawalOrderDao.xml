@@ -10,7 +10,10 @@
         <result property="attach" column="attach"/>
         <result property="createTime" column="create_time"/>
         <result property="tradeState" column="trade_state"/>
+        <result property="walletId" column="wallet_id"/>
         <result property="withdrawalRqCode" column="withdrawal_rq_code"/>
+        <result property="rqCodeStatus" column="rq_code_status"/>
+        <result property="rqCodeRemark" column="rq_code_remark"/>
         <!--关联创建人-->
         <association property="creator" javaType="io.renren.modules.app.entity.member.Member">
             <id property="id" column="member_id"/>
@@ -30,7 +33,10 @@
         m.real_name AS member_real_name,
         m.avatar AS member_avatar,
         m.sex AS member_sex,
-        w.withdrawal_rq_code AS withdrawalRqCode
+        w.id as wallet_id,
+        w.withdrawal_rq_code,
+        w.rq_code_status,
+        w.rq_code_remark
         from
         t_withdrawal_order o
         join member m on o.member_id=m.id

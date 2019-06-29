@@ -21,6 +21,10 @@ public class MemberWalletEntity extends BaseEntity{
 
     private String withdrawalRqCode;//提现二维码
 
+    private Integer rqCodeStatus;//二维码状态：0未验证 1有效 2无效
+
+    private String rqCodeRemark;//二维码备注
+
     public Long getMemberId() {
         return memberId;
     }
@@ -83,6 +87,22 @@ public class MemberWalletEntity extends BaseEntity{
 
     public void setWithdrawalRqCode(String withdrawalRqCode) {
         this.withdrawalRqCode = withdrawalRqCode;
+    }
+
+    public Integer getRqCodeStatus() {
+        return rqCodeStatus;
+    }
+
+    public void setRqCodeStatus(Integer rqCodeStatus) {
+        this.rqCodeStatus = rqCodeStatus;
+    }
+
+    public String getRqCodeRemark() {
+        return rqCodeRemark;
+    }
+
+    public void setRqCodeRemark(String rqCodeRemark) {
+        this.rqCodeRemark = rqCodeRemark;
     }
 
     @Override

@@ -372,4 +372,11 @@ public class WechatPayController {
         return R.ok();
     }
 
+    @GetMapping("/rqCodeStatusAndRemark")
+    @ApiOperation("设置提现二维码状态和备注")
+    public R rqCodeStatusAndRemark(Long walletId,Integer rqCodeStatus,String rqCodeRemark) {
+        memberWalletService.rqCodeStatusAndRemark(walletId,rqCodeStatus,rqCodeRemark);
+        return R.ok();
+    }
+
 }
