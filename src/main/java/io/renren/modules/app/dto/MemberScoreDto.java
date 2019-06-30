@@ -35,8 +35,8 @@ public class MemberScoreDto implements Serializable {
     //任务标题
     private String taskTitle;
 
-    //任务虚拟币
-    private Integer taskVirtualCurrency;
+    //任务金额
+    private Integer taskMoney;
 
     //任务完成时间
     private Long taskCompleteTime;
@@ -176,12 +176,12 @@ public class MemberScoreDto implements Serializable {
         this.receiverExperience = receiverExperience;
     }
 
-    public Integer getTaskVirtualCurrency() {
-        return taskVirtualCurrency;
+    public Integer getTaskMoney() {
+        return taskMoney;
     }
 
-    public void setTaskVirtualCurrency(Integer taskVirtualCurrency) {
-        this.taskVirtualCurrency = taskVirtualCurrency;
+    public void setTaskMoney(Integer taskMoney) {
+        this.taskMoney = taskMoney;
     }
 
     public Long getTaskCompleteTime() {
