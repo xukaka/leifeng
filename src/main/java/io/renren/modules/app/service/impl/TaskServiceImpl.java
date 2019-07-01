@@ -79,7 +79,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     public List<TaskBannerDto> getTaskBanners() {
         List<TaskBannerDto> banners = redisUtils.getList(RedisKeys.BANNER_KEY, TaskBannerDto.class);
         if (CollectionUtils.isEmpty(banners)) {
-            banners = this.baseMapper.getTaskBanners();
+            banners = baseMapper.getTaskBanners();
             if (!CollectionUtils.isEmpty(banners)) {
                 redisUtils.addList(RedisKeys.BANNER_KEY, banners, EXPIRE);
             }

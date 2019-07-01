@@ -429,13 +429,10 @@
         m.real_name AS completer_real_name,
         m.avatar AS completer_avatar,
         m.sex AS completer_sex
-        <!--        tg.name AS tag_name-->
         from t_task t
         JOIN t_task_receive re ON t.id = re.task_id
         JOIN t_task_address a ON t.address_id = a.id
-        JOIN member m ON re.receiver_id = m.id
-        <!-- LEFT JOIN r_task_tag rg ON t.id = rg.task_id
-         JOIN t_tag tg ON rg.tag_id=tg.id-->
+        JOIN member m ON re.receiver_id = m.id AND re.status != 'published' AND re.deleted = 0
         WHERE t.deleted = 0 AND t.status = 'completed'
         ORDER BY t.complete_time DESC
         LIMIT 0,15
