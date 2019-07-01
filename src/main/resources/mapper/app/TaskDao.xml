@@ -229,7 +229,7 @@
         LEFT JOIN r_task_image ri ON t.id = ri.task_id
         LEFT JOIN r_task_tag rg ON t.id = rg.task_id
         JOIN t_tag tg ON rg.tag_id=tg.id
-        LEFT JOIN t_task_receive tr ON t.id = tr.task_id AND tr.status != 'published' AND tr.deleted = 0
+        LEFT JOIN t_task_receive tr ON t.id = tr.task_id AND tr.status != 'published'AND tr.status != 'received' AND tr.deleted = 0
         LEFT JOIN member r ON tr.receiver_id = r.id
         WHERE t.id = #{taskId}
     </select>
@@ -432,7 +432,7 @@
         from t_task t
         JOIN t_task_receive re ON t.id = re.task_id
         JOIN t_task_address a ON t.address_id = a.id
-        JOIN member m ON re.receiver_id = m.id AND re.status != 'published' AND re.deleted = 0
+        JOIN member m ON re.receiver_id = m.id AND re.status = 'completed' AND re.deleted = 0
         WHERE t.deleted = 0 AND t.status = 'completed'
         ORDER BY t.complete_time DESC
         LIMIT 0,15

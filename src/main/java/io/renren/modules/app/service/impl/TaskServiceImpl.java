@@ -102,7 +102,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     //标签默认排序
     private void sortTagNames(List<TaskDto> tasks) {
-        for (TaskDto task:tasks) {
+        for (TaskDto task : tasks) {
             task.getTagNames().sort((o1, o2) -> o1.compareTo(o2));
         }
     }
@@ -161,13 +161,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
     @Override
-    public PageUtils<TaskDto> getPublishedTasks(Long publisherId,  TaskStatusEnum status,PageWrapper page) {
-        String taskStatus = status!=null?status.name():null;
-        List<TaskDto> tasks = baseMapper.getPublishedTasks(publisherId,taskStatus, page);
+    public PageUtils<TaskDto> getPublishedTasks(Long publisherId, TaskStatusEnum status, PageWrapper page) {
+        String taskStatus = status != null ? status.name() : null;
+        List<TaskDto> tasks = baseMapper.getPublishedTasks(publisherId, taskStatus, page);
         if (CollectionUtils.isEmpty(tasks)) {
             return new PageUtils<>();
         }
-        int total = baseMapper.publishCount(publisherId,taskStatus);
+        int total = baseMapper.publishCount(publisherId, taskStatus);
         return new PageUtils<>(tasks, total, page.getPageSize(), page.getCurrPage());
     }
 
@@ -251,7 +251,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     //计算任务积分值:积分值按照金额(1元=100分)的0.001计算
     private int calTaskIntegralValue(int money) {
-        return (int)Math.round(money *0.001);
+        return (int) Math.round(money * 0.001);
     }
 
     @Override
@@ -366,18 +366,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         if (!isExecutable) {
             throw new RRException("刷新任务状态...", 100);
         }
-        TaskReceiveEntity receive = new TaskReceiveEntity();
-        receive.setStatus(TaskStatusEnum.executing);
-        receive.setUpdateTime(DateUtils.now());
-        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
-        wrapper.eq("task_id", taskId)
-                .eq("receiver_id", receiverId);
-        Integer result = taskReceiveDao.update(receive, wrapper);
-        if (result != null && result > 0) {
-            updateTaskStatus(taskId, TaskStatusEnum.executing);
-            TaskEntity task = selectById(taskId);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId, task.getCreatorId(), taskId, "执行"));
-        }
+        updateTaskReceiveStatus(receiverId, taskId, TaskStatusEnum.executing);
+        updateTaskStatus(taskId, TaskStatusEnum.executing);
+        TaskEntity task = selectById(taskId);
+        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId, task.getCreatorId(), taskId, "执行"));
+
     }
 
 
@@ -490,17 +483,21 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             throw new RRException("任务未执行，不可提交", 100);
         }
 
+        updateTaskStatus(taskId, TaskStatusEnum.submitted);
+        updateTaskReceiveStatus(receiverId, taskId, TaskStatusEnum.submitted);
+        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId, task.getCreatorId(), taskId, "提交"));
+
+    }
+
+    //更新任务领取状态
+    private void updateTaskReceiveStatus(Long receiverId, Long taskId, TaskStatusEnum status) {
         TaskReceiveEntity receive = new TaskReceiveEntity();
-        receive.setStatus(TaskStatusEnum.submitted);
+        receive.setStatus(status);
         receive.setUpdateTime(DateUtils.now());
         Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("task_id", taskId)
                 .eq("receiver_id", receiverId);
-        Integer result = taskReceiveDao.update(receive, wrapper);
-        if (result != null && result > 0) {
-            updateTaskStatus(taskId, TaskStatusEnum.submitted);
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(receiverId, task.getCreatorId(), taskId, "提交"));
-        }
+        taskReceiveDao.update(receive, wrapper);
     }
 
     @Override
@@ -512,9 +509,19 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             throw new RRException("任务状态异常");
         }
 
+        //任务状态
         task.setStatus(TaskStatusEnum.completed);
         task.setCompleteTime(DateUtils.now());
-        Integer result = baseMapper.updateById(task);
+        baseMapper.updateById(task);
+
+        //领取人任务状态
+        TaskReceiveEntity receive = new TaskReceiveEntity();
+        receive.setStatus(TaskStatusEnum.completed);
+        receive.setUpdateTime(DateUtils.now());
+        Wrapper<TaskReceiveEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("task_id", taskId)
+                .eq("receiver_id", receiverId);
+        taskReceiveDao.update(receive, wrapper);
 
         //校验支付流水
         TaskOrderEntity order = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
@@ -533,28 +540,24 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
             memberWalletLogService.insert(log);
             //领取人钱包金额增加
             memberWalletService.incMoney(receiverId, order.getTotalFee());
-
-            taskOrderService.updateById(order);
+//            taskOrderService.updateById(order);
         } else {
             logger.info("任务订单状态异常，请联系客服");
             throw new RRException("任务订单状态异常，请联系客服");
         }
 
-        if (result != null && result > 0) {
-            ThreadPoolUtils.execute(() -> {
-                //任务完成数+1
-                memberService.incTaskCompleteCount(receiverId, 1);
-                //任务经验值增加
-                memberService.incMemberExperience(receiverId,task.getExperience());
-                //任务积分值增加
-                memberService.incMemberIntegralValue(receiverId,task.getIntegralValue());
+        ThreadPoolUtils.execute(() -> {
+            //任务完成数+1
+            memberService.incTaskCompleteCount(receiverId, 1);
+            //任务经验值增加
+            memberService.incMemberExperience(receiverId, task.getExperience());
+            //任务积分值增加
+            memberService.incMemberIntegralValue(receiverId, task.getIntegralValue());
 
-                rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId, receiverId, taskId, "确认完成"));
-                //给领取人添加标签
-                addTag2Member(receiverId, taskId);
-            });
-        }
-
+            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId, receiverId, taskId, "确认完成"));
+            //给领取人添加标签
+            addTag2Member(receiverId, taskId);
+        });
     }
 
     //给任务领取人添加技能标签
@@ -624,14 +627,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         return count > 0;
     }
 
-    //是否已支付
-    private boolean isPayedTask(Long taskId) {
-        TaskOrderEntity torder = taskOrderService.selectOne(new EntityWrapper<TaskOrderEntity>().eq("task_id", taskId));
-        TaskEntity task = selectById(taskId);
-        return WXPayConstants.SUCCESS.equals(torder.getTradeState()) && task.getStatus() == TaskStatusEnum.payed;
-    }
-
-
     //更新任务状态
     public void updateTaskStatus(Long taskId, TaskStatusEnum status) {
         TaskEntity task = new TaskEntity();
@@ -658,9 +653,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     }
 
     @Override
-    public void noticeReceiveTask(Long curMemberId,Long notifiedMemberId, Long taskId) {
-            //推送消息给被通知的用户
-            rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId, notifiedMemberId, taskId, "通知我领取"));
+    public void noticeReceiveTask(Long curMemberId, Long notifiedMemberId, Long taskId) {
+        //推送消息给被通知的用户
+        rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId, notifiedMemberId, taskId, "通知我领取"));
 
     }
 
