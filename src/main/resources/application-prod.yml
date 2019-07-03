@@ -58,7 +58,7 @@ spring:
                 #login-password: admin
 server:
     ssl:
-        key-store: classpath:pet.fangzheng.fun.jks
-        key-store-password: xukaka
-        key-store-type: JKS
+        key-store: classpath:2451105_www.lfeng.site.pfx
+        key-store-password: 4rb1P8Y1
+        key-store-type: PFX
     port: 8443
