@@ -24,10 +24,9 @@ spring:
   redis:
     open: true  # 是否开启redis缓存  true开启   false关闭
     database: 0
-    host: 47.94.164.57
-    #host: 119.23.229.161
+    host: 39.97.162.57
     port: 6379
-    password:  # 密码（默认为空）
+    password: lfonline@2019 # 密码（默认为空）
     timeout: 6000ms  # 连接超时时长（毫秒）
     jedis:
       pool:
@@ -42,8 +41,7 @@ spring:
     add-mappings: false
   #rabbitMQ
   rabbitmq:
-    #host: 119.23.229.161
-    host: 47.94.164.57
+    host: 39.97.162.57
     port: 5672
     username: guest
     password: guest
