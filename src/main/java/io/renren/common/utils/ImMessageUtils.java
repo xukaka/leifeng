@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ImMessageUtils{
     private final static Logger logger = LoggerFactory.getLogger(ImMessageUtils.class);
-    private final static String IM_MESSAGE_URL = "https://pet.fangzheng.fun:11805/api/message/send";
+    private final static String IM_MESSAGE_URL = "https://www.lfeng.site:11805/api/message/send";
 
     //圈消息
     public static String getCircleMsg(Long circleId,Long auditId,Long fromMemberId,Long toMemberId,String type){
