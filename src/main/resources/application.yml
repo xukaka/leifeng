@@ -91,10 +91,8 @@ renren:
 
 #微信小程序
 wx:
-  #app_id: wx337c1f56812473d2
-  #app_secret: f874d3460c7fdd56ba6880805259e16e
-  app_id: wxf303172e683e60d0
-  app_secret: f874d3460c7fdd56ba6880805259e16e
+  app_id: wx0204ced6bf9ea72c
+  app_secret: f71ef95582b08b26bf3a7c00f653841a
 
   code_session_url: https://api.weixin.qq.com/sns/jscode2session
   mch_id: 1517937991
