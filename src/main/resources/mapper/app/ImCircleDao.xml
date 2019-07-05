@@ -11,7 +11,7 @@
         n.type,
         n.create_time as createTime,
         c.name as circleName,
-        a.status as aduitStatus,
+        a.`status` as aduitStatus,
         m.id as memberId,
         m.nick_name as memberNickName,
         m.sex as memberSex,

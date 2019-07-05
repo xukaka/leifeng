@@ -216,7 +216,7 @@
         SELECT
         <include refid="taskDtoField"/>,
         ri.image_url,
-        tg.name AS tag_name,
+        tg.`name` AS tag_name,
         r.id AS receiver_id,
         r.nick_name AS receiver_nick_name,
         r.real_name AS receiver_real_name,
@@ -229,7 +229,7 @@
         LEFT JOIN r_task_image ri ON t.id = ri.task_id
         LEFT JOIN r_task_tag rg ON t.id = rg.task_id
         JOIN t_tag tg ON rg.tag_id=tg.id
-        LEFT JOIN t_task_receive tr ON t.id = tr.task_id AND tr.status != 'published'AND tr.status != 'received' AND tr.deleted = 0
+        LEFT JOIN t_task_receive tr ON t.id = tr.task_id AND tr.`status` != 'published'AND tr.`status` != 'received' AND tr.deleted = 0
         LEFT JOIN member r ON tr.receiver_id = r.id
         WHERE t.id = #{taskId}
     </select>
@@ -238,7 +238,7 @@
 
         select task.* ,
         ri.image_url,
-        tg.name AS tag_name
+        tg.`name` AS tag_name
         from(
         SELECT
         <include refid="taskDtoField"/>
@@ -247,7 +247,7 @@
         JOIN member m ON t.creator_id = m.id
         WHERE t.creator_id = #{publisherId} AND t.deleted = 0
         <if test="status!=null and status!=''">
-            AND t.status = #{status}
+            AND t.`status` = #{status}
         </if>
         ORDER BY t.create_time DESC
         LIMIT #{page.offset},#{page.limit}
@@ -264,7 +264,7 @@
         FROM t_task t
         WHERE t.creator_id = #{publisherId} and t.deleted = 0
         <if test="status!=null and status!=''">
-            AND t.status = #{status}
+            AND t.`status` = #{status}
         </if>
 
     </select>
@@ -273,7 +273,7 @@
     <select id="getReceivedTasks" resultMap="receivedTaskMap">
         select task.*,
         ri.image_url,
-        tg.name AS tag_name
+        tg.`name` AS tag_name
         from(
         SELECT
         <include refid="taskDtoField"/>,
@@ -308,7 +308,7 @@
     <select id="searchTasks"  resultMap="searchTaskMap">
         select task.* ,
         ri.image_url,
-        tg.name AS tag_name
+        tg.`name` AS tag_name
         from (
         SELECT
         <include refid="taskDtoField"/>
@@ -325,7 +325,7 @@
             )
             and
         </if>
-        t.deleted = 0 AND t.status = 'published'
+        t.deleted = 0 AND t.`status` = 'published'
         <include refid="searchTaskCondition"/>
         ORDER BY t.create_time desc
         LIMIT #{page.offset},#{page.limit}
@@ -354,7 +354,7 @@
             )
             and
         </if>
-        t.deleted = 0 AND t.status = 'published'
+        t.deleted = 0 AND t.`status` = 'published'
         <include refid="searchTaskCondition"/>
 
     </select>
@@ -366,7 +366,7 @@
             FROM t_task t
             WHERE NOT EXISTS
                 (SELECT 1 FROM t_task_receive re WHERE t.id = re.task_id AND re.receiver_id = #{receiverId} AND t.id=#{taskId})
-                AND t.deleted = 0 AND t.status = 'published' AND t.id= #{taskId}
+                AND t.deleted = 0 AND t.`status` = 'published' AND t.id= #{taskId}
     </select>
 
 
@@ -374,7 +374,7 @@
           SELECT
             COUNT(1)
             FROM t_task t
-            JOIN t_task_receive re ON re.task_id = t.id AND t.status = 'published' AND re.status='received'
+            JOIN t_task_receive re ON re.task_id = t.id AND t.`status` = 'published' AND re.`status`='received'
             WHERE  t.id= #{taskId} AND re.receiver_id = #{receiverId}
     </select>
 
@@ -382,7 +382,7 @@
           SELECT
             COUNT(1)
             FROM t_task t
-            JOIN t_task_receive re ON re.task_id = t.id AND t.status = 'received' AND re.status='choosed'
+            JOIN t_task_receive re ON re.task_id = t.id AND t.`status` = 'received' AND re.`status`='choosed'
             WHERE  t.deleted = 0 AND t.id= #{taskId} AND re.receiver_id = #{receiverId}
     </select>
 
@@ -391,7 +391,7 @@
         SELECT
         COUNT(1)
         FROM t_task t
-        JOIN t_task_receive re ON t.id = re.task_id AND t.status = 'executing' AND re.status='executing'
+        JOIN t_task_receive re ON t.id = re.task_id AND t.`status` = 'executing' AND re.`status`='executing'
         WHERE t.deleted = 0 AND t.id=#{taskId} AND re.receiver_id = #{receiverId}
     </select>
 
@@ -399,7 +399,7 @@
         SELECT
         COUNT(1)
         FROM t_task t
-        JOIN t_task_receive re ON t.id = re.task_id AND t.status='submitted'
+        JOIN t_task_receive re ON t.id = re.task_id AND t.`status`='submitted'
         WHERE t.deleted = 0 AND t.id=#{taskId} AND re.receiver_id = #{receiverId}
     </select>
 
@@ -432,8 +432,8 @@
         from t_task t
         JOIN t_task_receive re ON t.id = re.task_id
         JOIN t_task_address a ON t.address_id = a.id
-        JOIN member m ON re.receiver_id = m.id AND re.status = 'completed' AND re.deleted = 0
-        WHERE t.deleted = 0 AND t.status = 'completed'
+        JOIN member m ON re.receiver_id = m.id AND re.`status` = 'completed' AND re.deleted = 0
+        WHERE t.deleted = 0 AND t.`status` = 'completed'
         ORDER BY t.complete_time DESC
         LIMIT 0,15
 
@@ -441,7 +441,7 @@
 
     <select id="getTaskReceivers" resultType="io.renren.modules.app.dto.MemberDto">
         select m.* from t_task_receive re
-        join member m on re.receiver_id = m.id and m.status=1
+        join member m on re.receiver_id = m.id and m.`status`=1
         where re.task_id = #{taskId}
         order by re.create_time asc
         limit #{page.offset},#{page.limit}
@@ -449,7 +449,7 @@
 
     <select id="receiverCount" resultType="int">
         select count(1) from t_task_receive re
-        join member m on re.receiver_id = m.id and m.status =1
+        join member m on re.receiver_id = m.id and m.`status` =1
         where re.task_id = #{taskId}
     </select>
 

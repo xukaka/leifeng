@@ -8,7 +8,7 @@
         o.*,
         t.id as taskId,
         t.title as taskTitle,
-        t.status as taskStatus,
+        t.`status` as taskStatus,
         m.nick_name as taskCreatorNickName,
         m.id as taskCreatorId
         from
