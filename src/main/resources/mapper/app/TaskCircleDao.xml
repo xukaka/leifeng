@@ -34,7 +34,7 @@
     <select id="getCircle" resultMap="taskCircleMap">
         SELECT
         tc.*,
-        tg.name AS tag_name,
+        tg.`name` AS tag_name,
         m.id AS member_id,
         m.nick_name AS member_nick_name,
         m.real_name AS member_real_name,
@@ -52,7 +52,7 @@
 
         select
             circle.* ,
-            tg.name AS tag_name
+            tg.`name` AS tag_name
         from
         (
             SELECT
@@ -66,7 +66,7 @@
             JOIN member m ON tc.creator_id = m.id
             WHERE tc.deleted = 0
             <if test="keyword!=null and keyword !=''">
-                AND (tc.id=#{keyword} OR tc.name LIKE concat('%', #{keyword} ,'%'))
+                AND (tc.id=#{keyword} OR tc.`name` LIKE concat('%', #{keyword} ,'%'))
             </if>
             ORDER BY tc.create_time DESC
             LIMIT #{page.offset},#{page.limit}
@@ -85,7 +85,7 @@
         m.real_name AS member_real_name,
         m.avatar AS member_avatar,
         m.sex AS member_sex,
-        tg.name AS tag_name
+        tg.`name` AS tag_name
         FROM t_task_circle tc
         JOIN t_task_circle_member cm ON tc.id = cm.circle_id
         JOIN r_task_circle_tag rg ON tc.id = rg.circle_id
@@ -103,7 +103,7 @@
         FROM t_task_circle tc
         WHERE tc.deleted = 0
         <if test="keyword!=null and keyword !=''">
-            AND (tc.id=#{keyword} OR tc.name LIKE concat('%', #{keyword} ,'%'))
+            AND (tc.id=#{keyword} OR tc.`name` LIKE concat('%', #{keyword} ,'%'))
         </if>
     </select>
 
