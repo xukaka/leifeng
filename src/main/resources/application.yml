@@ -97,7 +97,7 @@ wx:
   code_session_url: https://api.weixin.qq.com/sns/jscode2session
   mch_id: 1541390381
   trade_type: JSAPI
-  key: huzhongchengwxd930ea5d5a258f4f03
+  key: huzhongchengwx0204ced6bf9ea72c11
   WXPayDomain: https://api.mch.weixin.qq.com/pay/unifiedorder
   notifyUrl: https://pet.fangzheng.fun/leifeng/app/wx/pay/notify
   orderQuery: https://api.mch.weixin.qq.com/pay/orderquery
