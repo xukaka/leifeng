@@ -99,7 +99,7 @@ wx:
   trade_type: JSAPI
   key: huzhongchengwx0204ced6bf9ea72c11
   WXPayDomain: https://api.mch.weixin.qq.com/pay/unifiedorder
-  notifyUrl: https://pet.fangzheng.fun/leifeng/app/wx/pay/notify
+  notifyUrl: https://www.lfeng.site/leifeng/app/wx/pay/notify
   orderQuery: https://api.mch.weixin.qq.com/pay/orderquery
   transferUrl: https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers
   refund: https://api.mch.weixin.qq.com/secapi/pay/refund
