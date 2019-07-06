@@ -6,7 +6,7 @@
     <!-- 插入搜索日志 -->
     <insert id="insertLog" parameterType="io.renren.modules.app.entity.search.SearchLogEntity">
         insert into t_search_log(`keyword`,`create_time`,`deleted`)
-            value(#{keyword},#{createTime},#{deleted})
+            values(#{keyword},#{createTime},#{deleted})
     </insert>
 
     <!-- 统计最近一个月，搜索关键字最多的前10个数据 -->
