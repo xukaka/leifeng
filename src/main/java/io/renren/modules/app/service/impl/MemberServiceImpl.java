@@ -1,11 +1,16 @@
 package io.renren.modules.app.service.impl;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.CommonRequest;
+import com.aliyuncs.CommonResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.profile.DefaultProfile;
+import com.aliyuncs.http.MethodType;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.github.qcloudsms.SmsSingleSender;
-import com.github.qcloudsms.SmsSingleSenderResult;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
@@ -13,7 +18,6 @@ import io.renren.modules.app.dao.member.*;
 import io.renren.modules.app.dto.*;
 import io.renren.modules.app.entity.member.*;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
-import io.renren.modules.app.entity.task.TaskReceiveEntity;
 import io.renren.modules.app.form.*;
 import io.renren.modules.app.service.ImService;
 import io.renren.modules.app.service.MemberAuthsService;
@@ -57,14 +61,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     @Resource
     private RedisUtils redisUtils;
 
-    @Value("${sms.appid}")
-    private int appid;
-
     @Value("${sms.appkey}")
     private String appkey;
 
-    @Value("${sms.templateId}")
-    private int templateId;
+    @Value("${sms.appsecret}")
+    private String appsecret;
+
+    @Value("${sms.templateCode}")
+    private String templateCode;
 
     @Value("${sms.signName}")
     private String signName;
@@ -286,11 +290,33 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     public void sendPhoneCode(String phoneNum) throws Exception {
         //随机生成4位验证码
         String code = String.valueOf((new Random().nextInt(8999) + 1000));
-        String[] params = {code};
+        JSONObject tparam = new JSONObject();
+        tparam.put("code",code);
+      /*  String[] params = {code};
         SmsSingleSender ssender = new SmsSingleSender(appid, appkey);
         SmsSingleSenderResult result = ssender.sendWithParam("86", phoneNum,
                 templateId, params, signName, "", "");
-        logger.info("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));
+        logger.info("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));*/
+        DefaultProfile profile = DefaultProfile.getProfile("cn-beijing", appkey, appsecret);
+        IAcsClient client = new DefaultAcsClient(profile);
+
+        CommonRequest request = new CommonRequest();
+        request.setMethod(MethodType.POST);
+        request.setDomain("dysmsapi.aliyuncs.com");
+        request.setVersion("2017-05-25");
+        request.setAction("SendSms");
+        request.putQueryParameter("RegionId", "cn-beijing");
+        request.putQueryParameter("PhoneNumbers",phoneNum);
+        request.putQueryParameter("SignName",signName);
+        request.putQueryParameter("TemplateCode",templateCode);
+        request.putQueryParameter("TemplateParam",tparam.toJSONString());
+        try {
+            CommonResponse response = client.getCommonResponse(request);
+            logger.info("腾讯短信接口返回结果：" + response.getData());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RRException("短信验证码发送失败");
+        }
         redisUtils.set(RedisKeys.PHONE_CODE_KEY + phoneNum, code, 5 * 60);//5分钟过期
     }
 

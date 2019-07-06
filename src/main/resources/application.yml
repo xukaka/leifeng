@@ -119,7 +119,12 @@ wechat :
 
 
 sms:
-  appid: 1400198286
-  appkey: 630640f20e56b175bbf232677815cc12
-  templateId: 309771
-  signName: 雷锋在线
+   appkey: LTAITV5hMdbv8Vro
+   appsecret: j04dsQyW6IamOnnwZG8cOaxXFUpryT
+   signName: 豚豚互助
+   templateCode: SMS_169902807
+ # appid: 1400198286  腾讯平台
+ # appkey: 630640f20e56b175bbf232677815cc12    腾讯平台
+ # templateId: 309771   腾讯平台
+ # signName: 雷锋在线    腾讯平台
+
