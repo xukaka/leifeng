@@ -38,12 +38,12 @@ public class RenrenApplication extends SpringBootServletInitializer {
 	private static Logger logger = LoggerFactory.getLogger(RenrenApplication.class);
 	public static void main(String[] args) {
 		ImConfig imConfig = new PropertyImConfigBuilder("jim.properties").build();
-		imConfig.setIsSSL("on");
+		/*imConfig.setIsSSL("on");
 		try {
 			initSsl(imConfig);
 		}catch (Exception e){
             logger.error("发生异常 msg={}","原因",e);
-		}
+		}*/
 
 		//初始化SSL;(开启SSL之前,你要保证你有SSL证书哦...)
 		//设置群组监听器，非必须，根据需要自己选择性实现;
