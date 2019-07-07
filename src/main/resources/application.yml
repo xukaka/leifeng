@@ -97,16 +97,14 @@ wx:
   code_session_url: https://api.weixin.qq.com/sns/jscode2session
   mch_id: 1541390381
   trade_type: JSAPI
-  key: 1541390381
-  #key: huzhongchengwx0204ced6bf9ea72c11
+  key: huzhongchengwx0204ced6bf9ea72c11
   WXPayDomain: https://api.mch.weixin.qq.com/pay/unifiedorder
   notifyUrl: https://www.lfeng.site/leifeng/app/wx/pay/notify
   orderQuery: https://api.mch.weixin.qq.com/pay/orderquery
   transferUrl: https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers
   refund: https://api.mch.weixin.qq.com/secapi/pay/refund
   refundQuery: https://api.mch.weixin.qq.com/pay/refundquery
-  cert: apiclient_cert.pem
-  #cert: wx_apiclient_cert.p12
+  cert: wx_apiclient_cert.p12
 
 #微信公众号
 wechat :
