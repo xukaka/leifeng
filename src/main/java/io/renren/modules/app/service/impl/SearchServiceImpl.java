@@ -24,6 +24,7 @@ import java.util.List;
 public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntity> implements SearchService {
     private final static Logger logger = LoggerFactory.getLogger(SearchServiceImpl.class);
 
+    private static final long TWO_HOURS_EXPIRE = 2 * 60 * 60;
     @Resource
     private SearchDao searchDao;
 
@@ -47,7 +48,7 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
     public List<SearchHistoryEntity> getHistories(Long userId) {
         Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("user_id", userId)
-                .eq("deleted",false)
+                .eq("deleted", false)
                 .orderBy("create_time", false);
         List<SearchHistoryEntity> histories = selectList(wrapper);
         if (CollectionUtils.isEmpty(histories)) {
@@ -60,7 +61,7 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
     public void clearHistories(Long userId) {
         Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("user_id", userId)
-                .eq("deleted",false);
+                .eq("deleted", false);
         List<SearchHistoryEntity> histories = selectList(wrapper);
         if (!CollectionUtils.isEmpty(histories)) {
             for (SearchHistoryEntity history : histories) {
@@ -72,17 +73,16 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
 
     @Override
     public List<HotSearchDto> getHotSearch() {
-        //redis保存热门搜索列表，过期时间为1天
-        List<HotSearchDto> hotSearchs =  redisUtils.getList(RedisKeys.HOT_SEARCH,HotSearchDto.class);
+        //redis缓存热门搜索列表，过期时间为2小时
+        List<HotSearchDto> hotSearchs = redisUtils.getList(RedisKeys.HOT_SEARCH, HotSearchDto.class);
         if (CollectionUtils.isEmpty(hotSearchs)) {
             hotSearchs = searchDao.getHotSearch();
             if (!CollectionUtils.isEmpty(hotSearchs)) {
-                redisUtils.addList(RedisKeys.HOT_SEARCH, hotSearchs);
+                redisUtils.addList(RedisKeys.HOT_SEARCH, hotSearchs, TWO_HOURS_EXPIRE);
             }
         }
         return hotSearchs;
     }
-
 
 
     /**
@@ -101,7 +101,7 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
         Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("user_id", userId)
                 .eq("keyword", keyword)
-                .eq("deleted",false);
+                .eq("deleted", false);
         this.update(history, wrapper);
     }
 
@@ -112,7 +112,7 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
         Wrapper<SearchHistoryEntity> wrapper = new EntityWrapper<>();
         wrapper.eq("user_id", userId)
                 .eq("keyword", keyword)
-                .eq("deleted",false);
+                .eq("deleted", false);
         return selectCount(wrapper) > 0;
     }
 
@@ -120,7 +120,7 @@ public class SearchServiceImpl extends ServiceImpl<SearchDao, SearchHistoryEntit
      * 添加搜索日志
      */
     private void addSearchLog(String keyword) {
-        SearchLogEntity log = new SearchLogEntity(DateUtils.now(),keyword);
+        SearchLogEntity log = new SearchLogEntity(DateUtils.now(), keyword);
         searchDao.insertLog(log);
     }
 
