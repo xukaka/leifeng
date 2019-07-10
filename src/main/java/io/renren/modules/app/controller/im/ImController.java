@@ -22,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @auther: Easy
@@ -61,6 +58,13 @@ public class ImController {
                 }
                 members.add(imHistoryMember);
             }
+            members.sort(new Comparator<ImHistoryMember>() {
+                @Override
+                public int compare(ImHistoryMember m1, ImHistoryMember m2) {
+                    return m1.getStatus() - m2.getStatus();
+                }
+            });
+
         }
         return R.ok().put("result", members);
 
