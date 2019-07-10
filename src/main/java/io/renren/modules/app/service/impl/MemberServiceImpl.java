@@ -43,8 +43,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     @Resource
     private MemberAuthsService memberAuthsService;
     @Resource
-    private ImService imService;
-    @Resource
     private MemberFollowDao memberFollowDao;
     @Resource
     private MemberScoreDao memberScoreDao;
@@ -127,22 +125,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
             //是否关注
             boolean isFollowed = this.isFollowed(curMemberId, memberId);
             dto.setFollowed(isFollowed);
-            /*List<Map<String, Object>> followNotice = redisUtils.rangeByScore("followNotice:" + memberId, ImFollowNoticeStatus.class);
-            if (!followNotice.isEmpty()) {
-                MessageTypeForm messageTypeForm = new MessageTypeForm();
-                messageTypeForm.setStatus(0);
-                messageTypeForm.setType(1);
-                messageTypeForm.setToId(member.getId());
-                imService.setMessageType(messageTypeForm);
-            }
-            List<Map<String, Object>> taskNotice = redisUtils.rangeByScore("task:" + memberId, ImFollowNoticeStatus.class);
-            if (!taskNotice.isEmpty()) {
-                MessageTypeForm messageTypeForm = new MessageTypeForm();
-                messageTypeForm.setStatus(0);
-                messageTypeForm.setType(2);
-                messageTypeForm.setToId(member.getId());
-                imService.setMessageType(messageTypeForm);
-            }*/
             return dto;
         }
         return null;
@@ -203,8 +185,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
     public void followMember(Long fromMemberId, Long toMemberId) {
         MemberFollowEntity follow = new MemberFollowEntity(DateUtils.now(), fromMemberId, toMemberId);
         memberFollowDao.insert(follow);
-//        redisUtils.addList("follow:" + toMemberId, fromMemberId);
-//        redisUtils.addList("follow-currentUser:" + fromMemberId, toMemberId);
     }
 
     @Override
@@ -213,8 +193,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         wrapper.eq("from_member_id", fromMemberId)
                 .eq("to_member_id", toMemberId);
         memberFollowDao.delete(wrapper);
-//        redisUtils.delListKey("follow-currentUser:" + fromMemberId, toMemberId);
-//        redisUtils.delListKey("follow:" + toMemberId, fromMemberId);
     }
 
 
@@ -291,12 +269,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         //随机生成4位验证码
         String code = String.valueOf((new Random().nextInt(8999) + 1000));
         JSONObject tparam = new JSONObject();
-        tparam.put("code",code);
-      /*  String[] params = {code};
-        SmsSingleSender ssender = new SmsSingleSender(appid, appkey);
-        SmsSingleSenderResult result = ssender.sendWithParam("86", phoneNum,
-                templateId, params, signName, "", "");
-        logger.info("腾讯短信接口返回结果：" + JsonUtil.Java2Json(result));*/
+        tparam.put("code", code);
         DefaultProfile profile = DefaultProfile.getProfile("cn-beijing", appkey, appsecret);
         IAcsClient client = new DefaultAcsClient(profile);
 
@@ -306,15 +279,15 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
         request.setVersion("2017-05-25");
         request.setAction("SendSms");
         request.putQueryParameter("RegionId", "cn-beijing");
-        request.putQueryParameter("PhoneNumbers",phoneNum);
-        request.putQueryParameter("SignName",signName);
-        request.putQueryParameter("TemplateCode",templateCode);
-        request.putQueryParameter("TemplateParam",tparam.toJSONString());
+        request.putQueryParameter("PhoneNumbers", phoneNum);
+        request.putQueryParameter("SignName", signName);
+        request.putQueryParameter("TemplateCode", templateCode);
+        request.putQueryParameter("TemplateParam", tparam.toJSONString());
         try {
             CommonResponse response = client.getCommonResponse(request);
-            logger.info("腾讯短信接口返回结果：" + response.getData());
+            logger.info("阿里短信接口返回结果：" + response.getData());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("短信验证码发送失败", e);
             throw new RRException("短信验证码发送失败");
         }
         redisUtils.set(RedisKeys.PHONE_CODE_KEY + phoneNum, code, 5 * 60);//5分钟过期
@@ -364,13 +337,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, Member> implements
 
     //增加用户虚拟币
     @Override
-    public void incMemberVirtualCurrency(Long memberId,Integer inc) {
+    public void incMemberVirtualCurrency(Long memberId, Integer inc) {
         baseMapper.incMemberVirtualCurrency(memberId, inc);
     }
 
     //增加用户积分值
     @Override
-    public void incMemberIntegralValue(Long memberId,Integer inc) {
+    public void incMemberIntegralValue(Long memberId, Integer inc) {
         baseMapper.incMemberIntegralValue(memberId, inc);
     }
 
