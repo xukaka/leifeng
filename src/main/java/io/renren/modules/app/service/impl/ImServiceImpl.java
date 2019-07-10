@@ -81,7 +81,7 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public void addDynamicNotice(Long memberId, String businessType, Long businessId) {
+    public void addDynamicNotice(Long memberId, String businessType, Long businessId){
         ImDynamicNotice notice = new ImDynamicNotice();
         notice.setMemberId(memberId);
         notice.setBusinessId(businessId);
