@@ -154,7 +154,7 @@ public class RedisUtils {
         List<Map<String, Object>> list = new ArrayList<>();
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<Object>> tuples = zset.rangeWithScores(key, 0, -1);
-        if (CollectionUtils.isEmpty(tuples)){
+        if (CollectionUtils.isEmpty(tuples)) {
             return list;
         }
         Iterator<ZSetOperations.TypedTuple<Object>> iterator = tuples.iterator();
@@ -190,5 +190,11 @@ public class RedisUtils {
         return gson.fromJson(json, clazz);
     }
 
+    //简单键值对操作 自增inc expire 方法设置过期时间
+    public Long incr(String key, long expire, long inc) {
+        Long incValue = redisTemplate.opsForValue().increment(key, inc);
+        redisTemplate.expire(key, expire, TimeUnit.SECONDS);
+        return incValue;
+    }
 
 }

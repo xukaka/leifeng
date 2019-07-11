@@ -3,6 +3,7 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.config.RabbitMQConfig;
@@ -20,6 +21,7 @@ import io.renren.modules.app.form.TaskCircleForm;
 import io.renren.modules.app.form.TaskCircleUpdateForm;
 import io.renren.modules.app.service.MemberService;
 import io.renren.modules.app.service.TaskCircleService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -60,10 +62,20 @@ public class TaskCircleServiceImpl extends ServiceImpl<TaskCircleDao, TaskCircle
         circle.setCreatorId(creatorId);
         circle.setMemberCount(1);
         circle.setCreateTime(DateUtils.now());
+        if (existsCircleName(circle.getName())){
+           throw new RRException("圈名称已存在，请换个名称");
+        }
         this.insert(circle);
         //插入圈标签
         addCircleTagRelation(circle.getId(),form.getTagIds());
         addCircleMember(circle.getId(),creatorId);
+    }
+
+    private boolean existsCircleName(String name) {
+        Wrapper<TaskCircleEntity> wrapper = new EntityWrapper<>();
+        wrapper.eq("name", name);
+        int count = baseMapper.selectCount(wrapper);
+        return count > 0;
     }
 
     //添加圈-标签关系

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.OrderNoUtil;
+import io.renren.common.utils.RedisKeys;
+import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.config.WXPayConfig;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
@@ -32,13 +34,16 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
-import java.security.*;
+import java.math.BigDecimal;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -53,6 +58,12 @@ public class WechatPayService {
 
     @Autowired
     private WithdrawalOrderService withdrawalOrderService;
+
+    @Autowired
+    private RedisUtils redisUtils;
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Autowired
     private WXPayConfig config;
 
@@ -227,7 +238,7 @@ public class WechatPayService {
                 return false;
             }
         } catch (Exception e) {
-            logger.info("签名校验出错异常",e);
+            logger.info("签名校验出错异常", e);
             return false;
         }
         return true;
@@ -463,10 +474,7 @@ public class WechatPayService {
     public void preWithdrawal(Long memberId, Long amount) {
         MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>()
                 .eq("member_id", memberId));
-        if (wallet == null || wallet.getMoney() < amount) {
-            throw new RRException("提现钱包余额不足");
-        }
-
+        checkPreWithdrawal(memberId, amount, wallet);
         //生成提现订单
         String outTradeNo = "TX" + OrderNoUtil.generateOrderNo(memberId);
         WithdrawalOrderEntity order = new WithdrawalOrderEntity();
@@ -493,6 +501,27 @@ public class WechatPayService {
         memberWalletLogService.insert(log);
     }
 
+    /**
+     * 校验预提现
+     * @param memberId
+     * @param amount
+     * @param wallet
+     */
+    private void checkPreWithdrawal(Long memberId, Long amount, MemberWalletEntity wallet) {
+        if (wallet == null || wallet.getMoney() < amount) {
+            throw new RRException("钱包提现余额不足");
+        }
+        if (amount < 2000){
+            throw new RRException("单次提现金额不低于20元");
+        }
+        if (amount > 100000){
+            throw new RRException("单次提现金额不高于1000元");
+        }
+        long todayTotalWithdrawalCount = redisUtils.incr(RedisKeys.PRE_WITHDRAWAL_COUNT_LIMIT+memberId, DateUtils.secondsLeftToday(),1);
+        if (todayTotalWithdrawalCount> 10){
+            throw new RRException("今日提现次数已达上限");
+        }
+    }
 
     /**
      * 提现
@@ -505,12 +534,12 @@ public class WechatPayService {
             throw new RRException("提现订单为空");
         }
         if (!WXPayConstants.AUDIT.equals(order.getTradeState())) {
-            throw new RRException("订单已经处理过了，不能重复提现,TradeState="+order.getTradeState());
+            throw new RRException("订单已经处理过了，不能重复提现,TradeState=" + order.getTradeState());
         }
         MemberWalletEntity wallet = memberWalletService.selectOne(new EntityWrapper<MemberWalletEntity>()
                 .eq("member_id", order.getMemberId()));
 
-        String transData = this.transferMoneyRequest(wallet.getOpenId(), wallet.getRealName(), String.valueOf(order.getTotalFee()));
+        String transData = this.transferMoneyRequest(wallet.getOpenId(), wallet.getRealName(), calRealTotalFee(order));
         logger.info("转账提现接口微信返回结果：{}", transData);
         Map<String, String> map = WXPayUtil.xmlToMap(transData);
         if (WXPayConstants.SUCCESS.equals(map.get("return_code"))) {
@@ -532,10 +561,27 @@ public class WechatPayService {
         return result;
     }
 
+    /**
+     * 计算实际的提现金额
+     *
+     * @param order
+     * @return
+     */
+    private String calRealTotalFee(WithdrawalOrderEntity order) {
+        /**
+         * 微信手续费0.6% + 平台服务费0.2% = 0.8%
+         * 每次提现不少于50元=5000分
+         */
+        BigDecimal orderTotalFee = new BigDecimal(order.getTotalFee());
+        BigDecimal withdrawalRate = new BigDecimal(0.992);
+        BigDecimal realTotalFee = orderTotalFee.multiply(withdrawalRate);
+        return String.valueOf(realTotalFee.longValue());
+
+    }
 
 
     /**
-     *人工 提现（临时方案，后期需调整为自动提醒：参考WechatPayService.withdrawal方法）
+     * 人工 提现（临时方案，后期需调整为自动提现：参考WechatPayService.withdrawal方法）
      */
     public Map<String, String> manualWithdrawal(String outTradeNo) throws Exception {
         Map<String, String> result = new HashMap<>();
@@ -545,14 +591,14 @@ public class WechatPayService {
             throw new RRException("提现订单为空");
         }
         if (!WXPayConstants.AUDIT.equals(order.getTradeState())) {
-            throw new RRException("订单已经处理过了，不能重复提现,TradeState="+order.getTradeState());
+            throw new RRException("订单已经处理过了，不能重复提现,TradeState=" + order.getTradeState());
         }
 
         order.setTradeState(WXPayConstants.SUCCESS);
         withdrawalOrderService.updateById(order);
 
-        result.put("status","success");
-        result.put("message","人工提现成功，请及时付款到用户账号");
+        result.put("status", "success");
+        result.put("message", "人工提现成功，请及时付款到用户账号");
 
         return result;
     }
