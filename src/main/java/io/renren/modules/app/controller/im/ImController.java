@@ -61,7 +61,7 @@ public class ImController {
             members.sort(new Comparator<ImHistoryMember>() {
                 @Override
                 public int compare(ImHistoryMember m1, ImHistoryMember m2) {
-                    return m1.getStatus() - m2.getStatus();
+                    return m2.getStatus() - m1.getStatus();
                 }
             });
 
