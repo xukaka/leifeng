@@ -28,7 +28,8 @@ public class DynamicDataSourceConfig {
     @Bean
     @ConfigurationProperties("spring.datasource.druid.second")
     public DataSource secondDataSource(){
-        return DruidDataSourceBuilder.create().build();
+//        return DruidDataSourceBuilder.create().build();
+        return null;
     }
 
     @Bean
@@ -36,7 +37,7 @@ public class DynamicDataSourceConfig {
     public DynamicDataSource dataSource(DataSource firstDataSource, DataSource secondDataSource) {
         Map<Object, Object> targetDataSources = new HashMap<>();
         targetDataSources.put(DataSourceNames.FIRST, firstDataSource);
-        targetDataSources.put(DataSourceNames.SECOND, secondDataSource);
+//        targetDataSources.put(DataSourceNames.SECOND, secondDataSource);
         return new DynamicDataSource(firstDataSource, targetDataSources);
     }
 }
