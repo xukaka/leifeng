@@ -3,11 +3,12 @@ package io.renren.modules.app.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.google.common.collect.Maps;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.config.RabbitMQConfig;
-import io.renren.modules.app.dao.member.MemberFollowDao;
+import io.renren.modules.app.config.WXPayConfig;
 import io.renren.modules.app.dao.task.TaskDao;
 import io.renren.modules.app.dao.task.TaskReceiveDao;
 import io.renren.modules.app.dto.MemberDto;
@@ -20,15 +21,17 @@ import io.renren.modules.app.entity.member.Member;
 import io.renren.modules.app.entity.member.MemberTagRelationEntity;
 import io.renren.modules.app.entity.pay.MemberWalletEntity;
 import io.renren.modules.app.entity.pay.MemberWalletLogEntity;
-import io.renren.modules.app.entity.story.DiaryContentEntity;
 import io.renren.modules.app.entity.task.*;
 import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
 import io.renren.modules.app.service.*;
+import io.renren.modules.app.utils.HttpClientUtil;
 import io.renren.modules.app.utils.WXPayConstants;
 import io.renren.modules.app.utils.WXPayUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -38,7 +41,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,9 +72,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     private RabbitMqHelper rabbitMqHelper;
     @Resource
     private RedisUtils redisUtils;
-
-    @Resource
-    private MemberFollowDao memberFollowDao;
+    @Autowired
+    private WXPayConfig wxPayConfig;
 
 
     @Autowired
@@ -221,10 +227,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     @Override
     @Transactional
-    public Long createTask(Long creatorId, TaskForm form) {
+    public Long createTask(Long creatorId, TaskForm form) throws Exception {
         ValidatorUtils.validateEntity(form);
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);
+        //调用微信平台的文字安全校验接口检查
+        wxMsgSecCheck(task.getDescription()+"||"+task.getTitle());
         task.setCreatorId(creatorId);
         task.setStatus(TaskStatusEnum.notpay);
         task.setCreateTime(DateUtils.now());
@@ -271,10 +279,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
 
     @Override
-    public void updateTask(TaskForm form) {
+    public void updateTask(TaskForm form) throws Exception {
         ValidatorUtils.validateEntity(form);
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);
+        wxMsgSecCheck(task.getDescription()+"||"+task.getTitle());
         updateById(task);
     }
 
@@ -657,6 +666,44 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         //推送消息给被通知的用户
         rabbitMqHelper.sendMessage(RabbitMQConfig.IM_QUEUE_TASK, ImMessageUtils.getTaskMsg(curMemberId, notifiedMemberId, taskId, "通知我领取"));
 
+    }
+
+    public void wxMsgSecCheck(String content) throws IOException {
+        //获取access_token
+        String accessToken = redisUtils.get("appid:"+wxPayConfig.getAppId());
+        if(org.springframework.util.StringUtils.isEmpty(accessToken)){
+            String accessTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+wxPayConfig.getAppId()+"&secret="+wxPayConfig.getAppSecret();
+            HttpPost atPost = new HttpPost(accessTokenUrl);
+            String atResult = HttpClientUtil.postExecute(atPost);
+            Map atmap = JsonUtil.JsonStr2Java(atResult, Map.class);
+            accessToken = (String) atmap.get("access_token");
+            Integer expireTime = (Integer) atmap.get("expires_in");
+            redisUtils.set("appid:"+wxPayConfig.getAppId(),accessToken,expireTime);
+        }
+
+        if(org.springframework.util.StringUtils.isEmpty(accessToken)){
+            throw new RRException("access_token值为空");
+        }
+
+        //post参数
+        HashMap<String, String> param = Maps.newHashMap();
+        param.put("content",content);
+        StringEntity msgEntity = new StringEntity(JsonUtil.Java2Json(param),"UTF-8");
+        String msgurl = "https://api.weixin.qq.com/wxa/msg_sec_check?access_token="+accessToken;
+        HttpPost msgPost = new HttpPost(msgurl);
+        msgPost.setEntity(msgEntity);
+
+        String secResult = HttpClientUtil.postExecute(msgPost);
+        Map secMap = JsonUtil.JsonStr2Java(secResult, Map.class);
+        Integer code = (Integer) secMap.get("errcode");
+        logger.info("文本安全校验接口结果：{}",secResult);
+
+        if(code!=0){
+            if(code == 87014)
+              throw new RRException("存在敏感字段，提交失败！");
+            else
+              throw new RRException("调用文本安全接口报错！");
+        }
     }
 
 

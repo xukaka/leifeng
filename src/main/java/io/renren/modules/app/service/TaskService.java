@@ -11,6 +11,7 @@ import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.form.TaskForm;
 import io.renren.modules.app.form.TaskQueryForm;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -49,7 +50,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 创建任务
      */
-    Long createTask(Long creatorId, TaskForm form);
+    Long createTask(Long creatorId, TaskForm form) throws Exception;
 
     /**
      * 发布任务
@@ -59,7 +60,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 更新任务
      */
-    void updateTask(TaskForm form);
+    void updateTask(TaskForm form) throws Exception;
 
     //更新任务状态
     void updateTaskStatus(Long taskId, TaskStatusEnum status);

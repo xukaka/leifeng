@@ -25,6 +25,8 @@ public class WXPayConfig {
 
     private String key;
 
+    private String appSecret;
+
     private String WXPayDomain;
 
     private String notifyUrl;
@@ -131,6 +133,14 @@ public class WXPayConfig {
 
     public void setTradeType(String tradeType) {
         this.tradeType = tradeType;
+    }
+
+    public String getAppSecret() {
+        return appSecret;
+    }
+
+    public void setAppSecret(String appSecret) {
+        this.appSecret = appSecret;
     }
 
     public String getKey() {
