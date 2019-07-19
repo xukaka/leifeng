@@ -49,8 +49,7 @@ public class TaskController {
     public R createTask(@RequestBody TaskForm form) {
         Long taskId = null;
         try {
-            taskId = taskService.createTask(0l, form);
-           // taskId = taskService.createTask(ReqUtils.curMemberId(), form);
+            taskId = taskService.createTask(ReqUtils.curMemberId(), form);
         } catch (Exception e) {
             e.printStackTrace();
             return R.error(e.getMessage());
