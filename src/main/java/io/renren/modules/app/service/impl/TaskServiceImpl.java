@@ -75,6 +75,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
     @Autowired
     private WXPayConfig wxPayConfig;
 
+    @Autowired
+    private WechatSecurityCheck wechatSecurityCheck;
 
     @Autowired
     private WechatPayService wxPayService;
@@ -232,7 +234,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);
         //调用微信平台的文字安全校验接口检查
-        wxMsgSecCheck(task.getDescription()+"||"+task.getTitle());
+        wechatSecurityCheck.checkMsgSecurity(task.getDescription()+"||"+task.getTitle());
         task.setCreatorId(creatorId);
         task.setStatus(TaskStatusEnum.notpay);
         task.setCreateTime(DateUtils.now());
@@ -283,7 +285,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
         ValidatorUtils.validateEntity(form);
         TaskEntity task = new TaskEntity();
         BeanUtils.copyProperties(form, task);
-        wxMsgSecCheck(task.getDescription()+"||"+task.getTitle());
+        wechatSecurityCheck.checkMsgSecurity(task.getDescription()+"||"+task.getTitle());
         updateById(task);
     }
 
@@ -668,43 +670,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskDao, TaskEntity> implements
 
     }
 
-    public void wxMsgSecCheck(String content) throws IOException {
-        //获取access_token
-        String accessToken = redisUtils.get("appid:"+wxPayConfig.getAppId());
-        if(org.springframework.util.StringUtils.isEmpty(accessToken)){
-            String accessTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+wxPayConfig.getAppId()+"&secret="+wxPayConfig.getAppSecret();
-            HttpPost atPost = new HttpPost(accessTokenUrl);
-            String atResult = HttpClientUtil.postExecute(atPost);
-            Map atmap = JsonUtil.JsonStr2Java(atResult, Map.class);
-            accessToken = (String) atmap.get("access_token");
-            Integer expireTime = (Integer) atmap.get("expires_in");
-            redisUtils.set("appid:"+wxPayConfig.getAppId(),accessToken,expireTime);
-        }
 
-        if(org.springframework.util.StringUtils.isEmpty(accessToken)){
-            throw new RRException("access_token值为空");
-        }
-
-        //post参数
-        HashMap<String, String> param = Maps.newHashMap();
-        param.put("content",content);
-        StringEntity msgEntity = new StringEntity(JsonUtil.Java2Json(param),"UTF-8");
-        String msgurl = "https://api.weixin.qq.com/wxa/msg_sec_check?access_token="+accessToken;
-        HttpPost msgPost = new HttpPost(msgurl);
-        msgPost.setEntity(msgEntity);
-
-        String secResult = HttpClientUtil.postExecute(msgPost);
-        Map secMap = JsonUtil.JsonStr2Java(secResult, Map.class);
-        Integer code = (Integer) secMap.get("errcode");
-        logger.info("文本安全校验接口结果：{}",secResult);
-
-        if(code!=0){
-            if(code == 87014)
-              throw new RRException("存在敏感字段，提交失败！");
-            else
-              throw new RRException("调用文本安全接口报错！");
-        }
-    }
 
 
 }

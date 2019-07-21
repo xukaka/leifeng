@@ -22,9 +22,11 @@ import io.renren.modules.app.form.PageWrapper;
 import io.renren.modules.app.service.DiaryService;
 import io.renren.modules.app.service.LikeService;
 import io.renren.modules.app.service.MemberService;
+import io.renren.modules.app.service.WechatSecurityCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -49,6 +51,8 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
 
     @Resource
     private MemberFollowDao memberFollowDao;
+    @Autowired
+    private WechatSecurityCheck wechatSecurityCheck;
 
 
     @Override
@@ -58,6 +62,8 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
         ValidatorUtils.validateEntity(form);
         DiaryEntity diary = new DiaryEntity();
         BeanUtils.copyProperties(form, diary);
+
+        wechatSecurityCheck.checkMsgSecurity(diary.getTitle());
         diary.setCreatorId(memberId);
         diary.setCreateTime(DateUtils.now());
         this.insert(diary);
@@ -75,6 +81,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
 
     //添加日记内容
     private void addDiaryContent(Long diaryId,List<DiaryContentForm> contents){
+        checkDiaryContentSecurity(contents);
         long createTime = DateUtils.now();
         for (DiaryContentForm form:contents){
             DiaryContentEntity content= new DiaryContentEntity();
@@ -85,6 +92,13 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryDao, DiaryEntity> impleme
         }
     }
 
+    private void checkDiaryContentSecurity(List<DiaryContentForm> contents){
+        StringBuilder contentMsg = new StringBuilder();
+        for (DiaryContentForm form:contents){
+            contentMsg.append(form.getParagraph());
+        }
+        wechatSecurityCheck.checkMsgSecurity(contentMsg.toString());
+    }
 
     @Override
     public DiaryDto getDiary(Long curMemberId,Long id) {
