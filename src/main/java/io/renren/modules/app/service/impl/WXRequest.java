@@ -2,6 +2,8 @@ package io.renren.modules.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import io.renren.common.exception.RRException;
+import io.renren.common.utils.HttpHelper;
+import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.dto.WXSession;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -11,11 +13,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 
 @Service
@@ -31,6 +35,9 @@ public class WXRequest {
 
     @Value("${wx.code_session_url}")
     public String wxLoginUrl = "";
+
+    @Autowired
+    private RedisUtils redisUtils;
 
 
     public WXSession loginWXWithCode(String code){
@@ -80,6 +87,37 @@ public class WXRequest {
         return wxSession;
     }
 
+    /**
+     * 微信access_token
+     */
+    public  String getAccessToken(){
+
+        try {
+            String value = redisUtils.get("WEIXIN_BASE_ACCESS_TOKEN");
+            if (!org.apache.commons.lang3.StringUtils.isEmpty(value)) {
+                logger.info("Get base access_token from redis is successful.value:{}",value);
+                return value;
+            }else{
+                synchronized (this) {
+                    //缓存中没有、或已经失效
+                    String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appId+"&secret="+ appSecret;
+                    String rs = HttpHelper.get(url,3000);
+
+                    JSONObject obj_content = JSONObject.parseObject(rs);
+                    String accessToken = obj_content.getString("access_token");
+                    int time = Integer.parseInt(obj_content.getString("expires_in"));
+
+                    //写缓存
+                    redisUtils.set("WEIXIN_BASE_ACCESS_TOKEN", accessToken, time - 3600);
+                    logger.info("Set base access_token to redis is successful.parameters time:{},realtime",time,time-3600);
+                    return accessToken;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Get base access_token from redis is error.");
+        }
+        return null;
+    }
 
 
 }

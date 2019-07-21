@@ -5,9 +5,10 @@ import io.renren.common.exception.RRException;
 import io.renren.common.utils.JsonUtil;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.app.config.WXPayConfig;
+import io.renren.modules.app.form.WxUserInfoForm;
 import io.renren.modules.app.service.impl.TaskServiceImpl;
+import io.renren.modules.app.service.impl.WXRequest;
 import io.renren.modules.app.utils.HttpClientUtil;
-import io.renren.modules.app.utils.JsSdkUtils;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
@@ -30,11 +31,11 @@ public class WechatSecurityCheck {
     @Autowired
     private WXPayConfig wxPayConfig;
     @Autowired
-    private JsSdkUtils jsSdkUtils;
+    private WXRequest wxRequest;
 
     public void checkMsgSecurity(String content) {
         //获取access_token
-        String accessToken = jsSdkUtils.getBaseAccessToken();
+        String accessToken = wxRequest.getAccessToken();
 
         HashMap<String, String> param = Maps.newHashMap();
         param.put("content", content);
@@ -51,7 +52,7 @@ public class WechatSecurityCheck {
 
             if (code != 0) {
                 if (code == 87014)
-                    throw new RRException("存在敏感字段，提交失败！");
+                    throw new RRException("发布的内容敏感字哦，请修改后发布！");
                 else
                     throw new RRException("调用文本安全接口报错！");
             }
