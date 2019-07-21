@@ -4,6 +4,7 @@ import com.jfinal.i18n.Res;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.*;
 import io.renren.modules.app.config.WXPayConfig;
+import io.renren.modules.app.service.WechatSecurityCheck;
 import io.renren.modules.app.utils.HttpClientUtil;
 import io.renren.modules.oss.cloud.OSSFactory;
 import io.swagger.annotations.Api;
@@ -53,6 +54,9 @@ public class ImageController {
     
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private WechatSecurityCheck wechatSecurityCheck;
     /**
      * 上传文件
      */
@@ -65,9 +69,7 @@ public class ImageController {
         //压缩图片：最大1M，循环压缩比率0.8
         byte[] imageBytes =  ImageUtils.commpressPicForScale(file.getBytes(),1024,0.8);
         //微信平台进行图片安全性校验
-        if(!imgSecCheckWX(imageBytes,file.getOriginalFilename())){
-            return R.error("图片安全性校验不通过");
-        }
+        wechatSecurityCheck.checkImageSecurity(imageBytes,file.getOriginalFilename());
 
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         String url = OSSFactory.build().uploadSuffix(imageBytes, suffix);
@@ -75,41 +77,5 @@ public class ImageController {
         return R.ok().put("result", url + Constant.IMAGE_STYLE);
     }
 
-
-    public boolean imgSecCheckWX(byte[] bytes , String fileName) throws Exception {
-        //获取access_token
-        String accessToken = redisUtils.get("appid:"+wxPayConfig.getAppId());
-        if(StringUtils.isEmpty(accessToken)){
-            String accessTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+wxPayConfig.getAppId()+"&secret="+wxPayConfig.getAppSecret();
-            HttpPost atPost = new HttpPost(accessTokenUrl);
-            String atResult = HttpClientUtil.postExecute(atPost);
-            Map atmap = JsonUtil.JsonStr2Java(atResult, Map.class);
-            accessToken = (String) atmap.get("access_token");
-            Integer expireTime = (Integer) atmap.get("expires_in");
-            redisUtils.set("appid:"+wxPayConfig.getAppId(),accessToken,expireTime);
-        }
-
-        if(StringUtils.isEmpty(accessToken)){
-            throw new RRException("access_token值为空");
-        }
-
-        //包装multipart/formdata数据作为参数
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.addPart("media",new ByteArrayBody(bytes,fileName));
-        HttpEntity mediaEntity = builder.build();
-
-        String securl = "https://api.weixin.qq.com/wxa/img_sec_check?access_token="+accessToken;
-        HttpPost secPost = new HttpPost(securl);
-        secPost.setEntity(mediaEntity);
-        String secResult = HttpClientUtil.postExecute(secPost);
-        Map secMap = JsonUtil.JsonStr2Java(secResult, Map.class);
-        Integer code = (Integer) secMap.get("errcode");
-        logger.info("图片安全接口结果：{}",secResult);
-
-        if(code!=0){
-            return false;
-        }
-        return true;
-    }
 
 }
