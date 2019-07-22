@@ -50,7 +50,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 创建任务
      */
-    Long createTask(Long creatorId, TaskForm form) throws Exception;
+    Long createTask(Long creatorId, TaskForm form);
 
     /**
      * 发布任务
@@ -60,7 +60,7 @@ public interface TaskService extends IService<TaskEntity> {
     /**
      * 更新任务
      */
-    void updateTask(TaskForm form) throws Exception;
+    void updateTask(TaskForm form);
 
     //更新任务状态
     void updateTaskStatus(Long taskId, TaskStatusEnum status);

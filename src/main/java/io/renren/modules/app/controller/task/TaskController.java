@@ -43,17 +43,11 @@ public class TaskController {
         return R.ok().put("result", banners);
     }
 
-   // @Login
+    @Login
     @PostMapping("/create")
     @ApiOperation("创建任务")
     public R createTask(@RequestBody TaskForm form) {
-        Long taskId = null;
-        try {
-            taskId = taskService.createTask(ReqUtils.curMemberId(), form);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return R.error(e.getMessage());
-        }
+        Long taskId = taskService.createTask(ReqUtils.curMemberId(), form);
         return R.ok().put("result", taskId);
     }
 
@@ -78,12 +72,7 @@ public class TaskController {
     @PutMapping("/update")
     @ApiOperation("更新任务信息")
     public R updateTask(@RequestBody TaskForm form) {
-        try {
-            taskService.updateTask(form);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return R.error(e.getMessage());
-        }
+        taskService.updateTask(form);
         return R.ok();
     }
 
@@ -175,9 +164,9 @@ public class TaskController {
 
     @GetMapping("/publish/list")
     @ApiOperation("分页获取发布任务列表")
-    public R getPublishedTasks(Long publisherId, TaskStatusEnum status,Integer curPage, Integer pageSize) {
+    public R getPublishedTasks(Long publisherId, TaskStatusEnum status, Integer curPage, Integer pageSize) {
         PageWrapper page = PageWrapperUtils.getPage(curPage, pageSize);
-        PageUtils<TaskDto> tasks = taskService.getPublishedTasks(publisherId,status, page);
+        PageUtils<TaskDto> tasks = taskService.getPublishedTasks(publisherId, status, page);
         return R.ok().put("result", tasks);
     }
 
@@ -209,8 +198,8 @@ public class TaskController {
     @Login
     @GetMapping("/noticeReceive")
     @ApiOperation("通知TA领取")
-    public R noticeReceive(Long notifiedMemberId,Long taskId) {
-        taskService.noticeReceiveTask(ReqUtils.curMemberId(),notifiedMemberId, taskId);
+    public R noticeReceive(Long notifiedMemberId, Long taskId) {
+        taskService.noticeReceiveTask(ReqUtils.curMemberId(), notifiedMemberId, taskId);
         return R.ok();
     }
 
